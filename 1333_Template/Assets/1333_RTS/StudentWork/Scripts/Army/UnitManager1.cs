@@ -6,13 +6,15 @@ using UnityEngine;
 public class UnitManager1 : MonoBehaviour
 {
     public GridTest1 gridTest;
-    public GridNode startNode;
-    public GridNode endNode;
+    public GridNode1 startNode; //currently class gridnode1; change back to struct gridnode if not working
+    public GridNode1 endNode; //currently class gridnode1; change back to struct gridnode if not working
+    [SerializeField] private GridManager1 gridManager;
     public GameObject dummyPrefab;
     // Start is called before the first frame update
     void Start()
     {
-        
+       startNode =  gridManager.StartNode;
+        endNode = gridManager.EndNode;  
     }
 
     // Update is called once per frame

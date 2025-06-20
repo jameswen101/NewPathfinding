@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GridNode1: MonoBehaviour
+public class GridNode1
 {
     public string Name;
     public Vector3 WorldPosition;

@@ -15,14 +15,19 @@ public class PathFinder1 : MonoBehaviour
         Naive,
     }
 
-    public GridNode StartNode;
-    public GridNode EndNode;
+    public GridNode1 StartNode; //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+    public GridNode1 EndNode; //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
 
-    List<GridNode> openSet = new List<GridNode>(); //should we also have a closedSet?
-    List<GridNode> closedSet = new List<GridNode>();
-    Dictionary<GridNode, int> costSoFar = new Dictionary<GridNode, int>(); //gCost (starts at 0)
-    Dictionary<GridNode, int> estimatedTotalCost = new Dictionary<GridNode, int>(); //fCost; costSoFar + Heuristic = estimatedTotalCost?
-    Dictionary<GridNode, GridNode> cameFrom = new Dictionary<GridNode, GridNode>(); //path reconstruction
+    public List<GridNode1> openSet = new List<GridNode1>(); //should we also have a closedSet? 
+    //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+    public List<GridNode1> closedSet = new List<GridNode1>(); 
+    //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+    public Dictionary<GridNode1, int> costSoFar = new Dictionary<GridNode1, int>(); //gCost (starts at 0) 
+    //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+    public Dictionary<GridNode1, int> estimatedTotalCost = new Dictionary<GridNode1, int>(); //fCost; costSoFar + Heuristic = estimatedTotalCost?
+    //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+    public Dictionary<GridNode1, GridNode1> cameFrom = new Dictionary<GridNode1, GridNode1>(); //path reconstruction
+    //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
 
 
     [Header("Pathfinding Settings")]
@@ -83,10 +88,18 @@ public class PathFinder1 : MonoBehaviour
 
     }
     */
+    private void Start()
+    {
+        
+    }
 
-    public List<GridNode> CalculatePath(GridNode StartNode, GridNode EndNode) //once we changed to this version, the line disappeared
+    public List<GridNode1> CalculatePath(GridNode1 StartNode, GridNode1 EndNode) //once we changed to this version, the line disappeared
+                                                                              //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
     {
         openSet.Add(StartNode);
+        costSoFar[StartNode] = 0; //adds StartNode to dictionary
+        estimatedTotalCost[StartNode] = Heuristic(StartNode, EndNode); //adds StartNode to dictionary
+        //adds StartNode to dictionary
         cameFrom[StartNode] = StartNode; // This works for marking the root
 
         Debug.Log($"Finding path from ({StartNode.WorldPosition.x}, {StartNode.WorldPosition.z}) to ({EndNode.WorldPosition.x}, {EndNode.WorldPosition.z})");
@@ -94,8 +107,9 @@ public class PathFinder1 : MonoBehaviour
         while (openSet.Count > 0)
         {
             //find code with lowest f-score
-            GridNode current = openSet[0];
-            foreach (GridNode node in openSet) //does openSet only have 1 node?
+            GridNode1 current = openSet[0];
+            foreach (GridNode1 node in openSet) //does openSet only have 1 node?
+                                                //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
             {
                 if (estimatedTotalCost[node] < estimatedTotalCost[current] || //keyNode not found
    (estimatedTotalCost[node] == estimatedTotalCost[current] &&
@@ -114,27 +128,22 @@ public class PathFinder1 : MonoBehaviour
         }
 
             // Reconstruct path
-            List<GridNode> path = new List<GridNode>();
-        GridNode pathNode = EndNode;
+            List<GridNode1> path = new List<GridNode1>();
+        GridNode1 pathNode = EndNode; //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
 
-        while (true)
+        if (!cameFrom.ContainsKey(EndNode))
+            return path;
+        while (!pathNode.Equals(StartNode)) //not the 1st node
         {
             path.Add(pathNode);
-            pathNode = cameFrom[pathNode];
-            if (!cameFrom.ContainsKey(pathNode))
-            {
-                Debug.LogError("Path reconstruction failed: node not found in cameFrom.");
-                break;
-            }
-
+            pathNode = cameFrom[pathNode]; //key not found
         }
-
-
+        path.Add(StartNode);
         path.Reverse();
         return path;
     }
 
-    private int Heuristic(GridNode a, GridNode b)
+    private int Heuristic(GridNode1 a, GridNode1 b) //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
     {
         float dx = Mathf.Abs(a.WorldPosition.x - b.WorldPosition.x);
         float dz = Mathf.Abs(a.WorldPosition.z - b.WorldPosition.z);
@@ -142,9 +151,9 @@ public class PathFinder1 : MonoBehaviour
     }
 
 
-    private List<GridNode> GetNeighbors(GridNode node)
+    private List<GridNode1> GetNeighbors(GridNode1 node) //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
     {
-        List<GridNode> neighbors = new List<GridNode>();
+        List<GridNode1> neighbors = new List<GridNode1>();
         int gridSizeX = gridManager.GridSettings.GridSizeX;
         int gridSizeY = gridManager.GridSettings.GridSizeY;
         float nodeSize = gridManager.GridSettings.NodeSize;
@@ -157,7 +166,7 @@ public class PathFinder1 : MonoBehaviour
         return neighbors;
     }
 
-    protected int GetDistance(GridNode nodeA, GridNode nodeB)
+    protected int GetDistance(GridNode1 nodeA, GridNode1 nodeB) //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
     {
         int dstX = (int)Mathf.Abs(nodeA.WorldPosition.x - nodeB.WorldPosition.x); //x-difference between source node + destination node
         int dstZ = (int)Mathf.Abs(nodeA.WorldPosition.z - nodeB.WorldPosition.z); //z-difference between source node + destination node

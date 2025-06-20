@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class GridManager : MonoBehaviour
+public class GridManager1 : MonoBehaviour
 {
     [SerializeField] private GridSettings gridSettings;
     public GridSettings GridSettings => gridSettings;
 
     //private
-    public GridNode[,] gridNodes;
+    public GridNode1[,] gridNodes; //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
     //[SerializeField] private
-    public List<GridNode> AllNodes = new();
-    public PathFinder pathFinder;
-    public GridNode StartNode;
-    public GridNode EndNode;
+    public List<GridNode1> AllNodes = new(); //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+    public PathFinder1 pathFinder;
+    public GridNode1 StartNode; //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+    public GridNode1 EndNode; //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
 
     public bool IsInitialized { get; private set; } = false;
 
@@ -23,7 +23,7 @@ public class GridManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartNode = gridNodes[0, 0];
+        StartNode = gridNodes[0, 0]; 
         EndNode = gridNodes[9, 4];
     }
 
@@ -35,7 +35,7 @@ public class GridManager : MonoBehaviour
 
     public void InitializeGrid()
     {
-        gridNodes = new GridNode[gridSettings.GridSizeX, gridSettings.GridSizeY];
+        gridNodes = new GridNode1[gridSettings.GridSizeX, gridSettings.GridSizeY]; //currently class gridnode1; change back to struct gridnode if not working
         for (int x = 0; x < gridSettings.GridSizeX; x++)
         {
             for (int y = 0; y < gridSettings.GridSizeY; y++)
@@ -44,7 +44,7 @@ public class GridManager : MonoBehaviour
                     ? new Vector3(x, 0, y) * gridSettings.NodeSize
                     : new Vector3(x, y, 0) * gridSettings.NodeSize;
 
-                GridNode node = new GridNode
+                GridNode1 node = new GridNode1
                 {
                     Name = $"Cell_{(x + gridSettings.GridSizeX) * x + y}",
                     WorldPosition = worldPos,
@@ -66,19 +66,19 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0;y < gridSettings.GridSizeY;y++)
             {
-                GridNode node = gridNodes[x, y];
-                AllNodes.Add(new GridNode
+                GridNode1 node = gridNodes[x, y]; //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
+                AllNodes.Add(new GridNode1
                 {
                     Name = $"Cell_{x}_{y}",
                     WorldPosition = node.WorldPosition,
                     Walkable = node.Walkable,
                     Weight = node.Weight
-                });
+                }); //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
             }
         }
     }
 
-    public GridNode GetNode(int x, int y)
+    public GridNode1 GetNode(int x, int y) //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
     {
         if (x < 0 || x>= gridSettings.GridSizeX || y < 0 || y>= gridSettings.GridSizeY)
             throw new System.IndexOutOfRangeException("Grid node indices out of range.");
@@ -96,25 +96,26 @@ public class GridManager : MonoBehaviour
         {
             for (int y = 0; y < gridSettings.GridSizeY; y++)
             {
-                GridNode node = gridNodes[x,y];
+                GridNode1 node = gridNodes[x,y];
                 Gizmos.color = node.Walkable ? Color.green : Color.red;
                 Gizmos.DrawWireCube(node.WorldPosition, Vector3.one * gridSettings.NodeSize * 0.9f);
             }
         }
         // Draw final path
-        List<Vector3> FinalPath = pathFinder.CalculatePath(StartNode, EndNode); 
+        List<GridNode1> FinalPath = pathFinder.CalculatePath(StartNode, EndNode); //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
         if (FinalPath != null && FinalPath.Count > 1) //FinalPath nodes > 1?
         {
-            Gizmos.color = finalPathColor;    
-            for (int i = 0; i < FinalPath.Count - 1; i++)    
-            {        
-                Gizmos.DrawLine(FinalPath[i], FinalPath[i + 1]);
-                Debug.Log($"Node visited: ({FinalPath[i].x}, {FinalPath[i].z})"); //make sure Debug.Log ends once destination reached
+            Gizmos.color = finalPathColor;
+            for (int i = 0; i < FinalPath.Count - 1; i++)
+            {
+                Gizmos.DrawLine(FinalPath[i].WorldPosition, FinalPath[i + 1].WorldPosition);
+                Debug.Log($"Node visited: {FinalPath[i].WorldPosition.x}, {FinalPath[i].WorldPosition.z}");
             }
+
         }
     }
 
-    public GridNode GetNodeFromWorldPosition(Vector3 position)
+    public GridNode1 GetNodeFromWorldPosition(Vector3 position) //currently MonoBehavior class gridnode1; change back to struct gridnode if not working
     {
         int x = GridSettings.UseXZPlane ? Mathf.RoundToInt(f: position.x / GridSettings.NodeSize) : Mathf.RoundToInt(f: position.x / GridSettings.NodeSize);
         int y = GridSettings.UseXZPlane ? Mathf.RoundToInt(f: position.z / GridSettings.NodeSize) : Mathf.RoundToInt(f: position.y / GridSettings.NodeSize);
@@ -142,13 +143,13 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    [CustomEditor(typeof(GridManager))]
+    [CustomEditor(typeof(GridManager1))]
     public class GridManagerEditor : Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            GridManager grid = (GridManager)target;
+            GridManager1 grid = (GridManager1)target;
             if (grid.IsInitialized)
             {
                 if (GUILayout.Button("Refresh Grid Debug View"))
