@@ -19,5 +19,6 @@ public class BuildingData
     public TeamArmies army;
     public GameObject buildingPrefab;
     public Sprite buildingIcon;
+    public bool IsSolid;
     public int moveCost = -1; //terrain color = rock/danger's color?
 }

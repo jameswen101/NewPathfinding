@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 public class BuildingPlacementManager : MonoBehaviour
 {
@@ -9,21 +10,30 @@ public class BuildingPlacementManager : MonoBehaviour
     [SerializeField] private Material validMaterial;
     [SerializeField] private Material invalidMaterial;
     [SerializeField] private LayerMask placementMask;
+    [SerializeField] private BuildingTypes buildingTypes;
 
-    private static BuildingPlacementManager _instance;
+    public static BuildingPlacementManager instance;
 
-    private BuildingType _pendingBuilding;
+    public BuildingData pendingBuilding;
+    //private BuildingData matchingBuilding;
     private GameObject ghostObject;
     private MeshRenderer[] ghostRenderers;
     private ArmyData playerArmy;
 
-    public void BeginPlacement(BuildingType buildingType, ArmyData playerArmy)
+    private void Start()
     {
-        _pendingBuilding = buildingType;
-        _playerArmy = playerArmy;
+        
+
+        //matchingBuilding = buildingTypes.Buildings.FirstOrDefault(b => b.buildingName == pendingBuilding.buildingName); //returns null if no matching buildings
+    }
+
+    public void BeginPlacement(BuildingData buildingData, ArmyData playerArmy) //why armydata?
+    {
+        //matchingBuilding = buildingData;
+        this.playerArmy = playerArmy;
 
         if (ghostObject != null) Destroy(ghostObject);
-        ghostObject = Instantiate(buildingType.Prefab.gameObject);
+        ghostObject = Instantiate(buildingData.buildingPrefab);
         ghostObject.SetActive(true);
 
         ghostRenderers = ghostObject.GetComponentsInChildren<MeshRenderer>();
@@ -31,7 +41,7 @@ public class BuildingPlacementManager : MonoBehaviour
 
     private void Update()
     {
-        if (_pendingBuilding == null || ghostObject == null) return;
+        if (pendingBuilding == null || ghostObject == null) return;
 
         // Raycast from mouse to grid
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -42,12 +52,12 @@ public class BuildingPlacementManager : MonoBehaviour
 
         ghostObject.transform.position = snappedWorld;
 
-        bool canPlace = gridManager.CanPlaceBuilding(_pendingBuilding, snappedCoords);
+        bool canPlace = gridManager.CanPlaceBuilding(buildingTypes, snappedCoords);
         SetGhostMaterial(canPlace ? validMaterial : invalidMaterial);
 
         if (canPlace && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            _playerArmy.SpawnBuilding(_pendingBuilding, snappedWorld);
+            playerArmy.SpawnBuilding(buildingTypes, snappedWorld); //if pendingBuilding were a BuildingTypes -> pendingBuilding[?]
             CancelPlacement();
         }
 
@@ -70,7 +80,7 @@ public class BuildingPlacementManager : MonoBehaviour
 
     private void CancelPlacement()
     {
-        _pendingBuilding = null;
+        pendingBuilding = null;
         if (ghostObject != null)
             Destroy(ghostObject);
     }

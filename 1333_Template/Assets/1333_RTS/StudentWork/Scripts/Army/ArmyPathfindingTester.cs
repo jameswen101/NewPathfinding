@@ -10,7 +10,7 @@ public class ArmyPathfindingTester : MonoBehaviour
     [Header("Patrol & AI Settings")]
     [SerializeField] private int patrolRadius = 8;
     [SerializeField] private float detectionDistance = 4f;
-    private readonly List<ArmyManager> armies = new();
+    private readonly List<ArmyData> armies = new();
     private enum UnitState { Patrol, Follow }
     private readonly Dictionary<UnitInstance, UnitState> unitStates = new();
     private readonly Dictionary<UnitInstance, Vector3[]> patrolPoints = new();
@@ -22,12 +22,12 @@ public class ArmyPathfindingTester : MonoBehaviour
         armies.Clear();
         for (int i = 0; i < armyCompositions.Count; i++)
         {
-            var army = new ArmyManager { ArmyID = i + 1, GridManager = gridManager };
+            var army = new ArmyData { ArmyID = i + 1, GridManager = gridManager };
             SpawnArmy(army, armyCompositions[i]);
             armies.Add(army);
         }
     }
-    private void SpawnArmy(ArmyManager army, ArmyComposition composition)
+    private void SpawnArmy(ArmyData army, ArmyComposition composition)
     {
         foreach (var entry in composition.entries)
         {
@@ -53,7 +53,7 @@ public class ArmyPathfindingTester : MonoBehaviour
     }
     private void Update()
     {
-        foreach (ArmyManager ownArmy in armies)
+        foreach (ArmyData ownArmy in armies)
         {
             List<UnitInstance> enemyUnits = new();
             foreach (var army in armies)
@@ -64,7 +64,7 @@ public class ArmyPathfindingTester : MonoBehaviour
             UpdateArmyUnits(ownArmy, enemyUnits);
         }
     }
-    private void UpdateArmyUnits(ArmyManager ownArmy, List<UnitInstance> enemyUnits)
+    private void UpdateArmyUnits(ArmyData ownArmy, List<UnitInstance> enemyUnits)
     {
         foreach (UnitInstance unit in ownArmy.Units)
         {

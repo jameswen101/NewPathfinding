@@ -1,4 +1,3 @@
-using RTS_1333;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -212,7 +211,7 @@ public class GridManager : MonoBehaviour
             for (int dy = 0; dy < type.Buildings[dy].height; dy++)
             {
                 Vector2Int pos = origin + new Vector2Int(dx, dy);
-                if (!IsValidCoordinate(pos.x, pos.y) || _buildingOccupancy.ContainsKey(pos))
+                if (!IsValidCoordinate(pos.x, pos.y) || _buildingOccupancy.ContainsKey(pos)) //check if walkable?
                     return false;
             }
         }
@@ -229,7 +228,7 @@ public class GridManager : MonoBehaviour
             {
                 Vector2Int pos = origin + new Vector2Int(dx, dy);
                 _buildingOccupancy[pos] = instance;
-                if (type.IsSolid)
+                if (type.Buildings[dy].IsSolid)
                     SetWalkable(pos.x, pos.y, false);
             }
         }
@@ -245,7 +244,7 @@ public class GridManager : MonoBehaviour
             {
                 Vector2Int pos = origin + new Vector2Int(dx, dy);
                 _buildingOccupancy.Remove(pos);
-                if (type.IsSolid)
+                if (type.Buildings[dy].IsSolid)
                     SetWalkable(pos.x, pos.y, true);
             }
         }
@@ -254,6 +253,11 @@ public class GridManager : MonoBehaviour
     public bool IsOccupied(Vector2Int pos)
     {
         return _buildingOccupancy.ContainsKey(pos);
+    }
+
+    private bool IsValidCoordinate(int x, int y)
+    {
+        return x >= 0 && x < gridSettings.GridSizeX && y >= 0 && y < gridSettings.GridSizeY;
     }
 
     [CustomEditor(typeof(GridManager))]

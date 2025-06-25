@@ -21,23 +21,29 @@ MonoBehaviour:
     army: {fileID: 0}
     buildingPrefab: {fileID: 100000, guid: 7036859d28e2cb84c9948a1fcf49fe95, type: 3}
     buildingIcon: {fileID: 21300000, guid: d6a40dd72c900794982f4c3992144bb8, type: 3}
+    IsSolid: 0
+    moveCost: -1
   - buildingName: Barracks
     width: 4
     height: 4
     maxHealth: 100
-    currentHealth: 0
+    currentHealth: 100
     army: {fileID: 0}
     buildingPrefab: {fileID: 100000, guid: e2f28d7d7478cb64597ebb9077abfe6e, type: 3}
     buildingIcon: {fileID: 21300000, guid: 21d5cfd56262af54d89e7239248cc7d0, type: 3}
+    IsSolid: 0
+    moveCost: -1
   - buildingName: Castle
     width: 4
     height: 4
     maxHealth: 100
-    currentHealth: 0
+    currentHealth: 100
     army: {fileID: 0}
     buildingPrefab: {fileID: 100000, guid: 637b3bb1a53fd584b8b2f29eddb05290, type: 3}
     buildingIcon: {fileID: 21300000, guid: d5b5dfc19c7c00049b4ffe46968a6e47, type: 3}
-  - buildingName: 
+    IsSolid: 0
+    moveCost: -1
+  - buildingName: Lumbermill
     width: 0
     height: 0
     maxHealth: 100
@@ -45,27 +51,35 @@ MonoBehaviour:
     army: {fileID: 0}
     buildingPrefab: {fileID: 100000, guid: 06905b5e993435c4e9526f63c49622e3, type: 3}
     buildingIcon: {fileID: 0}
+    IsSolid: 0
+    moveCost: -1
   - buildingName: Tower
     width: 1
     height: 1
     maxHealth: 100
-    currentHealth: 0
+    currentHealth: 100
     army: {fileID: 0}
     buildingPrefab: {fileID: 100000, guid: 5921e45280d702e44ad0fb582ac16d26, type: 3}
     buildingIcon: {fileID: 21300000, guid: 48f58ff7968f9e24dac165f999b5dd73, type: 3}
+    IsSolid: 0
+    moveCost: -1
   - buildingName: Wall Section
     width: 1
     height: 1
     maxHealth: 100
-    currentHealth: 0
+    currentHealth: 100
     army: {fileID: 0}
     buildingPrefab: {fileID: 100000, guid: 38f7e2d8e36aee34ea1626e31c1db895, type: 3}
     buildingIcon: {fileID: 21300000, guid: 5875ad7c254e2614eb020579a8aabe84, type: 3}
+    IsSolid: 0
+    moveCost: -1
   - buildingName: Workshop
     width: 3
     height: 3
     maxHealth: 100
-    currentHealth: 0
+    currentHealth: 100
     army: {fileID: 0}
     buildingPrefab: {fileID: 100000, guid: 5573396f6b8833f4dbd78bbb53d56df5, type: 3}
     buildingIcon: {fileID: 21300000, guid: 58b8477e719df634981be0682b80a6d4, type: 3}
+    IsSolid: 0
+    moveCost: -1
