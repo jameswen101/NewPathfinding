@@ -31,9 +31,10 @@ public class UnitInstance : UnitBase
         }
     }
 
-    public void Initialize(PathFinder assignedPathfinder, Material teamMaterial)
+    public void Initialize(PathFinder assignedPathfinder, Material teamMaterial, GridManager gridManager)
     {
         pathfinder = assignedPathfinder;
+        gridM = gridManager;
 
         // Apply team color
         foreach (var renderer in skinRoot.GetComponentsInChildren<Renderer>())

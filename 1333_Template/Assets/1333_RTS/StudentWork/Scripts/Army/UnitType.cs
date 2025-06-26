@@ -13,7 +13,7 @@ public class UnitType : ScriptableObject
     [SerializeField] private int defence = 1;
     public AttackType attackType = 0;
     [SerializeField] private int range = 1;
-
+    public string unitTypeName;
     public GameObject unitPrefab;
 
     public int Width => width;

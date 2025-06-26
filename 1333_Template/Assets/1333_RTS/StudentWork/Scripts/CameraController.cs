@@ -12,6 +12,9 @@ public class CameraController : MonoBehaviour
     public float maxY = 120f;
     Vector3 pos;
     public Camera cam;
+    public Vector3 defaultPosition;
+    public Vector3 topDownPosition;
+    public bool isTopDown = false;
 
     // Start is called before the first frame update
     void Start()
@@ -23,17 +26,28 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.W)) // forward (Z+)
-            transform.position += transform.forward * panSpeed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.W))
+        {
+            if (isTopDown)
+                transform.position += panSpeed * Time.deltaTime * Vector3.forward; // Z+
+            else
+                transform.position += panSpeed * Time.deltaTime * transform.forward;
+        }
 
-        if (Input.GetKey(KeyCode.S)) // backward (Z-)
-            transform.position -= transform.forward * panSpeed * Time.deltaTime;
+        if (Input.GetKey(KeyCode.S))
+        {
+            if (isTopDown)
+                transform.position -= panSpeed * Time.deltaTime * Vector3.forward; // Z-
+            else
+                transform.position -= panSpeed * Time.deltaTime * transform.forward;
+        }
+
 
         if (Input.GetKey(KeyCode.A)) // left (X-)
-            transform.position -= transform.right * panSpeed * Time.deltaTime;
+            transform.position -= panSpeed * Time.deltaTime * transform.right;
 
         if (Input.GetKey(KeyCode.D)) // right (X+)
-            transform.position += transform.right * panSpeed * Time.deltaTime;
+            transform.position += panSpeed * Time.deltaTime * transform.right;
 
         if (Input.GetKey(KeyCode.Q))
         {
@@ -42,6 +56,19 @@ public class CameraController : MonoBehaviour
         if (Input.GetKey(KeyCode.E))
         {
             cam.fieldOfView = Mathf.Clamp(cam.fieldOfView + 20f * Time.deltaTime, 20f, 60f);
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            isTopDown = !isTopDown;
+
+            if (isTopDown)
+            {
+                cam.transform.SetPositionAndRotation(topDownPosition, Quaternion.Euler(90f, 0f, 0f));
+            }
+            else
+            {
+                cam.transform.SetPositionAndRotation(defaultPosition, Quaternion.Euler(0f, 0f, 0f));
+            }
         }
     }
 }

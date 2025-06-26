@@ -20,4 +20,5 @@ MonoBehaviour:
   defence: 1
   attackType: 0
   range: 1
+  unitTypeName: Swordman
   unitPrefab: {fileID: 155132, guid: bcc60fdbd3a37b44cbc0cb99db483477, type: 3}

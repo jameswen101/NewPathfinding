@@ -255,7 +255,7 @@ public class GridManager : MonoBehaviour
         return _buildingOccupancy.ContainsKey(pos);
     }
 
-    private bool IsValidCoordinate(int x, int y)
+    public bool IsValidCoordinate(int x, int y)
     {
         return x >= 0 && x < gridSettings.GridSizeX && y >= 0 && y < gridSettings.GridSizeY;
     }

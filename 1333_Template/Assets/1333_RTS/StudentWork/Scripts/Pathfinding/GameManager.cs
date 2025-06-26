@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        
+        StartNewGame(2); //starting a new game with 2 players
     }
 
     void Update()
@@ -71,8 +71,8 @@ public class GameManager : MonoBehaviour
 
         for (var i = 0; i < armyCount; i++)
         {
-            //var armyData = new ArmyData();
-            //armyData.Initialize(gridManager, pathFinder, i, $"Faction_{i}");
+            var armyData = new ArmyData();
+            armyData.Initialize(gridManager, pathFinder, i, $"Faction_{i}");
 
             // Example spawn for now: one unit in each army
             foreach (var unitComp in armyComposition.entries)

@@ -20,4 +20,5 @@ MonoBehaviour:
   defence: 1
   attackType: 0
   range: 1
+  unitTypeName: HeavyCavalry
   unitPrefab: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}

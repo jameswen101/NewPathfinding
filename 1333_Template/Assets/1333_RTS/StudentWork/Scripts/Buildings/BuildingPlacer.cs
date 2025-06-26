@@ -22,32 +22,50 @@ public class BuildingPlacer : MonoBehaviour
         ghostObject = Instantiate(buildingData.buildingPrefab); //add a separate GhostPrefab in BuildingData?
     }
 
+    private Vector2Int gridOffset = Vector2Int.zero;
+
     void Update()
     {
         if (ghostObject == null) return;
 
+        HandleArrowKeyMovement(); // Handle arrow input
+
         Vector3 worldPos = GetMouseWorldPosition();
         GridNode node = gridManager.GetNodeFromWorldPosition(worldPos);
 
+        if (!gridManager.IsValidCoordinate((int)node.WorldPosition.x, (int)node.WorldPosition.z)) return; //checks if the source node even exists or not
+
+        GridNode targetNode = gridManager.GetNodeFromWorldPosition(node.WorldPosition + new Vector3(gridOffset.x, 0, gridOffset.y));
+        if (!gridManager.IsValidCoordinate((int)targetNode.WorldPosition.x, (int)targetNode.WorldPosition.z)) return; //checks if the target node even exists or not
+
         // Snap ghost to grid
-        ghostObject.transform.position = node.WorldPosition;
+        ghostObject.transform.position = targetNode.WorldPosition;
 
         // Optional: Validity check for placement (eg. grid occupied)
-        bool validPlacement = IsValidPlacement(node);
+        bool validPlacement = IsValidPlacement(targetNode);
         SetGhostColor(validPlacement ? Color.green : Color.red);
 
         // Confirm placement
         if (Input.GetMouseButtonDown(0) && validPlacement)
         {
-            PlaceBuilding(node);
+            PlaceBuilding(targetNode);
         }
 
         // Cancel placement
-        if (Input.GetMouseButtonDown(1))  // right-click to cancel
+        if (Input.GetMouseButtonDown(1))
         {
             CancelPlacement();
         }
     }
+
+    private void HandleArrowKeyMovement()
+    {
+        if (Input.GetKeyDown(KeyCode.UpArrow)) gridOffset += Vector2Int.up;
+        if (Input.GetKeyDown(KeyCode.DownArrow)) gridOffset += Vector2Int.down;
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) gridOffset += Vector2Int.left;
+        if (Input.GetKeyDown(KeyCode.RightArrow)) gridOffset += Vector2Int.right;
+    }
+
 
     private void PlaceBuilding(GridNode node)
     {

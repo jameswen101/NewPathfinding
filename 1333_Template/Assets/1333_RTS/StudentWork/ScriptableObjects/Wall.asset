@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7a08742b9f64d741bb415b5bc9085a8, type: 3}
+  m_Name: Wall
+  m_EditorClassIdentifier: 
+  buildingName: Wall Section
+  width: 3
+  height: 3
+  maxHealth: 100
+  currentHealth: 100
+  army: {fileID: 0}
+  buildingPrefab: {fileID: 100000, guid: 38f7e2d8e36aee34ea1626e31c1db895, type: 3}
+  buildingIcon: {fileID: 21300000, guid: 5875ad7c254e2614eb020579a8aabe84, type: 3}
+  IsSolid: 1
+  moveCost: -1

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7a08742b9f64d741bb415b5bc9085a8, type: 3}
+  m_Name: Archery
+  m_EditorClassIdentifier: 
+  buildingName: Archery
+  width: 7
+  height: 8
+  maxHealth: 100
+  currentHealth: 100
+  army: {fileID: 0}
+  buildingPrefab: {fileID: 100000, guid: 7036859d28e2cb84c9948a1fcf49fe95, type: 3}
+  buildingIcon: {fileID: 21300000, guid: d6a40dd72c900794982f4c3992144bb8, type: 3}
+  IsSolid: 1
+  moveCost: -1

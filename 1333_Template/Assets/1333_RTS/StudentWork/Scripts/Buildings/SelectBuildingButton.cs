@@ -19,9 +19,10 @@ public class SelectBuildingButton : MonoBehaviour
         buildingPlacer.StartPlacing(buildingData);
     }
 
-    public void Setup(BuildingData buildingData)
+    public void Setup(BuildingData buildingData, BuildingPlacer buildingPlacer) //add buildingPlacer as parameter
     {
         this.buildingData = buildingData;
+        this.buildingPlacer = buildingPlacer;
 
         buttonText.text = buildingData.buildingName;
         buttonImage.sprite = buildingData.buildingIcon;

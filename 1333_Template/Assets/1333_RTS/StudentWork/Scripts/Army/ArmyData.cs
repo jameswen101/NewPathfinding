@@ -17,8 +17,14 @@ public class ArmyData : MonoBehaviour, IArmyData
     public bool IsPlayer => ArmyID == 0;
     public string FactionName => _factionName;
 
-    public IList <UnitInstance> Units { get; }
-    public IList <BuildingBase> Buildings { get; }
+    [SerializeField]
+    private List<UnitInstance> _units = new List<UnitInstance>();
+
+    [SerializeField]
+    private List<BuildingBase> _buildings = new List<BuildingBase>();
+
+    public IList<UnitInstance> Units => _units;
+    public IList<BuildingBase> Buildings => _buildings;
 
 
     public void Initialize(GridManager gridManager, PathFinder pathfinder, int armyID, string factionName)
@@ -37,8 +43,14 @@ public class ArmyData : MonoBehaviour, IArmyData
         foreach (var unitData in unitDataList) SpawnUnit(unitData);
     }
 
-    public void SpawnUnit(UnitData data)
+    public void SpawnUnit(UnitData data) //UnitData parameter is currently blank?
     {
+        if (data == null) 
+        {
+            Debug.LogError("UnitData parameter doesn't exist");
+            return;
+        }
+
         if (data.UnitType == null || data.UnitType.unitPrefab == null)
         {
             Debug.LogError("Invalid UnitType or missing prefab");
@@ -46,16 +58,30 @@ public class ArmyData : MonoBehaviour, IArmyData
         }
 
         GameObject go = GameObject.Instantiate(data.UnitType.unitPrefab, data.Position, Quaternion.identity);
-        UnitInstance instance = go.GetComponent<UnitInstance>();
+        UnitInstance instance = go.GetComponent<UnitInstance>(); //unit expects itself to have a unitinstance on it
+        //pass the GridM from this class to UI here
 
-        if (instance == null)
+        if (go == null)
         {
-            Debug.LogError("Prefab does not contain UnitInstance component");
+            Debug.LogError("Prefab instantiation failed.");
             return;
         }
 
-        instance.Initialize(Pathfinder, data.TeamMaterial);
-        Units.Add(instance);
+        if (instance == null)
+        {
+            Debug.LogError($"Spawned prefab '{go.name}' does not have a UnitInstance component!");
+            return;
+        }
+
+        instance.Initialize(Pathfinder, data.TeamMaterial, GridManager);
+
+        if (Units == null)
+        {
+            Debug.LogError("Units list is null! Cannot add instance.");
+            return;
+        }
+
+        Units.Add(instance); 
     }
 
     public void RemoveDeadUnits()

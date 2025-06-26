@@ -38,7 +38,7 @@ public class ArmyPathfindingTester : MonoBehaviour
                 GameObject go = Instantiate(entry.unitTypePrefab.prefab, spawnPos, Quaternion.identity);
                 UnitInstance unit = go.GetComponent<UnitInstance>();
                 Material armyMat = armyMaterials[army.ArmyID % armyMaterials.Count];
-                unit.Initialize(pathfinder, armyMat);
+                unit.Initialize(pathfinder, armyMat, gridManager);
                 army.Units.Add(unit);
                 unitStates[unit] = UnitState.Patrol;
                 // Assign initial patrol points
