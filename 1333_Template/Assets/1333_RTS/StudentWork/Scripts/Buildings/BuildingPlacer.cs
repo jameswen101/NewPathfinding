@@ -6,6 +6,7 @@ public class BuildingPlacer : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private ArmyData armyData;
 
     private BuildingData selectedBuilding;
     private GameObject previewObject;
@@ -13,6 +14,13 @@ public class BuildingPlacer : MonoBehaviour
 
     private BuildingData currentBuildingData;
     private GameObject ghostObject;
+    private ArmyData currentArmy;
+
+    public void SetArmyData(ArmyData army)
+    {
+        currentArmy = army;
+    }
+
 
     public void StartPlacing(BuildingData buildingData)
     {
@@ -46,10 +54,11 @@ public class BuildingPlacer : MonoBehaviour
         SetGhostColor(validPlacement ? Color.green : Color.red);
 
         // Confirm placement
-        if (Input.GetMouseButtonDown(0) && validPlacement)
+        if (validPlacement && (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0)))
         {
             PlaceBuilding(targetNode);
         }
+
 
         // Cancel placement
         if (Input.GetMouseButtonDown(1))
@@ -69,10 +78,34 @@ public class BuildingPlacer : MonoBehaviour
 
     private void PlaceBuilding(GridNode node)
     {
-        Instantiate(currentBuildingData.buildingPrefab, node.WorldPosition, Quaternion.identity);
+        // 1. Instantiate the actual building in the world
+        GameObject buildingInstance = Instantiate(
+            currentBuildingData.buildingPrefab,
+            node.WorldPosition,
+            currentBuildingData.buildingPrefab.transform.rotation
+        );
+
+        // 2. Try to get the BuildingBase (or BuildingInstance) component
+        BuildingBase buildingComponent = buildingInstance.GetComponent<BuildingBase>();
+        if (buildingComponent == null)
+        {
+            Debug.LogError("Placed building does not have a BuildingBase component.");
+        }
+        else if (currentArmy != null)
+        {
+            currentArmy.Buildings.Add(buildingComponent); // Add to the correct army
+        }
+        else //currentArmy is null but buildingComponent is not
+        {
+            Debug.LogWarning("No army assigned to this building placement.");
+        }
+
+        // 3. Clean up
         Destroy(ghostObject);
+        ghostObject = null;
         currentBuildingData = null;
     }
+
 
     private void CancelPlacement()
     {

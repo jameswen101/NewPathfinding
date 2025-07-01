@@ -17,6 +17,7 @@ public class GridManager : MonoBehaviour
     public GridNode EndNode;
     [SerializeField] private List<TerrainType> terrainTypes = new List<TerrainType>();
     private readonly Dictionary<Vector2Int, BuildingInstance> _buildingOccupancy = new(); /// Tracks buildings that occupy grid nodes.
+    private readonly Dictionary<Vector2Int, UnitInstance> _unitOccupancy = new(); /// Tracks units that occupy grid nodes.
 
     public bool IsInitialized { get; private set; } = false;
 
@@ -221,31 +222,94 @@ public class GridManager : MonoBehaviour
     public void PlaceBuilding(BuildingInstance instance)
     {
         Vector2Int origin = instance.OriginPoint;
-        BuildingTypes type = instance.Type;
-        for (int dx = 0; dx < type.Buildings[dx].width; dx++)
+        BuildingData data = instance.Data;
+
+        for (int dx = 0; dx < data.width; dx++)
         {
-            for (int dy = 0; dy < type.Buildings[dy].height; dy++)
+            for (int dy = 0; dy < data.height; dy++)
             {
                 Vector2Int pos = origin + new Vector2Int(dx, dy);
                 _buildingOccupancy[pos] = instance;
-                if (type.Buildings[dy].IsSolid)
+                if (data.IsSolid)
+                {
                     SetWalkable(pos.x, pos.y, false);
+                }
             }
         }
+
     }
 
     public void RemoveBuilding(BuildingBase instance)
     {
         Vector2Int origin = instance.OriginPoint;
-        BuildingTypes type = instance.Type;
-        for (int dx = 0; dx < type.Buildings[dx].width; dx++)
+        BuildingData data = instance.Data;
+
+        for (int dx = 0; dx < data.width; dx++)
         {
-            for (int dy = 0; dy < type.Buildings[dy].height; dy++)
+            for (int dy = 0; dy < data.height; dy++)
             {
                 Vector2Int pos = origin + new Vector2Int(dx, dy);
                 _buildingOccupancy.Remove(pos);
-                if (type.Buildings[dy].IsSolid)
+                if (data.IsSolid)
+                {
                     SetWalkable(pos.x, pos.y, true);
+                }
+            }
+        }
+    }
+
+    public bool CanPlaceUnit(UnitType unitType, Vector2Int origin)
+    {
+        for (int dx = 0; dx < unitType.Width; dx++)
+        {
+            for (int dy = 0; dy < unitType.Height; dy++)
+            {
+                Vector2Int pos = origin + new Vector2Int(dx, dy);
+                if (!IsValidCoordinate(pos.x, pos.y) || _buildingOccupancy.ContainsKey(pos))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public void PlaceUnit(UnitInstance instance)
+    {
+        Vector2Int origin = instance.OriginPoint;
+        UnitType data = instance.UnitType;
+
+        for (int dx = 0; dx < data.Width; dx++)
+        {
+            for (int dy = 0; dy < data.Height; dy++)
+            {
+                Vector2Int pos = origin + new Vector2Int(dx, dy);
+                _unitOccupancy[pos] = instance;  // create _unitOccupancy dictionary
+                if (data != null && !instance.IsDead)
+                {
+                    SetWalkable(pos.x, pos.y, false);
+                }
+            }
+        }
+    }
+
+
+    public void RemoveUnit(UnitInstance instance)
+    {
+        Vector2Int origin = instance.OriginPoint;
+        UnitType data = instance.UnitType;
+
+        for (int dx = 0; dx < data.Width; dx++)
+        {
+            for (int dy = 0; dy < data.Height; dy++)
+            {
+                Vector2Int pos = origin + new Vector2Int(dx, dy);
+                if (_unitOccupancy.ContainsKey(pos))
+                {
+                    _unitOccupancy.Remove(pos);
+                    if (data != null)
+                    {
+                        SetWalkable(pos.x, pos.y, true);
+                    }
+                }
             }
         }
     }

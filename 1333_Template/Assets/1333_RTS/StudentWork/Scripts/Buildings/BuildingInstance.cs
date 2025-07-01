@@ -1,17 +1,14 @@
 using UnityEngine;
 
 
-    public class BuildingInstance : BuildingBase
+public class BuildingInstance : BuildingBase
+{
+    public override void Initialize(BuildingData buildingData, Vector2Int origin)
     {
-        /// <summary>
-        /// Initializes the building with a given BuildingType.
-        /// </summary>
-
-        public override void Initialize(BuildingData buildingData, Vector2Int origin)
-        {
-            BuildingData BD = buildingData; // if you want to store it
-            Origin = origin;
-            CurrentHp = buildingData.currentHealth;
-        }
+        BuildingData = buildingData; // this stores it in the field
+        Origin = origin;
+        CurrentHp = buildingData.currentHealth;
     }
+}
+
 

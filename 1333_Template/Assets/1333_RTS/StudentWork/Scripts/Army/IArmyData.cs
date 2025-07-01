@@ -10,10 +10,10 @@ public interface IArmyData
     public IList <BuildingBase> Buildings { get; }
     string FactionName { get; }
 
-    void Initialize(GridManager gridManager, PathFinder pathfinder, int armyID, string factionName);
+    void Initialize(GridManager gridManager, PathFinder pathfinder, int armyID, Material teamMaterial);
     void InitializeFromData(List<UnitData> data);
 
-    void SpawnUnit(UnitData data);
+    void SpawnUnit(UnitType unitType, Vector3 position, Material teamMaterial);
     void RemoveDeadUnits();
     void AddBuilding(BuildingBase building);
     void RemoveBuilding(BuildingBase building);

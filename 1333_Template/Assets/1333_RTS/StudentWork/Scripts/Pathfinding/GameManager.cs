@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PathFinder pathFinder;
     [SerializeField] private ArmyComposition armyComposition;
     private bool selectingStart = true;
+    [SerializeField] private ArmyPathfindingTester armyPathfindingTester;
     // Start is called before the first frame update
 
     private void Awake()
@@ -71,8 +72,9 @@ public class GameManager : MonoBehaviour
 
         for (var i = 0; i < armyCount; i++)
         {
-            var armyData = new ArmyData();
-            armyData.Initialize(gridManager, pathFinder, i, $"Faction_{i}");
+            var armyData = gameObject.AddComponent<ArmyData>();
+
+            armyData.Initialize(gridManager, pathFinder, i, armyPathfindingTester.armyMaterials[i]); //setting up the army
 
             // Example spawn for now: one unit in each army
             foreach (var unitComp in armyComposition.entries)

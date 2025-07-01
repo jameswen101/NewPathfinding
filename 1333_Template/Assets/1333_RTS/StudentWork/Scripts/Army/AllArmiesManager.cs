@@ -21,26 +21,41 @@ using UnityEngine;
             Instance = this;
         }
 
-        public void RegisterArmy(int armyId, ArmyData army)
+    private void Start()
+    {
+        ArmyData[] armiesInScene = FindObjectsOfType<ArmyData>();
+        foreach (ArmyData army in armiesInScene)
         {
-            if (_armies.ContainsKey(armyId))
-            {
-                Debug.LogWarning($"Army with ID {armyId} is already registered.");
-                return;
-            }
-
-            _armies.Add(armyId, army);
+            RegisterArmy(army.ArmyID, army);
+            Debug.Log($"Registered army with ID {army.ArmyID}");
         }
+    }
 
-        public void UnregisterArmy(int armyId)
+
+    public void RegisterArmy(int armyId, ArmyData army)
+    {
+        if (_armies.ContainsKey(armyId))
+        {
+            Debug.LogWarning($"Army with ID {armyId} is already registered.");
+            return;
+        }
+        _armies.Add(armyId, army);
+        Debug.Log($"Registered army {armyId}. Total armies: {_armies.Count}");
+    }
+
+    public void UnregisterArmy(int armyId)
         {
             _armies.Remove(armyId);
         }
 
-        public bool TryGetArmy(int armyId, out ArmyData army)
-        {
-            return _armies.TryGetValue(armyId, out army);
-        }
-    }  
+    public bool TryGetArmy(int armyId, out ArmyData army)
+    {
+        bool found = _armies.TryGetValue(armyId, out army);
+        Debug.Log($"TryGetArmy({armyId}) found={found}, total armies: {_armies.Count}");
+        return found;
+    }
 
-    
+
+}
+
+

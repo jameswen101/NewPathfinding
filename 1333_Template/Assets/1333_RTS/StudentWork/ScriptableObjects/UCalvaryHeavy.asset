@@ -22,3 +22,4 @@ MonoBehaviour:
   range: 1
   unitTypeName: HeavyCavalry
   unitPrefab: {fileID: 197908, guid: 892bd1c95e4ec2f43a7e0a49c68f27f1, type: 3}
+  unitIcon: {fileID: 21300000, guid: f350be1c09ee5804cb083145f4315faf, type: 3}

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using IngameDebugConsole;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 
 public class DebugCommands : MonoBehaviour
@@ -15,6 +16,7 @@ public class DebugCommands : MonoBehaviour
     [SerializeField] private BuildingTypes buildingTypes;
     [SerializeField] private ArmyData armyData;
     [SerializeField] private AvailableTeamUnits armyUnits;
+    [SerializeField] private BuildingPlacer buildingPlacer;
 
     private void OnEnable()
     {
@@ -75,6 +77,7 @@ public class DebugCommands : MonoBehaviour
             Debug.LogError($"No army registered with ID {armyId}");
             return;
         }
+        Debug.Log($"Army found: {armyData}");
 
         if (armyPathfindingTester == null)
         {
@@ -95,23 +98,21 @@ public class DebugCommands : MonoBehaviour
             }
             data.TeamMaterial = armyPathfindingTester.armyMaterials[colorIndex];
 
-            armyData.SpawnUnit(data);
+            armyData.SpawnUnit(unitType, data.Position, data.TeamMaterial);
             Debug.Log($"Spawned {unitTypeName} at ({x}, {z}) in Army {armyId} with color index {colorIndex}");
     }
 
 
     private void PlaceBuilding(string buildingName, int armyId)
     {
-        // Always load the full BuildingTypes asset
-        //var buildingTypes = Resources.Load<BuildingTypes>("BuildingTypes/DefaultBuildingTypes"); // adjust filename as needed
         if (buildingTypes == null)
         {
-            Debug.LogError("BuildingTypes asset not found in Resources/BuildingTypes.");
+            Debug.LogError("BuildingTypes asset not found.");
             return;
         }
 
         var buildingData = buildingTypes.Buildings
-    .FirstOrDefault(b => b.buildingName.Equals(buildingName, System.StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(b => b.buildingName.Equals(buildingName, System.StringComparison.OrdinalIgnoreCase));
 
         if (buildingData == null)
         {
@@ -119,19 +120,21 @@ public class DebugCommands : MonoBehaviour
             return;
         }
 
+        Debug.Log($"Trying to get army with ID {armyId}");
+        if (!allArmiesManager.TryGetArmy(armyId, out ArmyData army))
+        {
+            Debug.LogError($"No army registered with ID {armyId}");
+            return;
+        }
 
-        // Get the army
-        
-        //if (!AllArmiesManager.Instance.TryGetArmy(armyId, out var army))
-        //if (armyManager.ArmyID == -1)
-        //{
-        //    Debug.LogError($"No army registered with ID {armyId}");
-        //    return;
-        //}
+        Debug.Log($"allArmiesManager = {allArmiesManager}");
+        Debug.Log($"army = {army}");
+        Debug.Log($"armyId = {armyId}");
 
-        buildingPlacementManager.BeginPlacement(buildingData, armyData); //how are you gonna convert from armyID to armyData?
-
+        buildingPlacer.SetArmyData(army);        //if this is null, check if this class has ArmyData defined properly      
+        buildingPlacer.StartPlacing(buildingData);     // Already spawns ghost + arrow movement
     }
+
 
 
 }

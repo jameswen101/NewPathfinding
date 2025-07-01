@@ -18,7 +18,7 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 100
   army: {fileID: 0}
-  buildingPrefab: {fileID: 100000, guid: 38f7e2d8e36aee34ea1626e31c1db895, type: 3}
+  buildingPrefab: {fileID: 179413192849663538, guid: 990e16c6a31688a48be4b9c89f89f0c5, type: 3}
   buildingIcon: {fileID: 21300000, guid: 48f58ff7968f9e24dac165f999b5dd73, type: 3}
   IsSolid: 1
   moveCost: -1

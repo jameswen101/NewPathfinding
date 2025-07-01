@@ -4,12 +4,12 @@ using UnityEngine;
 
     public abstract class BuildingBase : MonoBehaviour
     {
-        [SerializeField] protected BuildingTypes BuildingType;
+        [SerializeField] protected BuildingData BuildingData;
         [SerializeField] protected int CurrentHp;
         [SerializeField] protected Vector2Int Origin;
         protected IArmyData OwningArmy;
 
-        public BuildingTypes Type => BuildingType;
+        public BuildingData Data => BuildingData;
 
         public int Hp => CurrentHp;
         public int ArmyId => OwningArmy.ArmyID;
@@ -24,8 +24,10 @@ using UnityEngine;
             OwningArmy = army;
         }
 
-        public virtual void OnDestroy()
-        {
+    public virtual void OnDestroy()
+    {
+        if (ParentArmy != null)
             ParentArmy.RemoveBuilding(this);
-        }
     }
+
+}

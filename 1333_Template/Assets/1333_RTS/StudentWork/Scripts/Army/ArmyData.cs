@@ -26,16 +26,30 @@ public class ArmyData : MonoBehaviour, IArmyData
     public IList<UnitInstance> Units => _units;
     public IList<BuildingBase> Buildings => _buildings;
 
+    public Material TeamMaterial { get; private set; }
 
-    public void Initialize(GridManager gridManager, PathFinder pathfinder, int armyID, string factionName)
+
+
+    private void Awake()
+    {
+        Debug.Log($"ArmyData Awake with ArmyID={ArmyID}");
+        Debug.Log($"AllArmiesManager.Instance == null? {AllArmiesManager.Instance == null}");
+        //AllArmiesManager.Instance.RegisterArmy(ArmyID, this);
+    }
+
+    private bool isRegistered;
+
+    public void Initialize(GridManager gridManager, PathFinder pathfinder, int armyID, Material teamMaterial)
     {
         GridManager = gridManager;
         Pathfinder = pathfinder;
         ArmyID = armyID;
-        _factionName = factionName;
+        TeamMaterial = teamMaterial;
 
         AllArmiesManager.Instance.RegisterArmy(armyID, this);
+        isRegistered = true;
     }
+
 
     public void InitializeFromData(List<UnitData> unitDataList)
     {
@@ -43,46 +57,46 @@ public class ArmyData : MonoBehaviour, IArmyData
         foreach (var unitData in unitDataList) SpawnUnit(unitData);
     }
 
-    public void SpawnUnit(UnitData data) //UnitData parameter is currently blank?
+    public void SpawnUnit(UnitType unitType, Vector3 position, Material teamMaterial)
+{
+    if (unitType == null || unitType.unitPrefab == null)
     {
-        if (data == null) 
-        {
-            Debug.LogError("UnitData parameter doesn't exist");
-            return;
-        }
-
-        if (data.UnitType == null || data.UnitType.unitPrefab == null)
-        {
-            Debug.LogError("Invalid UnitType or missing prefab");
-            return;
-        }
-
-        GameObject go = GameObject.Instantiate(data.UnitType.unitPrefab, data.Position, Quaternion.identity);
-        UnitInstance instance = go.GetComponent<UnitInstance>(); //unit expects itself to have a unitinstance on it
-        //pass the GridM from this class to UI here
-
-        if (go == null)
-        {
-            Debug.LogError("Prefab instantiation failed.");
-            return;
-        }
-
-        if (instance == null)
-        {
-            Debug.LogError($"Spawned prefab '{go.name}' does not have a UnitInstance component!");
-            return;
-        }
-
-        instance.Initialize(Pathfinder, data.TeamMaterial, GridManager);
-
-        if (Units == null)
-        {
-            Debug.LogError("Units list is null! Cannot add instance.");
-            return;
-        }
-
-        Units.Add(instance); 
+        Debug.LogError("Invalid UnitType or missing prefab.");
+        return;
     }
+
+    GameObject go = GameObject.Instantiate(unitType.unitPrefab, position, Quaternion.identity);
+    if (go == null)
+    {
+        Debug.LogError("Prefab instantiation failed.");
+        return;
+    }
+
+    UnitInstance instance = go.GetComponent<UnitInstance>();
+    if (instance == null)
+    {
+        Debug.LogError($"Spawned prefab '{go.name}' does not have a UnitInstance component!");
+        return;
+    }
+
+    // Convert position to grid coords
+    Vector2Int gridPos = new Vector2Int(
+        Mathf.RoundToInt(position.x),
+        Mathf.RoundToInt(position.z)
+    );
+
+    // Initialize UnitInstance (make sure you have a matching Initialize overload)
+    instance.Initialize(Pathfinder, teamMaterial, GridManager, unitType, gridPos);
+
+    if (Units == null)
+    {
+        Debug.LogError("Units list is null! Cannot add instance.");
+        return;
+    }
+
+    Units.Add(instance);
+}
+
 
     public void RemoveDeadUnits()
     {
@@ -167,5 +181,10 @@ public class ArmyData : MonoBehaviour, IArmyData
     public void Dispose()
     {
         AllArmiesManager.Instance?.UnregisterArmy(ArmyID);
+    }
+
+    public void SpawnUnit(UnitData data)
+    {
+        throw new NotImplementedException();
     }
 }

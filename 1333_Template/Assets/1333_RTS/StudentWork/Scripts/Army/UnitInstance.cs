@@ -22,6 +22,8 @@ public class UnitInstance : UnitBase
     //public List<GridNode> CurrentPath => path;
     public bool IsMoving => moving;
     public bool IsDead;
+    public UnitType UnitType { get; private set; }
+    public Vector2Int OriginPoint { get; private set; }
 
     void Awake()
     {
@@ -31,10 +33,12 @@ public class UnitInstance : UnitBase
         }
     }
 
-    public void Initialize(PathFinder assignedPathfinder, Material teamMaterial, GridManager gridManager)
+    public void Initialize(PathFinder assignedPathfinder, Material teamMaterial, GridManager gridManager, UnitType unitType, Vector2Int OriginPoint)
     {
         pathfinder = assignedPathfinder;
         gridM = gridManager;
+        UnitType = unitType;
+        this.OriginPoint = OriginPoint;
 
         // Apply team color
         foreach (var renderer in skinRoot.GetComponentsInChildren<Renderer>())

@@ -15,6 +15,8 @@ public class UnitType : ScriptableObject
     [SerializeField] private int range = 1;
     public string unitTypeName;
     public GameObject unitPrefab;
+    public Sprite unitIcon;
+    //public TeamArmies army;
 
     public int Width => width;
     public int Height => height;
