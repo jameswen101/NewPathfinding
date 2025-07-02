@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3932144045923571386}
   - component: {fileID: -7822204470597411798}
+  - component: {fileID: 7132879356238567488}
   m_Layer: 0
   m_Name: WorkshopPrefab
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,6 +49,29 @@ MonoBehaviour:
   BuildingData: {fileID: 11400000, guid: e1d4a9e5082d9e74081b2c695b7b882d, type: 2}
   CurrentHp: 0
   Origin: {x: 0, y: 0}
+--- !u!136 &7132879356238567488
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358525926046081873}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 4.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: -0.5, y: -2, z: 1}
 --- !u!1001 &4468059000137518208
 PrefabInstance:
   m_ObjectHideFlags: 0

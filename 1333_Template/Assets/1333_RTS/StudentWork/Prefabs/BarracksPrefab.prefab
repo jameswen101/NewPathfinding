@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4621549380320951994}
   - component: {fileID: -6399584010406861211}
+  - component: {fileID: 2575277964987006807}
   m_Layer: 0
   m_Name: BarracksPrefab
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,6 +49,29 @@ MonoBehaviour:
   BuildingData: {fileID: 11400000, guid: 664d4efd95ac8b5479f39657ba7ee96a, type: 2}
   CurrentHp: 0
   Origin: {x: 0, y: 0}
+--- !u!136 &2575277964987006807
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3081341531244844115}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 5
+  m_Height: 10
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &5030616371556061012
 PrefabInstance:
   m_ObjectHideFlags: 0

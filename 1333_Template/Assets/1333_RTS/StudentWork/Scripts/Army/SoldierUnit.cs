@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierUnit : MonoBehaviour
+public class SoldierUnit : MonoBehaviour //controls solider movement
 {
     public void MoveAlongPath(List<Vector3> path)
     {

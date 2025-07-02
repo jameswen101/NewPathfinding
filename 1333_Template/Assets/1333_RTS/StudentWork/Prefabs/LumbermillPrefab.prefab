@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 7211261257209954028}
   - component: {fileID: 8760667436250027155}
+  - component: {fileID: 7754124103374116526}
   m_Layer: 0
   m_Name: LumbermillPrefab
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,6 +49,29 @@ MonoBehaviour:
   BuildingData: {fileID: 11400000, guid: d2634a74bffb4e14db429e1af0e43291, type: 2}
   CurrentHp: 0
   Origin: {x: 0, y: 0}
+--- !u!136 &7754124103374116526
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 981383197906197324}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 4
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &6715193602532165967
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 7134330771379447738}
   - component: {fileID: 6584834772238936346}
+  - component: {fileID: 3016291847664709223}
   m_Layer: 0
   m_Name: ArcheryPrefab
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,6 +49,29 @@ MonoBehaviour:
   BuildingData: {fileID: 11400000, guid: 8afaed5f5b7db7d4b95d24df2687d9a5, type: 2}
   CurrentHp: 0
   Origin: {x: 0, y: 0}
+--- !u!136 &3016291847664709223
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6664572768097176988}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 5
+  m_Height: 8
+  m_Direction: 1
+  m_Center: {x: -19, y: -3.5, z: -5.5}
 --- !u!1001 &6069825327264164188
 PrefabInstance:
   m_ObjectHideFlags: 0

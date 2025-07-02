@@ -1,18 +1,22 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SoldierMovementManager : MonoBehaviour
 {
-    private SoldierUnit selectedSoldier;
+    private SoldierUnit selectedSoldier;      // source
+    private Highlightable selectedHighlight;  // highlight for source
+
+    private Highlightable targetHighlight;    // highlight for target
+
     [SerializeField] private GridManager gridManager;
-    [SerializeField] private PathFinder pathfinder; // your A* class
+    [SerializeField] private PathFinder pathfinder;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private Camera mainCamera;
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) HandleClick();
+        if (Input.GetMouseButtonDown(0))
+            HandleClick();
     }
 
     void HandleClick()
@@ -20,27 +24,83 @@ public class SoldierMovementManager : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            GameObject target = hit.collider.gameObject;
+            GameObject clicked = hit.collider.gameObject;
 
-            if (target.TryGetComponent<SoldierUnit>(out var soldier))
+            // If clicking a soldier
+            if (clicked.TryGetComponent<SoldierUnit>(out var soldier))
             {
-                selectedSoldier = soldier;
+                // If no soldier selected yet, this becomes the source
+                if (selectedSoldier == null)
+                {
+                    selectedSoldier = soldier;
+
+                    if (selectedHighlight != null)
+                        selectedHighlight.SetHighlight(false);
+
+                    selectedHighlight = soldier.GetComponent<Highlightable>();
+                    if (selectedHighlight != null)
+                        selectedHighlight.SetHighlight(true);
+                }
+                else
+                {
+                    // This becomes the target soldier
+                    if (targetHighlight != null)
+                        targetHighlight.SetHighlight(false);
+
+                    targetHighlight = soldier.GetComponent<Highlightable>();
+                    if (targetHighlight != null)
+                        targetHighlight.SetHighlight(true);
+
+                    // Move to target
+                    MoveTo(clicked.transform.position);
+                }
             }
-            else if (selectedSoldier != null)
+            // If clicking a building
+            else if (clicked.CompareTag("Building"))
             {
-                Vector3 start = selectedSoldier.transform.position;
-                Vector3 end = hit.point;
+                if (targetHighlight != null)
+                    targetHighlight.SetHighlight(false);
 
-                List<Vector3> path = pathfinder.CalculatePath(gridManager.GetNodeFromWorldPosition(start), gridManager.GetNodeFromWorldPosition(end));
-                selectedSoldier.MoveAlongPath(path);
+                targetHighlight = clicked.GetComponent<Highlightable>();
+                if (targetHighlight != null)
+                    targetHighlight.SetHighlight(true);
 
-                // Visualize path
-                lineRenderer.positionCount = path.Count;
-                lineRenderer.SetPositions(path.ToArray());
-
-                selectedSoldier = null;
+                if (selectedSoldier != null)
+                {
+                    MoveTo(clicked.transform.position);
+                }
+            }
+            else
+            {
+                // Clicking ground, just move
+                if (selectedSoldier != null)
+                {
+                    MoveTo(hit.point);
+                }
             }
         }
     }
-}
 
+    void MoveTo(Vector3 destination)
+    {
+        Vector3 start = selectedSoldier.transform.position;
+        List<Vector3> path = pathfinder.CalculatePath(
+            gridManager.GetNodeFromWorldPosition(start),
+            gridManager.GetNodeFromWorldPosition(destination));
+
+        selectedSoldier.MoveAlongPath(path);
+
+        lineRenderer.positionCount = path.Count;
+        lineRenderer.SetPositions(path.ToArray());
+
+        // Clear highlights
+        if (selectedHighlight != null)
+            selectedHighlight.SetHighlight(false);
+        if (targetHighlight != null)
+            targetHighlight.SetHighlight(false);
+
+        selectedSoldier = null;
+        selectedHighlight = null;
+        targetHighlight = null;
+    }
+}
