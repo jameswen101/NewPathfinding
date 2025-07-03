@@ -17,17 +17,20 @@ public class ArmyData : MonoBehaviour, IArmyData
     public bool IsPlayer => ArmyID == 0;
     public string FactionName => _factionName;
 
-    [SerializeField]
-    private List<UnitInstance> _units = new List<UnitInstance>();
+    public List<UnitInstance> _units = new();
 
-    [SerializeField]
-    private List<BuildingBase> _buildings = new List<BuildingBase>();
+    public List<BuildingBase> _buildings = new();
 
     public IList<UnitInstance> Units => _units;
     public IList<BuildingBase> Buildings => _buildings;
 
     public Material TeamMaterial { get; private set; }
 
+    public List<MachineInstance> _machines = new();
+
+    public IList<MachineInstance> Machines => _machines;
+
+    public GameObject healthBarPrefab;
 
 
     private void Awake()
@@ -65,8 +68,9 @@ public class ArmyData : MonoBehaviour, IArmyData
         return;
     }
 
-    GameObject go = GameObject.Instantiate(unitType.unitPrefab, position, Quaternion.identity);
-    if (go == null)
+        GameObject go = GameObject.Instantiate(unitType.unitPrefab, position, Quaternion.identity);
+
+        if (go == null)
     {
         Debug.LogError("Prefab instantiation failed.");
         return;
@@ -79,8 +83,12 @@ public class ArmyData : MonoBehaviour, IArmyData
         return;
     }
 
-    // Convert position to grid coords
-    Vector2Int gridPos = new Vector2Int(
+
+        GameObject hb = Instantiate(healthBarPrefab);
+        hb.GetComponent<HealthBar>().Initialize(instance.transform, instance);
+
+        // Convert position to grid coords
+        Vector2Int gridPos = new Vector2Int(
         Mathf.RoundToInt(position.x),
         Mathf.RoundToInt(position.z)
     );
@@ -94,8 +102,9 @@ public class ArmyData : MonoBehaviour, IArmyData
         return;
     }
 
-    Units.Add(instance);
-}
+    _units.Add(instance);
+        Debug.Log($"Added {instance.name} to Army {ArmyID} Units list.");
+    }
 
 
     public void RemoveDeadUnits()
@@ -155,6 +164,7 @@ public class ArmyData : MonoBehaviour, IArmyData
         // Place on grid + store in AAM
         GridManager.PlaceBuilding(building);
         AddBuilding(building);
+        Debug.Log($"Added {building.name} to Army {ArmyID} Buildings list.");
     }
 
 
@@ -162,7 +172,7 @@ public class ArmyData : MonoBehaviour, IArmyData
     {
         if (!Buildings.Contains(building))
         {
-            Buildings.Add(building);
+            _buildings.Add(building);
             // todo
             building.AssignToArmy(this);
         }
@@ -172,9 +182,65 @@ public class ArmyData : MonoBehaviour, IArmyData
     {
         if (Buildings.Contains(building))
         {
-            Buildings.Remove(building);
+            _buildings.Remove(building);
             GridManager.RemoveBuilding(building);
             Object.Destroy(building.gameObject);
+        }
+    }
+
+    public void SpawnMachine(MachineType machineType, Vector3 position, Material teamMaterial)
+    {
+        if (machineType == null || machineType.machinePrefab == null)
+        {
+            Debug.LogError("Invalid MachineType or missing prefab.");
+            return;
+        }
+
+        Vector2Int origin = GridManager.GetNodeFromWorldPosition(position).Coordinates;
+
+        if (!GridManager.CanPlaceMachine(machineType, origin))
+        {
+            Debug.Log("Invalid building placement");
+            return;
+        }
+
+        // Snap to grid
+        Vector3 worldCenter = GridManager.GetNode(origin.x, origin.y).WorldPosition;
+
+        GameObject go = GameObject.Instantiate(machineType.machinePrefab, position, Quaternion.identity);
+        if (go == null)
+        {
+            Debug.LogError("Prefab instantiation failed.");
+            return;
+        }
+
+        MachineInstance instance = go.GetComponent<MachineInstance>();
+        if (instance == null)
+        {
+            Debug.LogError($"Spawned prefab '{go.name}' does not have a MachineInstance component!");
+            return;
+        }
+
+        Vector2Int gridPos = new Vector2Int(
+            Mathf.RoundToInt(position.x),
+            Mathf.RoundToInt(position.z)
+        );
+
+        instance.Initialize(Pathfinder, teamMaterial, GridManager, machineType, gridPos);
+
+        _machines.Add(instance);
+        Debug.Log($"Added {instance.name} to Army {ArmyID} Machines list.");
+    }
+
+    public void RemoveDestroyedMachines()
+    {
+        for (int i = _machines.Count - 1; i >= 0; i--)
+        {
+            var machine = _machines[i];
+            if (machine == null || machine.IsDestroyed)
+            {
+                _machines.RemoveAt(i);
+            }
         }
     }
 

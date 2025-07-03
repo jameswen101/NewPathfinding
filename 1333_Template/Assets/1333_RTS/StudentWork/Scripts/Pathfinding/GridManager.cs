@@ -18,6 +18,7 @@ public class GridManager : MonoBehaviour
     [SerializeField] private List<TerrainType> terrainTypes = new List<TerrainType>();
     private readonly Dictionary<Vector2Int, BuildingInstance> _buildingOccupancy = new(); /// Tracks buildings that occupy grid nodes.
     private readonly Dictionary<Vector2Int, UnitInstance> _unitOccupancy = new(); /// Tracks units that occupy grid nodes.
+    private readonly Dictionary<Vector2Int, MachineInstance> _machineOccupancy = new(); /// Tracks units that occupy grid nodes.
 
     public bool IsInitialized { get; private set; } = false;
 
@@ -313,6 +314,90 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
+    public bool CanPlaceMachine(MachineType machineType, Vector2Int origin)
+    {
+        for (int dx = 0; dx < machineType.width; dx++)
+        {
+            for (int dy = 0; dy < machineType.height; dy++)
+            {
+                Vector2Int pos = origin + new Vector2Int(dx, dy);
+                if (!IsValidCoordinate(pos.x, pos.y) || _buildingOccupancy.ContainsKey(pos))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public void PlaceMachine(MachineInstance instance)
+    {
+        Vector2Int origin = instance.GridPosition;
+        MachineType data = instance.MachineType;
+
+        for (int dx = 0; dx < data.width; dx++)
+        {
+            for (int dy = 0; dy < data.height; dy++)
+            {
+                Vector2Int pos = origin + new Vector2Int(dx, dy);
+                _machineOccupancy[pos] = instance;  // create _unitOccupancy dictionary
+                if (data != null && !instance.IsDestroyed)
+                {
+                    SetWalkable(pos.x, pos.y, false);
+                }
+            }
+        }
+    }
+
+
+    public void RemoveMachine(MachineInstance instance)
+    {
+        Vector2Int origin = instance.GridPosition;
+        MachineType data = instance.MachineType;
+
+        for (int dx = 0; dx < data.width; dx++)
+        {
+            for (int dy = 0; dy < data.height; dy++)
+            {
+                Vector2Int pos = origin + new Vector2Int(dx, dy);
+                if (_machineOccupancy.ContainsKey(pos))
+                {
+                    _machineOccupancy.Remove(pos);
+                    if (data != null)
+                    {
+                        SetWalkable(pos.x, pos.y, true);
+                    }
+                }
+            }
+        }
+    }
+
+    public bool IsRegionWalkable(int startX, int startY, int width, int height)
+    {
+        for (int dx = 0; dx < width; dx++)
+        {
+            for (int dy = 0; dy < height; dy++)
+            {
+                int x = startX + dx;
+                int y = startY + dy;
+
+                // Make sure coordinates are within grid bounds
+                if (x < 0 || x >= GridSettings.GridSizeX ||
+                    y < 0 || y >= GridSettings.GridSizeY)
+                {
+                    return false;
+                }
+
+                // Check if node is walkable
+                if (!GetNode(x, y).Walkable)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
 
     public bool IsOccupied(Vector2Int pos)
     {

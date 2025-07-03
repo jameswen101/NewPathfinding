@@ -53,6 +53,16 @@ public class SelectionManager : MonoBehaviour
                     Debug.Log("You must select a unit first before choosing a target building.");
                 }
             }
+            else if (clicked.CompareTag("Machine"))
+            {
+                Debug.Log("Clicked on object with tag machine");
+                if (sourceUnit != null)
+                {
+                    targetObject = clicked.transform;
+                    Debug.Log($"Target machine selected: {targetObject.name}");
+                    ConfirmSelection();
+                }
+            }
             else
             {
                 Debug.Log("Clicked on an unrecognized object.");

@@ -2,46 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Linq;
 
-public class BuildingPlacementManager : MonoBehaviour
+public class MachinePlacementManager : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
     [SerializeField] private Material validMaterial;
     [SerializeField] private Material invalidMaterial;
     [SerializeField] private LayerMask placementMask;
-    [SerializeField] private BuildingTypes buildingTypes;
 
-    public static BuildingPlacementManager instance;
-
-    private BuildingData pendingBuilding;
-    //private BuildingData matchingBuilding;
+    private MachineType pendingMachine;
     private GameObject ghostObject;
     private MeshRenderer[] ghostRenderers;
     private ArmyData playerArmy;
 
-    private void Start()
-    {
-        
-
-        //matchingBuilding = buildingTypes.Buildings.FirstOrDefault(b => b.buildingName == pendingBuilding.buildingName); //returns null if no matching buildings
-    }
-
-    public void BeginPlacement(BuildingData buildingData, ArmyData playerArmy) //why armydata?
-    {
-        //matchingBuilding = buildingData;
-        this.playerArmy = playerArmy;
-
-        if (ghostObject != null) Destroy(ghostObject);
-        ghostObject = Instantiate(buildingData.buildingPrefab);
-        ghostObject.SetActive(true);
-
-        ghostRenderers = ghostObject.GetComponentsInChildren<MeshRenderer>();
-    }
-
     private void Update()
     {
-        if (pendingBuilding == null || ghostObject == null) return;
+        if (pendingMachine == null || ghostObject == null) return;
 
         // Raycast from mouse to grid
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -52,12 +28,12 @@ public class BuildingPlacementManager : MonoBehaviour
 
         ghostObject.transform.position = snappedWorld;
 
-        bool canPlace = gridManager.CanPlaceBuilding(buildingTypes, snappedCoords);
+        bool canPlace = gridManager.CanPlaceMachine(pendingMachine, snappedCoords);
         SetGhostMaterial(canPlace ? validMaterial : invalidMaterial);
 
         if (canPlace && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            playerArmy.SpawnBuilding(buildingTypes, snappedWorld); //if pendingBuilding were a BuildingTypes -> pendingBuilding[?]
+            playerArmy.SpawnMachine(pendingMachine, snappedWorld, playerArmy.TeamMaterial);
             CancelPlacement();
         }
 
@@ -65,6 +41,19 @@ public class BuildingPlacementManager : MonoBehaviour
         {
             CancelPlacement();
         }
+    }
+
+    public void BeginPlacement(MachineType machineType, ArmyData army)
+    {
+        pendingMachine = machineType;
+        playerArmy = army;
+
+        if (ghostObject != null)
+            Destroy(ghostObject);
+
+        ghostObject = Instantiate(machineType.machinePrefab);
+        ghostObject.SetActive(true);
+        ghostRenderers = ghostObject.GetComponentsInChildren<MeshRenderer>();
     }
 
     private void SetGhostMaterial(Material mat)
@@ -80,8 +69,9 @@ public class BuildingPlacementManager : MonoBehaviour
 
     private void CancelPlacement()
     {
-        pendingBuilding = null;
+        pendingMachine = null;
         if (ghostObject != null)
             Destroy(ghostObject);
     }
 }
+

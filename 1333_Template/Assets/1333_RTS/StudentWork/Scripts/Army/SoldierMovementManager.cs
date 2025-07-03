@@ -56,7 +56,22 @@ public class SoldierMovementManager : MonoBehaviour
                 }
             }
             // If clicking a building
-            else if (clicked.CompareTag("Building"))
+            else if (clicked.CompareTag("Building")) 
+            {
+                if (targetHighlight != null)
+                    targetHighlight.SetHighlight(false);
+
+                targetHighlight = clicked.GetComponent<Highlightable>();
+                if (targetHighlight != null)
+                    targetHighlight.SetHighlight(true);
+
+                if (selectedSoldier != null)
+                {
+                    MoveTo(clicked.transform.position);
+                }
+            }
+            // If clicking a machine
+            else if (clicked.CompareTag("Machine")) 
             {
                 if (targetHighlight != null)
                     targetHighlight.SetHighlight(false);
@@ -73,7 +88,7 @@ public class SoldierMovementManager : MonoBehaviour
             else
             {
                 // Clicking ground, just move
-                if (selectedSoldier != null)
+                if (selectedSoldier != null) //make sure system knows what soldier is called
                 {
                     MoveTo(hit.point);
                 }

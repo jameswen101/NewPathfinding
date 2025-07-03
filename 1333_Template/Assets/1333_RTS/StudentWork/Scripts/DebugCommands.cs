@@ -5,6 +5,7 @@ using System.Linq;
 using IngameDebugConsole;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DebugCommands : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class DebugCommands : MonoBehaviour
     [SerializeField] private ArmyData armyData;
     [SerializeField] private AvailableTeamUnits armyUnits;
     [SerializeField] private BuildingPlacer buildingPlacer;
+    [SerializeField] private MachineCollection machineTypes;
 
     private void OnEnable()
     {
@@ -46,6 +48,9 @@ public class DebugCommands : MonoBehaviour
             "Places a building on the grid. Usage: PlaceBuilding [buildingTypeName] [armyId]",
             PlaceBuilding
         );
+
+        DebugLogConsole.AddCommand<int, int>("SpawnMachine", "Spawns a machine for your army to attack. " +
+            "Usage: SpawnMachine [int, int]", SpawnMachine);
     }
 
     private void HelloWorld()
@@ -135,6 +140,48 @@ public class DebugCommands : MonoBehaviour
         buildingPlacer.StartPlacing(buildingData);     // Already spawns ghost + arrow movement
     }
 
+    public void SpawnMachine(int armyID, int machineIndex)
+    {
+        if (machineTypes == null)
+        {
+            Debug.LogError("MachineTypes is not assigned.");
+            return;
+        }
+
+        if (machineIndex < 0 || machineIndex >= machineTypes.MachineList.Count)
+        {
+            Debug.LogError($"Machine index {machineIndex} out of range.");
+            return;
+        }
+
+        if (!AllArmiesManager.Instance.TryGetArmy(armyID, out var armyData))
+        {
+            Debug.LogError($"Army with ID {armyID} not found!");
+            return;
+        }
+
+        MachineType machineData = machineTypes.MachineList[machineIndex];
+        Vector3 spawnPos = FindRandomValidPosition(machineData.width, machineData.height);
+
+        armyData.SpawnMachine(machineData, spawnPos, armyData.TeamMaterial);
+    }
+
+
+    private Vector3 FindRandomValidPosition(int width, int height)
+    {
+        for (int attempt = 0; attempt < 100; attempt++)
+        {
+            int x = Random.Range(0, armyData.GridManager.GridSettings.GridSizeX - width + 1);
+            int y = Random.Range(0, armyData.GridManager.GridSettings.GridSizeY - height + 1);
+
+            if (armyData.GridManager.IsRegionWalkable(x, y, width, height))
+            {
+                return armyData.GridManager.GetNode(x, y).WorldPosition;
+            }
+        }
+        Debug.LogWarning("No valid spawn location found.");
+        return Vector3.zero;
+    }
 
 
 }

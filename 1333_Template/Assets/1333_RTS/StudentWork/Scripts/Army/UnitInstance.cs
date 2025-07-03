@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitInstance : UnitBase
+public class UnitInstance : UnitBase, IHasHealth
 {
     [Header("Visuals & FX")]
     [SerializeField] private Animator animator;
@@ -24,6 +24,9 @@ public class UnitInstance : UnitBase
     public bool IsDead;
     public UnitType UnitType { get; private set; }
     public Vector2Int OriginPoint { get; private set; }
+
+    public float CurrentHealth { get; private set; }
+    public float MaxHealth { get; private set; }
 
     void Awake()
     {
@@ -112,4 +115,28 @@ public class UnitInstance : UnitBase
         pathLine.startColor = Color.yellow;
         pathLine.endColor = Color.red;
     }
+
+    public void Attack(UnitInstance target)
+    {
+        if (target == null || target.IsDead)
+            return;
+
+        target.TakeDamage(UnitType.Damage);
+
+        Debug.Log($"{UnitType.unitTypeName} attacked {target.UnitType.unitTypeName} for {UnitType.Damage} damage.");
+    }
+
+
+    public void TakeDamage(int incomingDamage)
+    {
+        int mitigated = Mathf.Max(incomingDamage - UnitType.Defence, 1);
+        CurrentHealth -= mitigated;
+        Debug.Log($"{UnitType.unitTypeName} took {mitigated} damage (after {UnitType.Defence} defence).");
+
+        if (CurrentHealth <= 0)
+        {
+            IsDead = true;
+        }
+    }
+
 }

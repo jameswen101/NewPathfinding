@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Unit
   - Building
+  - Machine
   layers:
   - Default
   - TransparentFX

@@ -14,7 +14,7 @@ public class UnitPlacementManager : MonoBehaviour
 
     public static UnitPlacementManager instance;
 
-    public UnitType pendingUnit;
+    private UnitType pendingUnit;
     //private BuildingData matchingBuilding;
     private GameObject ghostObject;
     private Renderer[] ghostRenderers;
