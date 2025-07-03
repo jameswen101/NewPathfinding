@@ -28,11 +28,17 @@ public class UnitInstance : UnitBase, IHasHealth
     public float CurrentHealth { get; private set; }
     public float MaxHealth { get; private set; }
 
+    [SerializeField] private HealthBar healthBar;
+
     void Awake()
     {
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
+        }
+        if (healthBar == null)
+        {
+            healthBar = GetComponentInChildren<HealthBar>();
         }
     }
 
@@ -131,6 +137,7 @@ public class UnitInstance : UnitBase, IHasHealth
     {
         int mitigated = Mathf.Max(incomingDamage - UnitType.Defence, 1);
         CurrentHealth -= mitigated;
+        healthBar.UpdateHealthBar(CurrentHealth, MaxHealth);
         Debug.Log($"{UnitType.unitTypeName} took {mitigated} damage (after {UnitType.Defence} defence).");
 
         if (CurrentHealth <= 0)

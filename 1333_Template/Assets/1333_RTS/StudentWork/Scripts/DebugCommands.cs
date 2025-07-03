@@ -19,7 +19,7 @@ public class DebugCommands : MonoBehaviour
     [SerializeField] private AvailableTeamUnits armyUnits;
     [SerializeField] private BuildingPlacer buildingPlacer;
     [SerializeField] private MachineCollection machineTypes;
-
+    [SerializeField] private TeamMaterialsCollection teamMaterials;
     private void OnEnable()
     {
         DebugLogConsole.AddCommand("HelloWorld", "Prints a message to the console", HelloWorld);
@@ -58,7 +58,7 @@ public class DebugCommands : MonoBehaviour
         Debug.Log("Hello world");
     }
 
-    private void ArmySpawn(string unitTypeName, int armyId, float x, float z, int colorIndex) //armyUnits.AvailableUnits[i].unitTypeName
+    private void ArmySpawn(string unitTypeName, int armyId, float x, float z, int colorIndex) //remove ColorIndex parameter
     {
         UnitType unitType = null;
         for (int i = 0; i < armyUnits.AvailableUnits.Count; i++)
@@ -96,7 +96,7 @@ public class DebugCommands : MonoBehaviour
             data.Health = unitType.MaxHp;
             data.ArmyId = armyId;
             // Validate color index
-            if (colorIndex < 0 || colorIndex >= armyPathfindingTester.armyMaterials.Count)
+            if (colorIndex < 0 || colorIndex >= armyPathfindingTester.armyMaterials.Count) //change to TeamMaterialsCollection
             {
                 Debug.LogError($"Invalid color index {colorIndex}. Must be between 0 and {armyPathfindingTester.armyMaterials.Count - 1}.");
                 return;

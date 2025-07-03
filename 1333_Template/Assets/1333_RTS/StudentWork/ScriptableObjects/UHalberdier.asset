@@ -21,5 +21,5 @@ MonoBehaviour:
   attackType: 0
   range: 1
   unitTypeName: Halberdier
-  unitPrefab: {fileID: 163764, guid: 148322894bbd52e488116a8616dfbe4c, type: 3}
+  unitPrefab: {fileID: 4769937016071173698, guid: 2b9771a46a5e16142abc01adf54b601a, type: 3}
   unitIcon: {fileID: 21300000, guid: 0078e0718535aed4e89f01d15e054f80, type: 3}

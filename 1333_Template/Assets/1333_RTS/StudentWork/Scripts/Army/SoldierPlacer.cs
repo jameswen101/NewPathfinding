@@ -5,8 +5,10 @@ using UnityEngine;
 public class SoldierPlacer : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
+    [SerializeField] private PathFinder pathFinder;
     [SerializeField] private Camera mainCamera;
-   
+    [SerializeField] private GameObject healthBarPrefab;
+
     private GameObject ghostSoldier;
     private UnitType currentUnitType;
     private Vector2Int gridOffset = Vector2Int.zero;
@@ -46,8 +48,48 @@ public class SoldierPlacer : MonoBehaviour
     public void StartPlacingSoldier(UnitType unitType)
     {
         currentUnitType = unitType;
+
+        // Spawn ghost object
         ghostSoldier = Instantiate(unitType.unitPrefab);
+
+        // Get UnitInstance
+        UnitInstance unitInstance = ghostSoldier.GetComponent<UnitInstance>();
+        if (unitInstance != null)
+        {
+            // Initialize the UnitInstance
+            unitInstance.Initialize(
+                pathFinder,
+                currentArmy.TeamMaterial,
+                gridManager,
+                unitType,
+                Vector2Int.zero
+            );
+
+            // Create health bar
+            GameObject hbObj = Instantiate(healthBarPrefab);
+
+            // Get HealthBar component
+            HealthBar hb = hbObj.GetComponent<HealthBar>();
+            if (hb != null)
+            {
+                hb.Initialize(
+                    ghostSoldier.transform,     // Target transform to follow
+                    unitInstance,               // IHasHealth reference (make sure UnitInstance implements IHasHealth)
+                    mainCamera                    // Camera to convert world to screen
+                );
+            }
+            else
+            {
+                Debug.LogError("HealthBar prefab is missing HealthBar script!");
+            }
+        }
+        else
+        {
+            Debug.LogError("The prefab does not have a UnitInstance component!");
+        }
+
     }
+
 
 
     private void HandleArrowKeys()

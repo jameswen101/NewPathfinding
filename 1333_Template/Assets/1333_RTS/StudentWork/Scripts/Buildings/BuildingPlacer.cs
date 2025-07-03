@@ -7,6 +7,8 @@ public class BuildingPlacer : MonoBehaviour
     [SerializeField] private GridManager gridManager;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private ArmyData armyData;
+    [SerializeField] private GameObject healthBarPrefab;
+
 
     private BuildingData selectedBuilding;
     private GameObject previewObject;
@@ -78,33 +80,56 @@ public class BuildingPlacer : MonoBehaviour
 
     private void PlaceBuilding(GridNode node)
     {
-        // 1. Instantiate the actual building in the world
+        // 1. Instantiate the actual building
         GameObject buildingInstance = Instantiate(
             currentBuildingData.buildingPrefab,
             node.WorldPosition,
             currentBuildingData.buildingPrefab.transform.rotation
         );
 
-        // 2. Try to get the BuildingBase (or BuildingInstance) component
+        // 2. Try to get the BuildingInstance (or BuildingBase)
         BuildingBase buildingComponent = buildingInstance.GetComponent<BuildingBase>();
+        BuildingInstance buildingIns = buildingInstance.GetComponent<BuildingInstance>();
+
+        IHasHealth healthComponent = buildingIns.GetComponent<IHasHealth>();
+
         if (buildingComponent == null)
         {
             Debug.LogError("Placed building does not have a BuildingBase component.");
         }
         else if (currentArmy != null)
         {
-            currentArmy.Buildings.Add(buildingComponent); // Add to the correct army
+            currentArmy.Buildings.Add(buildingComponent);
         }
-        else //currentArmy is null but buildingComponent is not
+        else
         {
             Debug.LogWarning("No army assigned to this building placement.");
         }
 
-        // 3. Clean up
+        // 3. Spawn Health Bar if applicable
+        if (buildingIns != null)
+        {
+            if (buildingIns.healthBar != null)
+            {
+                buildingIns.healthBar.Initialize(
+                    buildingInstance.transform,
+                    buildingIns, // assuming it implements IHasHealth
+                    mainCamera
+                );
+            }
+            else
+            {
+                Debug.LogWarning("Building prefab is missing a HealthBar reference!");
+            }
+        }
+
+
+        // 4. Clean up
         Destroy(ghostObject);
         ghostObject = null;
         currentBuildingData = null;
     }
+
 
 
     private void CancelPlacement()

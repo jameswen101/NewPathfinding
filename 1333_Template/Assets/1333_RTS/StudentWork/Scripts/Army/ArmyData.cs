@@ -7,6 +7,7 @@ using Object = UnityEngine.Object;
 public class ArmyData : MonoBehaviour, IArmyData
 {
     [SerializeField] private string _factionName;
+    [SerializeField] private Camera mainCamera;
 
     public GridManager GridManager;
     [field: SerializeField]
@@ -24,7 +25,7 @@ public class ArmyData : MonoBehaviour, IArmyData
     public IList<UnitInstance> Units => _units;
     public IList<BuildingBase> Buildings => _buildings;
 
-    public Material TeamMaterial { get; private set; }
+    public Material TeamMaterial { get; set; }
 
     public List<MachineInstance> _machines = new();
 
@@ -41,6 +42,11 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
     private bool isRegistered;
+
+    public void SetTeamMaterial(Material TeamMaterial)
+    {
+        this.TeamMaterial = TeamMaterial;
+    }
 
     public void Initialize(GridManager gridManager, PathFinder pathfinder, int armyID, Material teamMaterial)
     {
@@ -85,7 +91,7 @@ public class ArmyData : MonoBehaviour, IArmyData
 
 
         GameObject hb = Instantiate(healthBarPrefab);
-        hb.GetComponent<HealthBar>().Initialize(instance.transform, instance);
+        hb.GetComponent<HealthBar>().Initialize(instance.transform, instance, mainCamera);
 
         // Convert position to grid coords
         Vector2Int gridPos = new Vector2Int(

@@ -75,6 +75,7 @@ public class GameManager : MonoBehaviour
             var armyData = gameObject.AddComponent<ArmyData>();
 
             armyData.Initialize(gridManager, pathFinder, i, armyPathfindingTester.armyMaterials[i]); //setting up the army
+            //change to TeamMaterialsCollection
 
             // Example spawn for now: one unit in each army
             foreach (var unitComp in armyComposition.entries)

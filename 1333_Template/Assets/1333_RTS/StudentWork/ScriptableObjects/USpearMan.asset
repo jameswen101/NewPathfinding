@@ -21,5 +21,5 @@ MonoBehaviour:
   attackType: 0
   range: 1
   unitTypeName: Spearman
-  unitPrefab: {fileID: 123088, guid: 0755a95e2e1b5f44e8226989fb76f2cf, type: 3}
+  unitPrefab: {fileID: 4655823230317744030, guid: d4680be6bf918b54aaa017f6f1f6056c, type: 3}
   unitIcon: {fileID: 21300000, guid: f1e22036f1163484681e160b3b68dbc4, type: 3}

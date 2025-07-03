@@ -7,6 +7,7 @@ public class ArmyPathfindingTester : MonoBehaviour
     [SerializeField] private PathFinder pathfinder;
     [SerializeField] private List<ArmyComposition> armyCompositions = new();
     public List<Material> armyMaterials;
+    public TeamMaterialsCollection teamMaterials;
     [Header("Patrol & AI Settings")]
     [SerializeField] private int patrolRadius = 8;
     [SerializeField] private float detectionDistance = 4f;
@@ -38,7 +39,7 @@ public class ArmyPathfindingTester : MonoBehaviour
                 Vector2Int spawnGridPos = new Vector2Int(Mathf.RoundToInt(spawnPos.x), Mathf.RoundToInt(spawnPos.z));
                 GameObject go = Instantiate(entry.unitTypePrefab.prefab, spawnPos, Quaternion.identity);
                 UnitInstance unit = go.GetComponent<UnitInstance>();
-                Material armyMat = armyMaterials[army.ArmyID % armyMaterials.Count];
+                Material armyMat = armyMaterials[army.ArmyID % armyMaterials.Count]; //change to TeamMaterialsCollection
                 unit.Initialize(pathfinder, armyMat, gridManager, unit.UnitType, spawnGridPos); //add UnitType + convert spawnPos to Vector2Int
                 army.Units.Add(unit);
                 unitStates[unit] = UnitState.Patrol;
