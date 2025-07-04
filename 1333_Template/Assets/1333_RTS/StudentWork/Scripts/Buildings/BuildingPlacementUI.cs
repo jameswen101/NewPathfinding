@@ -8,11 +8,13 @@ public class BuildingPlacementUI : MonoBehaviour
     [SerializeField] private SelectBuildingButton ButtonPrefab;
     [SerializeField] private BuildingTypes BuildingData;
     [SerializeField] private BuildingPlacer buildingPlacer;
+    [SerializeField] private ArmyData armyData;
 
     // Start is called before the first frame update
     void Start()
     {
-        foreach(BuildingData t in BuildingData.Buildings)
+        buildingPlacer.SetArmyData(armyData);
+        foreach (BuildingData t in BuildingData.Buildings)
         {
             SelectBuildingButton button = Instantiate(ButtonPrefab, layoutGroupParent);
             button.Setup(t, buildingPlacer);

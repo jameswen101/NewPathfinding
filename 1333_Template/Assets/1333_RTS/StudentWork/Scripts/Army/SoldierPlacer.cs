@@ -56,6 +56,10 @@ public class SoldierPlacer : MonoBehaviour
         UnitInstance unitInstance = ghostSoldier.GetComponent<UnitInstance>();
         if (unitInstance != null)
         {
+
+         Debug.Log($"currentArmy = {(currentArmy == null ? "NULL" : currentArmy.name)}");
+
+
             // Initialize the UnitInstance
             unitInstance.Initialize(
                 pathFinder,

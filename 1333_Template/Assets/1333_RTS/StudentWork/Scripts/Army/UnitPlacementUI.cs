@@ -8,10 +8,12 @@ public class UnitPlacementUI : MonoBehaviour
     [SerializeField] private SelectUnitButton ButtonPrefab;
     [SerializeField] private AvailableTeamUnits availableTeamUnits;
     [SerializeField] private SoldierPlacer soldierPlacer;
+    [SerializeField] private ArmyData armyData;
 
     // Start is called before the first frame update
     void Start()
     {
+        soldierPlacer.SetArmyData(armyData);
         foreach (UnitType ut in availableTeamUnits.AvailableUnits)
         {
             var buttonGO = Instantiate(ButtonPrefab, layoutGroupParent);

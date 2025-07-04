@@ -50,6 +50,15 @@ public class UnitInstance : UnitBase, IHasHealth
 
     public void Initialize(PathFinder assignedPathfinder, Material teamMaterial, GridManager gridManager, UnitType unitType, Vector2Int OriginPoint, ArmyData armyData, int ArmyID)
     {
+        // Debug: Check which arguments are null
+        Debug.Log($@"[UnitInstance.Initialize] 
+    assignedPathfinder = {(assignedPathfinder != null ? "OK" : "NULL")}
+    teamMaterial = {(teamMaterial != null ? "OK" : "NULL")}
+    gridManager = {(gridManager != null ? "OK" : "NULL")}
+    unitType = {(unitType != null ? "OK" : "NULL")}
+    armyData = {(armyData != null ? "OK" : "NULL")}
+    ArmyID = {ArmyID}");
+
         pathfinder = assignedPathfinder;
         gridM = gridManager;
         UnitType = unitType;

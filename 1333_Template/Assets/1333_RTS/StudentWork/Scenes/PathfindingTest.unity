@@ -2437,6 +2437,10 @@ PrefabInstance:
       value: -234.03
       objectReference: {fileID: 0}
     - target: {fileID: 6065425317864752821, guid: e1ccf0989a3ae1a41a06f7e6a5b1ec4d, type: 3}
+      propertyPath: armyData
+      value: 
+      objectReference: {fileID: 847158489}
+    - target: {fileID: 6065425317864752821, guid: e1ccf0989a3ae1a41a06f7e6a5b1ec4d, type: 3}
       propertyPath: ButtonPrefab
       value: 
       objectReference: {fileID: 4741576103165868044, guid: aac44f838a7577344a7b65f1e329d013, type: 3}
@@ -8344,6 +8348,7 @@ MonoBehaviour:
   ButtonPrefab: {fileID: 4865893633181281741, guid: d9100c4836f29b34082551cc0c0920af, type: 3}
   availableTeamUnits: {fileID: 11400000, guid: b295660e7aba31b4e988973c98c5a4db, type: 2}
   soldierPlacer: {fileID: 702948297}
+  armyData: {fileID: 847158489}
 --- !u!114 &1872451665
 MonoBehaviour:
   m_ObjectHideFlags: 0
