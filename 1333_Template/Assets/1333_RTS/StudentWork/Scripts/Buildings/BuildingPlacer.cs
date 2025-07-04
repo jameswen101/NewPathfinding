@@ -30,6 +30,7 @@ public class BuildingPlacer : MonoBehaviour
 
         // Instantiate ghost prefab (make sure your BuildingData has this reference)
         ghostObject = Instantiate(buildingData.buildingPrefab); //add a separate GhostPrefab in BuildingData?
+
     }
 
     private Vector2Int gridOffset = Vector2Int.zero;

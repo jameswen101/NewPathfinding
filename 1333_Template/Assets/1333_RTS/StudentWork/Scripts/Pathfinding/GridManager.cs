@@ -19,6 +19,8 @@ public class GridManager : MonoBehaviour
     private readonly Dictionary<Vector2Int, BuildingInstance> _buildingOccupancy = new(); /// Tracks buildings that occupy grid nodes.
     private readonly Dictionary<Vector2Int, UnitInstance> _unitOccupancy = new(); /// Tracks units that occupy grid nodes.
     private readonly Dictionary<Vector2Int, MachineInstance> _machineOccupancy = new(); /// Tracks units that occupy grid nodes.
+    private List<Vector3> _currentDebugPath;
+
 
     public bool IsInitialized { get; private set; } = false;
 
@@ -40,11 +42,13 @@ public class GridManager : MonoBehaviour
         Debug.Log($"StartNode: {StartNode.Name}, EndNode: {EndNode.Name}");
     }
 
-
-    // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
+            Debug.Log("Debug path recalculated.");
+        }
     }
 
     public void InitializeGrid()
@@ -113,31 +117,47 @@ public class GridManager : MonoBehaviour
     {
         gridNodes[x,y].Walkable = walkable;
     }
+
+    public void ComputeDebugPath()
+    {
+        _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
+    }
+
     private void OnDrawGizmos()
     {
-        if (gridNodes == null || gridSettings == null) return;
-        Gizmos.color = Color.green;
+        if (gridNodes == null || gridSettings == null)
+            return;
+
+        // Draw grid
         for (int x = 0; x < gridSettings.GridSizeX; x++)
         {
             for (int y = 0; y < gridSettings.GridSizeY; y++)
             {
-                GridNode node = gridNodes[x,y];
-                Gizmos.color = node.GizmoColor; // use terrain-specific color
+                GridNode node = gridNodes[x, y];
+                Gizmos.color = node.GizmoColor;
                 Gizmos.DrawWireCube(node.WorldPosition, Vector3.one * gridSettings.NodeSize * 0.9f);
             }
         }
-        // Draw final path
-        List<Vector3> FinalPath = pathFinder.CalculatePath(StartNode, EndNode); 
-        if (FinalPath != null && FinalPath.Count > 1) //FinalPath nodes > 1?
+
+        // Draw debug path
+        DrawDebugPath(_currentDebugPath); // <- make sure you have a reference to the current path
+    }
+
+
+    private void DrawDebugPath(List<Vector3> path)
+    {
+        if (path == null || path.Count <= 1)
+            return;
+
+        Gizmos.color = finalPathColor;
+
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            Gizmos.color = finalPathColor;    
-            for (int i = 0; i < FinalPath.Count - 1; i++)    
-            {        
-                Gizmos.DrawLine(FinalPath[i], FinalPath[i + 1]);
-                Debug.Log($"Node visited: ({FinalPath[i].x}, {FinalPath[i].z})"); //make sure Debug.Log ends once destination reached
-            }
+            Gizmos.DrawLine(path[i], path[i + 1]);
+            Debug.Log($"Node visited: ({path[i].x}, {path[i].z})");
         }
     }
+
 
     public GridNode GetNodeFromWorldPosition(Vector3 position)
     {
@@ -186,13 +206,16 @@ public class GridManager : MonoBehaviour
     {
         StartNode = node;
         Debug.Log($"StartNode set to: {node.Name}");
+        _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
     }
 
     public void SetEndNode(GridNode node)
     {
         EndNode = node;
         Debug.Log($"EndNode set to: {node.Name}");
+        _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
     }
+
 
 
     private void DoSomethingOnEachNode(System.Action thingToDo)

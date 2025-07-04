@@ -30,6 +30,12 @@ public class UnitInstance : UnitBase, IHasHealth
 
     [SerializeField] private HealthBar healthBar;
 
+    public ArmyData Army { get; set; }
+
+    public int ArmyID { get; set; }
+
+
+
     void Awake()
     {
         if (animator == null)
@@ -42,12 +48,14 @@ public class UnitInstance : UnitBase, IHasHealth
         }
     }
 
-    public void Initialize(PathFinder assignedPathfinder, Material teamMaterial, GridManager gridManager, UnitType unitType, Vector2Int OriginPoint)
+    public void Initialize(PathFinder assignedPathfinder, Material teamMaterial, GridManager gridManager, UnitType unitType, Vector2Int OriginPoint, ArmyData armyData, int ArmyID)
     {
         pathfinder = assignedPathfinder;
         gridM = gridManager;
         UnitType = unitType;
         this.OriginPoint = OriginPoint;
+        Army = armyData;
+        this.ArmyID = ArmyID;
 
         // Apply team color
         foreach (var renderer in skinRoot.GetComponentsInChildren<Renderer>())
@@ -127,11 +135,27 @@ public class UnitInstance : UnitBase, IHasHealth
         if (target == null || target.IsDead)
             return;
 
+        // Prevent attacking same team
+        if (Army != null && target.Army != null)
+        {
+            if (Army.TeamMaterial == target.Army.TeamMaterial)
+            {
+                Debug.Log("Cannot attack unit on same team.");
+                return;
+            }
+        }
+
         target.TakeDamage(UnitType.Damage);
 
         Debug.Log($"{UnitType.unitTypeName} attacked {target.UnitType.unitTypeName} for {UnitType.Damage} damage.");
     }
 
+    public void SetPath(List<Vector3> path)
+    {
+        // Assign to internal path-following logic
+        this.path = path; //make currentPath and pathIndex variables
+        pathIndex = 0;
+    }
 
     public void TakeDamage(int incomingDamage)
     {

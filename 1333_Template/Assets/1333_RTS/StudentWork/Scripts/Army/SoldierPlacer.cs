@@ -62,7 +62,7 @@ public class SoldierPlacer : MonoBehaviour
                 currentArmy.TeamMaterial,
                 gridManager,
                 unitType,
-                Vector2Int.zero
+                Vector2Int.zero, currentArmy, currentArmy.ArmyID
             );
 
             // Create health bar

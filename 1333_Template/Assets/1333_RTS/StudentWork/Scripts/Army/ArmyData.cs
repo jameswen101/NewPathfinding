@@ -100,7 +100,7 @@ public class ArmyData : MonoBehaviour, IArmyData
     );
 
     // Initialize UnitInstance (make sure you have a matching Initialize overload)
-    instance.Initialize(Pathfinder, teamMaterial, GridManager, unitType, gridPos);
+    instance.Initialize(Pathfinder, teamMaterial, GridManager, unitType, gridPos, this, ArmyID);
 
     if (Units == null)
     {

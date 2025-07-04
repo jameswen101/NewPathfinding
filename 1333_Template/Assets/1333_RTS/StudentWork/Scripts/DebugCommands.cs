@@ -20,13 +20,16 @@ public class DebugCommands : MonoBehaviour
     [SerializeField] private BuildingPlacer buildingPlacer;
     [SerializeField] private MachineCollection machineTypes;
     [SerializeField] private TeamMaterialsCollection teamMaterials;
+    [SerializeField] private GridManager gridManager;
+    [SerializeField] private PathFinder pathFinder;
+    [SerializeField] private Camera mainCamera;
     private void OnEnable()
     {
         DebugLogConsole.AddCommand("HelloWorld", "Prints a message to the console", HelloWorld);
 
         DebugLogConsole.AddCommand<string, int, string, int>(
     "ArmySpawn",
-    "Spawns an army. Usage: ArmySpawn [unitTypeName] [armyId] [x,z] [colorIndex]",
+    "Spawns an army. Usage: ArmySpawn [unitTypeName] [armyId] [x,z] [colorIndex]", //remove colorIndex, ID?
     (unitTypeName, armyId, position, colorIndex) =>
     {
         string[] coords = position.Split(',');
@@ -38,7 +41,7 @@ public class DebugCommands : MonoBehaviour
             return;
         }
 
-        ArmySpawn(unitTypeName, armyId, x, z, colorIndex);
+        ArmySpawn(unitTypeName);
     }
 );
 
@@ -47,7 +50,7 @@ public class DebugCommands : MonoBehaviour
             "PlaceBuilding",
             "Places a building on the grid. Usage: PlaceBuilding [buildingTypeName] [armyId]",
             PlaceBuilding
-        );
+        ); //remove armyID- all buildings spawned will have armyID 0
 
         DebugLogConsole.AddCommand<int, int>("SpawnMachine", "Spawns a machine for your army to attack. " +
             "Usage: SpawnMachine [int, int]", SpawnMachine);
@@ -58,53 +61,55 @@ public class DebugCommands : MonoBehaviour
         Debug.Log("Hello world");
     }
 
-    private void ArmySpawn(string unitTypeName, int armyId, float x, float z, int colorIndex) //remove ColorIndex parameter
+    public void ArmySpawn(string unitTypeName)
     {
-        UnitType unitType = null;
-        for (int i = 0; i < armyUnits.AvailableUnits.Count; i++)
-        {
-            if (string.Equals(armyUnits.AvailableUnits[i].unitTypeName, unitTypeName, StringComparison.OrdinalIgnoreCase))
-            {
-                unitType = armyUnits.AvailableUnits[i];
-                break;
-            }
-        }
+        // Find the UnitType by name
+        UnitType unitType = armyUnits.AvailableUnits.Find(u => u.unitTypeName == unitTypeName);
 
         if (unitType == null)
         {
-            Debug.LogError($"unitTypeName '{unitTypeName}' not found in AvailableUnits!");
+            Debug.LogError($"UnitType '{unitTypeName}' not found!");
             return;
         }
+        // Instantiate the prefab
+        GameObject unitObj = Instantiate(unitType.unitPrefab);
 
-
-        if (!allArmiesManager.TryGetArmy(armyId, out armyData)) //change to ArmyData?
+        // Get the UnitInstance component
+        UnitInstance unit = unitObj.GetComponent<UnitInstance>();
+        if (unit != null)
         {
-            Debug.LogError($"No army registered with ID {armyId}");
-            return;
-        }
-        Debug.Log($"Army found: {armyData}");
+            // Force ArmyID = 0
+            unit.ArmyID = 0;
+            // Optionally assign Army reference (if you use it)
+            unit.Army = armyData;
 
-        if (armyPathfindingTester == null)
+            // Initialize with player material
+            unit.Initialize(
+                pathFinder,
+                armyData.TeamMaterial,
+                gridManager,
+                unitType,
+                Vector2Int.zero, armyData, unit.ArmyID // adjust grid origin if needed
+            );
+
+            Debug.Log($"Spawned {unitType.unitTypeName} for player army.");
+        }
+        else
         {
-            Debug.LogError("ArmyPathfindingTester is not assigned!");
-            return;
+            Debug.LogError("Unit prefab is missing UnitInstance component.");
         }
 
-        var data = ScriptableObject.CreateInstance<UnitData>();
-            data.UnitType = unitType;
-            data.Position = new Vector3(x, 0, z);
-            data.Health = unitType.MaxHp;
-            data.ArmyId = armyId;
-            // Validate color index
-            if (colorIndex < 0 || colorIndex >= armyPathfindingTester.armyMaterials.Count) //change to TeamMaterialsCollection
-            {
-                Debug.LogError($"Invalid color index {colorIndex}. Must be between 0 and {armyPathfindingTester.armyMaterials.Count - 1}.");
-                return;
-            }
-            data.TeamMaterial = armyPathfindingTester.armyMaterials[colorIndex];
+        // Spawn health bar
+        HealthBar hb = unitObj.GetComponentInChildren<HealthBar>();
+        if (hb != null)
+        {
+            hb.Initialize(
+                unitObj.transform,
+                unit,
+                mainCamera
+            );
+        }
 
-            armyData.SpawnUnit(unitType, data.Position, data.TeamMaterial);
-            Debug.Log($"Spawned {unitTypeName} at ({x}, {z}) in Army {armyId} with color index {colorIndex}");
     }
 
 
@@ -125,20 +130,23 @@ public class DebugCommands : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Trying to get army with ID {armyId}");
-        if (!allArmiesManager.TryGetArmy(armyId, out ArmyData army))
+        Debug.Log($"Forcing ArmyID to 0 instead of {armyId}");
+        if (!allArmiesManager.TryGetArmy(0, out ArmyData army))
         {
-            Debug.LogError($"No army registered with ID {armyId}");
+            Debug.LogError("No army registered with ID 0");
             return;
         }
 
         Debug.Log($"allArmiesManager = {allArmiesManager}");
         Debug.Log($"army = {army}");
-        Debug.Log($"armyId = {armyId}");
+        Debug.Log($"armyId (forced) = 0");
 
-        buildingPlacer.SetArmyData(army);        //if this is null, check if this class has ArmyData defined properly      
-        buildingPlacer.StartPlacing(buildingData);     // Already spawns ghost + arrow movement
+
+
+        buildingPlacer.SetArmyData(army);
+        buildingPlacer.StartPlacing(buildingData);
     }
+
 
     public void SpawnMachine(int armyID, int machineIndex)
     {
