@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class SelectionManager : MonoBehaviour
 {
-    private Transform sourceUnit;
+    private Transform sourceObject;
     private Transform targetObject;
+    private UnitInstance sourceUnit;
+    private UnitInstance targetUnit;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private TextMeshProUGUI statusText;
 
@@ -26,16 +28,23 @@ public class SelectionManager : MonoBehaviour
             if (clicked.CompareTag("Unit"))
             {
                 Debug.Log("Clicked on object with tag unit");
+                UnitInstance clickedUnit = clicked.GetComponent<UnitInstance>();
+                if (clickedUnit == null)
+                {
+                    Debug.LogWarning("Clicked object has no UnitInstance component!");
+                    return;
+                }
+
                 if (sourceUnit == null)
                 {
-                    sourceUnit = clicked.transform;
-                    Debug.Log($"Source unit selected: {sourceUnit.name}");
+                    sourceUnit = clickedUnit;
+                    Debug.Log($"Source unit selected: {sourceUnit.name} (ArmyID {sourceUnit.ArmyID})");
                     statusText.text = $"Source unit selected: {sourceUnit.name}";
                 }
                 else
                 {
-                    targetObject = clicked.transform;
-                    Debug.Log($"Target unit selected: {targetObject.name}");
+                    targetUnit = clickedUnit;
+                    Debug.Log($"Target unit selected: {targetUnit.name} (ArmyID {targetUnit.ArmyID})");
                     ConfirmSelection();
                 }
             }
@@ -72,11 +81,41 @@ public class SelectionManager : MonoBehaviour
 
     void ConfirmSelection()
     {
-        // This is where you trigger your pathfinding or attack logic
-        Debug.Log($"Ready to issue order: {sourceUnit.name} -> {targetObject.name}");
+        Debug.Log($"Ready to issue order: {sourceUnit.name} -> {targetUnit?.name ?? "no target"}");
 
-        // Reset selection so you can pick a new source later
+        if (sourceUnit != null && targetUnit != null)
+        {
+            // Check if they are enemies
+            if (sourceUnit.Army != null && targetUnit.Army != null)
+            {
+                if (sourceUnit.Army.TeamMaterial == targetUnit.Army.TeamMaterial)
+                {
+                    Debug.Log("Cannot attack unit on the same team.");
+                }
+                else
+                {
+                    // They are on different teams, ATTACK!
+                    sourceUnit.Attack(targetUnit);
+                    Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
+                    Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+                }
+            }
+            else
+            {
+                // If you don’t care about teams, always attack:
+                sourceUnit.Attack(targetUnit);
+                Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
+                Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Cannot issue attack: missing source or target unit.");
+        }
+
+        // Reset selection
         sourceUnit = null;
-        targetObject = null;
+        targetUnit = null;
     }
+
 }

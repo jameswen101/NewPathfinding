@@ -30,9 +30,9 @@ public class UnitInstance : UnitBase, IHasHealth
 
     [SerializeField] private HealthBar healthBar;
 
-    public ArmyData Army { get; set; }
+    [SerializeField] public ArmyData Army { get; set; }
 
-    public int ArmyID { get; set; }
+    [SerializeField] public int ArmyID { get; set; }
 
 
 
