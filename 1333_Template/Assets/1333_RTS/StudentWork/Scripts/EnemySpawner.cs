@@ -49,15 +49,17 @@ public class EnemySpawner : MonoBehaviour
         UnitInstance unit = enemyObj.GetComponent<UnitInstance>();
         if (unit != null)
         {
-            // You could pick any node as start and end
+            // Always assign ArmyID 1
+            unit.ArmyID = 1;
+
+            // Calculate path
             GridNode startNode = gridManager.GetNodeFromWorldPosition(spawnPoint.position);
             GridNode endNode = gridManager.EndNode;
 
-            // Calculate path and assign it
             List<Vector3> path = gridManager.pathFinder.CalculatePath(startNode, endNode);
             unit.SetPath(path);
 
-            Debug.Log($"Spawned enemy with path from {startNode.Name} to {endNode.Name}");
+            Debug.Log($"Spawned enemy with ArmyID 1 and path from {startNode.Name} to {endNode.Name}");
         }
         else
         {
@@ -73,10 +75,11 @@ public class EnemySpawner : MonoBehaviour
             {
                 hb.Initialize(
                     enemyObj.transform,
-                    unit, // assuming UnitInstance implements IHasHealth
+                    unit,
                     mainCamera
                 );
             }
         }
     }
+
 }

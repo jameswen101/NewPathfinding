@@ -14,6 +14,11 @@ public class SelectionManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            if (mainCamera == null)
+            {
+                Debug.LogError("SelectionManager: mainCamera is NULL!");
+                return;
+            }
             HandleClick();
         }
     }
@@ -45,6 +50,14 @@ public class SelectionManager : MonoBehaviour
                 {
                     targetUnit = clickedUnit;
                     Debug.Log($"Target unit selected: {targetUnit.name} (ArmyID {targetUnit.ArmyID})");
+                    if (sourceUnit == null)
+                    {
+                        Debug.LogError("sourceUnit is null before ConfirmSelection!");
+                    }
+                    if (targetUnit == null)
+                    {
+                        Debug.LogError("targetUnit is null before ConfirmSelection!");
+                    }
                     ConfirmSelection();
                 }
             }
@@ -95,6 +108,11 @@ public class SelectionManager : MonoBehaviour
                 else
                 {
                     // They are on different teams, ATTACK!
+                    if (sourceUnit == null || targetUnit == null)
+                    {
+                        Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
+                        return;
+                    }
                     sourceUnit.Attack(targetUnit);
                     Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
                     Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
@@ -103,6 +121,11 @@ public class SelectionManager : MonoBehaviour
             else
             {
                 // If you don’t care about teams, always attack:
+                if (sourceUnit == null || targetUnit == null)
+                {
+                    Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
+                    return;
+                }
                 sourceUnit.Attack(targetUnit);
                 Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
                 Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");

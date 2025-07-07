@@ -20,33 +20,23 @@ public class UnitInstance : UnitBase, IHasHealth
 
     // Public access if needed by Army Manager
     //public List<GridNode> CurrentPath => path;
-    public bool IsMoving => moving;
-    public bool IsDead;
-    public UnitType UnitType { get; private set; }
+    public bool IsMoving => moving; //how to use IsMoving?
+    public UnitType UnitType => unitType;
     public Vector2Int OriginPoint { get; private set; }
-
-    public float CurrentHealth { get; private set; }
-    public float MaxHealth { get; private set; }
-
-    [SerializeField] private HealthBar healthBar;
-
     [SerializeField] public ArmyData Army { get; set; }
 
     [SerializeField] public int ArmyID { get; set; }
 
-
-
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
         }
-        if (healthBar == null)
-        {
-            healthBar = GetComponentInChildren<HealthBar>();
-        }
     }
+
 
     public void Initialize(PathFinder assignedPathfinder, Material teamMaterial, GridManager gridManager, UnitType unitType, Vector2Int OriginPoint, ArmyData armyData, int ArmyID)
     {
@@ -61,7 +51,7 @@ public class UnitInstance : UnitBase, IHasHealth
 
         pathfinder = assignedPathfinder;
         gridM = gridManager;
-        UnitType = unitType;
+        this.unitType = unitType;
         this.OriginPoint = OriginPoint;
         Army = armyData;
         this.ArmyID = ArmyID;
@@ -77,6 +67,8 @@ public class UnitInstance : UnitBase, IHasHealth
             renderer.materials = mats;
         }
     }
+
+
 
     public void SetDestination(Vector3 targetPosition)
     {
@@ -154,6 +146,12 @@ public class UnitInstance : UnitBase, IHasHealth
             }
         }
 
+        //check if UnitType is null
+        if (UnitType == null)
+        {
+            Debug.LogError("UnitType undefined"); //currently null
+        }
+
         target.TakeDamage(UnitType.Damage);
 
         Debug.Log($"{UnitType.unitTypeName} attacked {target.UnitType.unitTypeName} for {UnitType.Damage} damage.");
@@ -166,17 +164,5 @@ public class UnitInstance : UnitBase, IHasHealth
         pathIndex = 0;
     }
 
-    public void TakeDamage(int incomingDamage)
-    {
-        int mitigated = Mathf.Max(incomingDamage - UnitType.Defence, 1);
-        CurrentHealth -= mitigated;
-        healthBar.UpdateHealthBar(CurrentHealth, MaxHealth);
-        Debug.Log($"{UnitType.unitTypeName} took {mitigated} damage (after {UnitType.Defence} defence).");
-
-        if (CurrentHealth <= 0)
-        {
-            IsDead = true;
-        }
-    }
 
 }
