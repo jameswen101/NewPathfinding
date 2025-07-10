@@ -115,7 +115,7 @@ public class SoldierPlacer : MonoBehaviour
         }
         else if (currentArmy != null)
         {
-            currentArmy.Units.Add(unitComponent);
+            currentArmy.Units.Add(unitComponent); //adds unit to army
         }
         else
         {

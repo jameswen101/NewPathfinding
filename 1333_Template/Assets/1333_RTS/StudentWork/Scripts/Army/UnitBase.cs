@@ -51,7 +51,7 @@ public abstract class UnitBase : MonoBehaviour
     {
         if (healthBar == null)
         {
-            healthBar = GetComponentInChildren<HealthBar>();
+            healthBar = GetComponentInChildren<HealthBar>(); //automatically finds the health bar child instance attached to the spawned prefab
         }
     }
 

@@ -51,11 +51,11 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Q))
         {
-            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - 20f * Time.deltaTime, 20f, 60f);
+            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - 20f * Time.deltaTime, 20f, 90f);
         }
         if (Input.GetKey(KeyCode.E))
         {
-            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView + 20f * Time.deltaTime, 20f, 60f);
+            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView + 20f * Time.deltaTime, 20f, 90f);
         }
         if (Input.GetKeyDown(KeyCode.C))
         {

@@ -10,7 +10,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
 
     void Start()
     {
-        healthBar = GetComponentInChildren<HealthBar>();
+        healthBar = GetComponentInChildren<HealthBar>(); //automatically finds the health bar child instance attached to the spawned prefab
     }
 
     public override void Initialize(BuildingData buildingData, Vector2Int origin)

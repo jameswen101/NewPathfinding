@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
@@ -12,7 +13,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private GameObject healthBarPrefab;
 
     private int spawnCount = 0; // Track how many enemies spawned
-    [SerializeField] private int maxSpawnCount = 4; // Limit for testing, will be removed later
+    [SerializeField] private int maxSpawnCount = 5; // Limit for testing, will be removed later
 
     private void Start()
     {
@@ -52,6 +53,22 @@ public class EnemySpawner : MonoBehaviour
             // Always assign ArmyID 1
             unit.ArmyID = 1;
 
+            // Try to find the ArmyData with ID 1
+            ArmyData armyData = FindObjectsOfType<ArmyData>()
+                .FirstOrDefault(a => a.ArmyID == 1);
+
+            if (armyData != null)
+            {
+                unit.Army = armyData; // if you want the reference
+                armyData.Units.Add(unit);
+                Debug.Log($"Added unit {unit.name} to ArmyID 1.");
+                Debug.Log($"Units count now: {armyData.Units.Count}");
+            }
+            else
+            {
+                Debug.LogError("Could not find ArmyData with ArmyID 1!");
+            }
+
             // Calculate path
             GridNode startNode = gridManager.GetNodeFromWorldPosition(spawnPoint.position);
             GridNode endNode = gridManager.EndNode;
@@ -79,6 +96,14 @@ public class EnemySpawner : MonoBehaviour
                     mainCamera
                 );
             }
+            else
+            {
+                Debug.LogError("Spawned health bar prefab has no HealthBar component!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Health bar prefab was null, skipping health bar.");
         }
     }
 

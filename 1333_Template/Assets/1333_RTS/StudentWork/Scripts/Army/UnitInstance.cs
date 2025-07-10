@@ -35,6 +35,11 @@ public class UnitInstance : UnitBase, IHasHealth
         {
             animator = GetComponentInChildren<Animator>();
         }
+        if (healthBar == null)
+        {
+            Debug.LogWarning($"Unit {name} has no HealthBar assigned at Awake.");
+        }
+
     }
 
 

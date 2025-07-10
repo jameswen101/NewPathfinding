@@ -156,14 +156,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: 97c5d2095ebd00c46a22be6df761d1e2, type: 2}
+  healthBar: {fileID: 6449297347133401319}
   animator: {fileID: 2506690468857586072}
   skinRoot: {fileID: 4059513959329778922}
   pathLine: {fileID: 2017231994599393862}
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
-  IsDead: 0
-  healthBar: {fileID: 6449297347133401319}
 --- !u!114 &7326431936209560974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,6 +286,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 897845046465882187}
     - target: {fileID: 6879022286885001475, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
