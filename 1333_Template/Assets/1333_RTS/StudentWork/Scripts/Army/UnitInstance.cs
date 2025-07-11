@@ -27,10 +27,29 @@ public class UnitInstance : UnitBase, IHasHealth
 
     [SerializeField] public int ArmyID { get; set; }
 
+    [SerializeField] private AudioManager audioManager; // Reference to AudioManager for playing SFX
+
+    private float walkingSFXCooldown = 0f;
+
     protected override void Awake()
     {
         base.Awake();
-
+        if (audioManager == null)
+        {
+            audioManager = FindObjectOfType<AudioManager>();
+            if (audioManager == null)
+            {
+                Debug.LogError("AudioManager not found in the scene!");
+            }
+        }
+        if (gridM == null)
+        {
+            gridM = FindObjectOfType<GridManager>();
+            if (gridM == null)
+            {
+                Debug.LogError("GridManager not found in the scene!");
+            }
+        }
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
@@ -99,22 +118,56 @@ public class UnitInstance : UnitBase, IHasHealth
 
     private void Update()
     {
+        // If not moving or no path, exit
         if (!moving || path == null || pathIndex >= path.Count)
+        {
             return;
+        }
 
+        // Update cooldown timer
+        walkingSFXCooldown -= Time.deltaTime;
+
+        if (walkingSFXCooldown <= 0f)
+        {
+            PlayWalkingSFX();
+            walkingSFXCooldown = 0.5f; // play every half second
+        }
+
+        // Move towards the next point
         Vector3 nextPoint = path[pathIndex];
         float step = moveSpeed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, nextPoint, step);
 
+        // Reached current point?
         if (Vector3.Distance(transform.position, nextPoint) < 0.05f)
         {
             pathIndex++;
             if (pathIndex >= path.Count)
             {
                 moving = false;
-                // You can trigger idle animations here if needed
+                // Optionally trigger idle animation
             }
         }
+
+        if (CurrentHealth <= 0)
+        {
+            Die();
+            return;
+        }
+    }
+
+    private void PlayWalkingSFX()
+    {
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        audioManager.PlaySFX("Footsteps");
     }
 
     private void DrawPathLine()
@@ -157,9 +210,46 @@ public class UnitInstance : UnitBase, IHasHealth
             Debug.LogError("UnitType undefined"); //currently null
         }
 
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        if (audioManager == null)
+        {
+            Debug.LogError("audioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        //Play attack SFX
+        audioManager.PlaySFX("Knife Stabbing");
         target.TakeDamage(UnitType.Damage);
 
         Debug.Log($"{UnitType.unitTypeName} attacked {target.UnitType.unitTypeName} for {UnitType.Damage} damage.");
+
+        if (target.IsDead)
+        {
+            target.Die();
+            Debug.Log($"{target.UnitType.unitTypeName} has died.");
+        }
+    }
+
+    public void Die()
+    {
+        IsDead = true;
+        //animator.SetTrigger("Die");
+        // Play explosion SFX
+        audioManager.PlaySFX("Explosion");
+        // play particle FX
+        // Disable the unit after a short delay
+        Destroy(gameObject, 2f);
     }
 
     public void SetPath(List<Vector3> path)

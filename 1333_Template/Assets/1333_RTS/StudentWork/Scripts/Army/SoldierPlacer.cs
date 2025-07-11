@@ -8,6 +8,7 @@ public class SoldierPlacer : MonoBehaviour
     [SerializeField] private PathFinder pathFinder;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject healthBarPrefab;
+    [SerializeField] private AudioManager audioManager;
 
     private GameObject ghostSoldier;
     private UnitType currentUnitType;
@@ -38,11 +39,39 @@ public class SoldierPlacer : MonoBehaviour
         bool validPlacement = IsValidPlacement(targetNode);
         SetGhostColor(validPlacement ? Color.green : Color.red);
 
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0))
+        // Confirm placement
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Return))
         {
-            PlaceSoldier(targetNode);
+            if (validPlacement)
+            {
+                PlaceSoldier(targetNode);
+            }
+            else
+            {
+                if (audioManager == null)
+                {
+                    Debug.LogError("AudioManager is NULL! No audio will play.");
+                }
+                else
+                {
+                    Debug.Log("AudioManager exists.");
+                }
+
+                audioManager.PlaySFX("Wrong Answer");
+            }
         }
+        // Cancel placement with right-click
         if (Input.GetMouseButtonDown(1)) CancelPlacement();
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        audioManager.PlaySFX("Wrong Answer");
     }
 
     public void StartPlacingSoldier(UnitType unitType)
@@ -51,6 +80,8 @@ public class SoldierPlacer : MonoBehaviour
 
         // Spawn ghost object
         ghostSoldier = Instantiate(unitType.unitPrefab);
+
+        audioManager.PlaySFX("Right Answer"); // Play placement sound
 
         // Get UnitInstance
         UnitInstance unitInstance = ghostSoldier.GetComponent<UnitInstance>();
@@ -121,7 +152,16 @@ public class SoldierPlacer : MonoBehaviour
         {
             Debug.LogWarning("No army assigned to this unit placement.");
         }
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
 
+        audioManager.PlaySFX("Bike Bell"); // Play placement sound
         Destroy(ghostSoldier);
     }
 

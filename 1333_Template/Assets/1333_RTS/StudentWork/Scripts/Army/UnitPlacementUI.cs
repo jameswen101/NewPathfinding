@@ -9,6 +9,7 @@ public class UnitPlacementUI : MonoBehaviour
     [SerializeField] private AvailableTeamUnits availableTeamUnits;
     [SerializeField] private SoldierPlacer soldierPlacer;
     [SerializeField] private ArmyData armyData;
+    [SerializeField] private AudioManager audioManager;
 
     // Start is called before the first frame update
     void Start()
@@ -18,7 +19,7 @@ public class UnitPlacementUI : MonoBehaviour
         {
             var buttonGO = Instantiate(ButtonPrefab, layoutGroupParent);
             var button = buttonGO.GetComponent<SelectUnitButton>();
-            button.Setup(ut, soldierPlacer);
+            button.Setup(ut, soldierPlacer, audioManager);
         }
     }
 

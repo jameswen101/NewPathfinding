@@ -1,35 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance { get; private set; }
-
     [Header("Audio Sources")]
-    [SerializeField] private AudioSource musicSource;
-    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource musicSource; // BGM
+    [SerializeField] private AudioSource correctPlacementSource; // correct placement SFX
+    [SerializeField] private AudioSource spawnSource; // spawned unit/building SFX
+    [SerializeField] private AudioSource attackedSource; // knife stabbing SFX after unit gets attacked
+    [SerializeField] private AudioSource explosionSource; // explosion SFX after unit/building runs out of health
+    [SerializeField] private AudioSource walkingSource; // SFX for when unit travels along the grid
+    [SerializeField] private AudioSource hoverButtonSource; // SFX for when a button is hovered
+    [SerializeField] private AudioSource incorrectPlacementSource; // SFX for when a unit/building is placed incorrectly
 
     [Header("Audio Clips")]
     [SerializeField] private List<AudioClip> musicClips;
     [SerializeField] private List<AudioClip> sfxClips;
 
-    private Dictionary<string, AudioClip> musicDict;
-    private Dictionary<string, AudioClip> sfxDict;
+    [SerializeField] private Dictionary<string, AudioClip> musicDict;
+    [SerializeField] private Dictionary<string, AudioClip> sfxDict;
 
-    void Awake()
+    // Mixer groups (optional, can leave commented if not using)
+    //[SerializeField] private AudioMixerGroup placementGroup;
+    //[SerializeField] private AudioMixerGroup footstepGroup;
+    //[SerializeField] private AudioMixerGroup attackGroup;
+    //[SerializeField] private AudioMixerGroup spawnGroup;
+
+    private void Awake()
     {
-        // Singleton enforcement
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            InitializeDictionaries();
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        InitializeDictionaries();
     }
 
     private void InitializeDictionaries()
@@ -73,7 +74,7 @@ public class AudioManager : MonoBehaviour
     {
         if (sfxDict.TryGetValue(name, out AudioClip clip))
         {
-            sfxSource.PlayOneShot(clip);
+            correctPlacementSource.PlayOneShot(clip);
         }
         else
         {
@@ -88,6 +89,6 @@ public class AudioManager : MonoBehaviour
 
     public void SetSFXVolume(float volume)
     {
-        sfxSource.volume = Mathf.Clamp01(volume);
+        correctPlacementSource.volume = Mathf.Clamp01(volume);
     }
 }

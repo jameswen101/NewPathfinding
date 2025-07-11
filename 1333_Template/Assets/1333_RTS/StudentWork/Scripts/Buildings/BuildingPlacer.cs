@@ -8,7 +8,7 @@ public class BuildingPlacer : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private ArmyData armyData;
     [SerializeField] private GameObject healthBarPrefab;
-
+    [SerializeField] private AudioManager audioManager;
 
     private BuildingData selectedBuilding;
     private GameObject previewObject;
@@ -30,7 +30,7 @@ public class BuildingPlacer : MonoBehaviour
 
         // Instantiate ghost prefab (make sure your BuildingData has this reference)
         ghostObject = Instantiate(buildingData.buildingPrefab); //add a separate GhostPrefab in BuildingData?
-
+        audioManager.PlaySFX("Right Answer"); // Play placement sound
     }
 
     private Vector2Int gridOffset = Vector2Int.zero;
@@ -57,9 +57,25 @@ public class BuildingPlacer : MonoBehaviour
         SetGhostColor(validPlacement ? Color.green : Color.red);
 
         // Confirm placement
-        if (validPlacement && (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0)))
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Return))
         {
-            PlaceBuilding(targetNode);
+            if (validPlacement)
+            {
+                PlaceBuilding(targetNode);
+            }
+            else
+            {
+                if (audioManager == null)
+                {
+                    Debug.LogError("AudioManager is NULL! No audio will play.");
+                }
+                else
+                {
+                    Debug.Log("AudioManager exists.");
+                }
+
+                audioManager.PlaySFX("Wrong Answer");
+            }
         }
 
 
@@ -67,6 +83,16 @@ public class BuildingPlacer : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             CancelPlacement();
+            if (audioManager == null)
+            {
+                Debug.LogError("AudioManager is NULL! No audio will play.");
+            }
+            else
+            {
+                Debug.Log("AudioManager exists.");
+            }
+
+            audioManager.PlaySFX("incorrectPlacementSource");
         }
     }
 
@@ -124,6 +150,16 @@ public class BuildingPlacer : MonoBehaviour
             }
         }
 
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        audioManager.PlaySFX("Bike Bell"); // Play placement sound
 
         // 4. Clean up
         Destroy(ghostObject);

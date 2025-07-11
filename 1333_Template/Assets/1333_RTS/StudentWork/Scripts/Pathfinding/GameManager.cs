@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ArmyComposition armyComposition;
     private bool selectingStart = true;
     [SerializeField] private ArmyPathfindingTester armyPathfindingTester;
+    [SerializeField] private AudioManager audioManager;
     // Start is called before the first frame update
 
     private void Awake()
@@ -21,6 +23,17 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         StartNewGame(2); //starting a new game with 2 players
+        //call BGM
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        audioManager.PlayMusic("Raga Legacy", true);
     }
 
     void Update()
@@ -52,6 +65,11 @@ public class GameManager : MonoBehaviour
                     selectingStart = !selectingStart; // Toggle between start/end
                 }
             }
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            audioManager.StopMusic(); // stop music
+            SceneManager.LoadScene("PauseMenu");
         }
     }
 

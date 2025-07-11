@@ -113,7 +113,7 @@ public class SelectionManager : MonoBehaviour
                         Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
                         return;
                     }
-                    sourceUnit.Attack(targetUnit);
+                    sourceUnit.Attack(targetUnit); //play attack SFX here?
                     Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
                     Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
                 }

@@ -8,6 +8,7 @@ public class ArmyMaterialUI : MonoBehaviour
     [SerializeField] private ArmyMaterialButton ButtonPrefab;
     [SerializeField] private TeamMaterialsCollection materialsCollection;
     [SerializeField] private ArmyMaterialSelector armyMaterialSelector;
+    [SerializeField] private AudioManager audioManager;
 
     // Start is called before the first frame update
     void Start()
@@ -16,7 +17,7 @@ public class ArmyMaterialUI : MonoBehaviour
         {
             Debug.Log($"Spawning button for {t.name}");
             ArmyMaterialButton button = Instantiate(ButtonPrefab, layoutGroupParent);
-            button.Setup(t, armyMaterialSelector);
+            button.Setup(t, armyMaterialSelector, audioManager);
         }
     }
 

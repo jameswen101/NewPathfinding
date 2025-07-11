@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SelectUnitButton : MonoBehaviour
@@ -12,16 +13,17 @@ public class SelectUnitButton : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] private UnitType unitType;
     [SerializeField] private SoldierPlacer soldierPlacer;
-
+    [SerializeField] private AudioManager audioManager;
     public void OnClick()
     {
         soldierPlacer.StartPlacingSoldier(unitType);
     }
 
-    public void Setup(UnitType unitType, SoldierPlacer soldierPlacer) //add soldierPlacer as parameter
+    public void Setup(UnitType unitType, SoldierPlacer soldierPlacer, AudioManager audioManager) //add soldierPlacer as parameter
     {
         this.unitType = unitType;
         this.soldierPlacer = soldierPlacer;
+        this.audioManager = audioManager;
 
         buttonText.text = unitType.unitTypeName;
         buttonImage.sprite = unitType.unitIcon; //make sure every UnitType has unitIcon set up
@@ -29,5 +31,10 @@ public class SelectUnitButton : MonoBehaviour
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(OnClick);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        audioManager.PlaySFX("Answer Button");
     }
 }
