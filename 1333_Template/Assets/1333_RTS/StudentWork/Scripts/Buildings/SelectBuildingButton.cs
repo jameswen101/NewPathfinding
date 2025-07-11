@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using JetBrains.Annotations;
 
-public class SelectBuildingButton : MonoBehaviour
+public class SelectBuildingButton : MonoBehaviour, IPointerEnterHandler
 {
     [SerializeField] private Image buttonImage;
     [SerializeField] private TMP_Text buttonText;
@@ -18,6 +18,7 @@ public class SelectBuildingButton : MonoBehaviour
 
     public void OnClick()
     {
+        audioManager.PlaySFX("Beep Short");
         buildingPlacer.StartPlacing(buildingData);
     }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SelectUnitButton : MonoBehaviour
+public class SelectUnitButton : MonoBehaviour, IPointerEnterHandler
 {
     [SerializeField] private Image buttonImage;
     [SerializeField] private TMP_Text buttonText;
@@ -16,6 +16,7 @@ public class SelectUnitButton : MonoBehaviour
     [SerializeField] private AudioManager audioManager;
     public void OnClick()
     {
+        audioManager.PlaySFX("Beep Short");
         soldierPlacer.StartPlacingSoldier(unitType);
     }
 

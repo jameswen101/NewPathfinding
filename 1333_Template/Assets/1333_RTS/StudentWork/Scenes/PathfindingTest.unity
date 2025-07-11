@@ -9315,6 +9315,7 @@ MonoBehaviour:
   walkingSource: {fileID: 776763901}
   hoverButtonSource: {fileID: 1282496809}
   incorrectPlacementSource: {fileID: 206838147}
+  beepSource: {fileID: 1756548357}
   musicClips:
   - {fileID: 8300000, guid: 6fc2a81de98094d40af705714365f0f0, type: 3}
   sfxClips:
@@ -9325,6 +9326,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: dc1c53ab557bcf740b60f326465fb93d, type: 3}
   - {fileID: 8300000, guid: 5009636300441fd4cb0d8bdc1717b375, type: 3}
   - {fileID: 8300000, guid: 9f9215b649bd3b841bed774f02ffcd6c, type: 3}
+  - {fileID: 8300000, guid: 8513b97f6a3d76341a75c3a93c188a90, type: 3}
 --- !u!4 &1516349753
 Transform:
   m_ObjectHideFlags: 0

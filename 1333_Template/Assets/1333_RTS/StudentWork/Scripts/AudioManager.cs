@@ -14,6 +14,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource walkingSource; // SFX for when unit travels along the grid
     [SerializeField] private AudioSource hoverButtonSource; // SFX for when a button is hovered
     [SerializeField] private AudioSource incorrectPlacementSource; // SFX for when a unit/building is placed incorrectly
+    [SerializeField] private AudioSource beepSource; // SFX for when a button is clicked
 
     [Header("Audio Clips")]
     [SerializeField] private List<AudioClip> musicClips;

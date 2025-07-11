@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ArmyMaterialButton : MonoBehaviour
+public class ArmyMaterialButton : MonoBehaviour, IPointerEnterHandler
 {
     [SerializeField] private Button button;
     [SerializeField] private ArmyMaterialSelector selector;
@@ -20,6 +20,7 @@ public class ArmyMaterialButton : MonoBehaviour
 
     private void OnButtonClicked()
     {
+        audioManager.PlaySFX("Beep Short");
         selector.PlayerSelectMaterial(teamMaterialInfo);
     }
 
