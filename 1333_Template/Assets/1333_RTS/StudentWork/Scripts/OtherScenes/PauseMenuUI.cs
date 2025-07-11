@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PauseMenuUI : MonoBehaviour
 {
     public Button playButton;
+    [SerializeField] private IntroAudioManager introAudioManager;
     //public TimerUI timer;
 
     void Start()
@@ -19,11 +21,14 @@ public class PauseMenuUI : MonoBehaviour
         //}
 
         playButton.onClick.AddListener(GoToMainGame); // if applicable
+        introAudioManager.PlayMusic("Gamela", true);
     }
 
 
     public void GoToMainGame()
     {
+        introAudioManager.StopMusic(); // stop music
+        introAudioManager.PlayMusic("Beep Short");
         SceneManager.LoadScene("PathfindingTest");
 
         // Resume the timer (will work only if TimerUI survives the scene load)
@@ -32,5 +37,10 @@ public class PauseMenuUI : MonoBehaviour
         //{
         //    timer.timerIsRunning = true;
         //}
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        introAudioManager.PlaySFX("Answer Button");
     }
 }
