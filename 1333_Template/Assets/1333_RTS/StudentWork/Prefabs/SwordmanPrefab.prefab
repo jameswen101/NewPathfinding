@@ -88,14 +88,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: 1c23b03c97b6b004e97d811a81c29fd5, type: 2}
+  healthBar: {fileID: 1675620356536619755}
   animator: {fileID: 9042754207649061191}
   skinRoot: {fileID: 2055608124249767228}
   pathLine: {fileID: 7236306785773129312}
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
-  IsDead: 0
-  healthBar: {fileID: 1675620356536619755}
+  audioManager: {fileID: 0}
+  healthText: {fileID: 0}
+  healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
 --- !u!114 &7973285040236641588
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -65,14 +65,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: ab7d10a4f307f11419d8bd4c12ab4d30, type: 2}
+  healthBar: {fileID: 6056872145432421104}
   animator: {fileID: 494029205974567811}
   skinRoot: {fileID: 494029205967438447}
   pathLine: {fileID: 7896878171698217753}
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
-  IsDead: 0
-  healthBar: {fileID: 6056872145432421104}
+  audioManager: {fileID: 0}
+  healthText: {fileID: 0}
+  healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
 --- !u!120 &7896878171698217753
 LineRenderer:
   serializedVersion: 2

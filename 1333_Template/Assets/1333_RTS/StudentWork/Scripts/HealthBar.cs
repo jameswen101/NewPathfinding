@@ -1,59 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private Transform target;
-    //[SerializeField] private Vector3 worldOffset = new Vector3(0, 2f, 0); // Adjust height above object
+    [SerializeField] private Transform targetTransform;
+    [SerializeField] private Transform pivotTransform; // << reference to the pivot
     [SerializeField] private Slider slider;
 
-    private Transform targetTransform;
-    private IHasHealth targetHealth; // interface or script holding health
+    private IHasHealth targetHealth;
 
-    private void Awake()
-    {
-        mainCamera = Camera.main;
-    }
-
-    public void Initialize(Transform target, IHasHealth healthSource, Camera mainCamera)
+    public void Initialize(Transform target, IHasHealth healthSource, Camera camera)
     {
         targetTransform = target;
         targetHealth = healthSource;
-        this.mainCamera = mainCamera;
-
-        // Optionally, initialize the slider
-        if (slider != null)
-        {
-            slider.maxValue = targetHealth.MaxHealth;
-            slider.value = targetHealth.CurrentHealth;
-        }
+        mainCamera = camera;
     }
 
-    void Update()
+    private void Update()
     {
-        if (targetTransform == null || targetHealth == null)
+        if (targetTransform == null) return;
+
+        // Keep the bar at a fixed world position above the target
+        transform.position = targetTransform.position + Vector3.up * 2f;
+
+        // Rotate only the pivot to face camera
+        pivotTransform.rotation = Quaternion.LookRotation(
+            pivotTransform.position - mainCamera.transform.position
+        );
+
+        if (slider != null && targetHealth != null)
         {
-            Destroy(gameObject);
-            return;
+            slider.value = targetHealth.CurrentHealth / targetHealth.MaxHealth;
         }
-
-        // Follow target
-        transform.position = mainCamera.transform.position;
-
-
-        // Update fill
-        //float fill = Mathf.Clamp01(targetHealth.CurrentHealth / targetHealth.MaxHealth);
-        //fillImage.fillAmount = fill;
-
-        //transform.forward = Camera.main.transform.forward;
-
-    }
-
-    public void UpdateHealthBar(float currentValue, float maxValue)
-    {
-        slider.value = currentValue/maxValue;
     }
 }

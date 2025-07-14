@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UnitInstance : UnitBase, IHasHealth
@@ -31,6 +32,16 @@ public class UnitInstance : UnitBase, IHasHealth
 
     private float walkingSFXCooldown = 0f;
 
+    public TextMeshPro healthText;
+
+    [SerializeField] private GameObject healthBarPrefab;
+
+    public void UpdateHealthText()
+    {
+        healthText.text = $"{CurrentHealth} / {MaxHealth}";
+    }
+
+
     protected override void Awake()
     {
         base.Awake();
@@ -58,7 +69,14 @@ public class UnitInstance : UnitBase, IHasHealth
         {
             Debug.LogWarning($"Unit {name} has no HealthBar assigned at Awake.");
         }
-
+        if (healthText == null)
+        {
+            healthText = GetComponentInChildren<TextMeshPro>();
+            if (healthText == null)
+            {
+                Debug.LogWarning($"Unit {name} has no HealthText assigned at Awake.");
+            }
+        }
     }
 
 
@@ -90,6 +108,20 @@ public class UnitInstance : UnitBase, IHasHealth
             }
             renderer.materials = mats;
         }
+        // Instantiate as child of the unit
+        GameObject healthBarObj = Instantiate(
+            healthBarPrefab,
+            transform // parent transform
+        );
+
+        // Optional: set local offset
+        healthBarObj.transform.localPosition = new Vector3(0, 2f, 2f);
+
+        // Get HealthBar component
+        HealthBar healthBar = healthBarObj.GetComponent<HealthBar>();
+
+        // Initialize it
+        healthBar.Initialize(this.transform, this, Camera.main);
     }
 
 
