@@ -5,19 +5,22 @@ using UnityEngine;
 
 public class TerrainType : ScriptableObject
 {
-    [SerializeField] private string terrainName = "Default";
-    [SerializeField] private Color gizmoColor = Color.green;
-    [SerializeField] private bool walkable = true;
-    [SerializeField] private int movementCost = 1;
+    public string terrainName = "Default";
+    //[SerializeField] private 
+    public Color gizmoColor;
+    //[SerializeField] private
+    public bool walkable = true;
+    //[SerializeField] private 
+    public int movementCost = 1;
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

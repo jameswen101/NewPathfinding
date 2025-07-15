@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34e8fa9d8772c9b4b8577c9f715dafa4, type: 3}
+  m_Name: Ballista
+  m_EditorClassIdentifier: 
+  machineName: Ballista
+  machinePrefab: {fileID: 7001709924389640821, guid: d8b3c5457ed11934aa9f2a244c0b99f0, type: 3}
+  machineIcon: {fileID: 21300000, guid: 634e5cf4ccdf14c43a5bfe0160e74914, type: 3}
+  moveSpeed: 0
+  attackRange: 0
+  damage: 0
+  width: 0
+  height: 0

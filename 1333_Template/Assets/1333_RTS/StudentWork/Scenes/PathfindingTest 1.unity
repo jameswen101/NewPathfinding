@@ -160,44 +160,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 45725957}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8aff3012b0020d8469e33d079d85af40, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f298c53fd2816b4188a56ffff6a446d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 171974297}
-  StartNode:
-    Name: 
-    WorldPosition: {x: 0, y: 0, z: 0}
-    Walkable: 0
-    Weight: 0
-    isWall: 0
-    fCost: 0
-    gCost: 0
-    hCost: 0
-  EndNode:
-    Name: 
-    WorldPosition: {x: 0, y: 0, z: 0}
-    Walkable: 0
-    Weight: 0
-    isWall: 0
-    fCost: 0
-    gCost: 0
-    hCost: 0
-  pathfindingType: 0
-  framesPerStep: 10
-  visualizePathfinding: 1
-  startNodeColor: {r: 0, g: 1, b: 0, a: 1}
-  endNodeColor: {r: 1, g: 0, b: 0, a: 1}
-  currentPathColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  visitedNodeColor: {r: 0.5, g: 0.5, b: 1, a: 0.5}
-  unvisitedNodeColor: {r: 0.3, g: 0.3, b: 0.3, a: 0.3}
-  finalPathColor: {r: 0, g: 1, b: 1, a: 1}
-  currentNodeColor: {r: 1, g: 0, b: 1, a: 1}
-  currentNeighborColor: {r: 1, g: 0.5, b: 0, a: 0.5}
-  explorationLineColor: {r: 1, g: 1, b: 0, a: 0.3}
-  currentSeed: 0
-  useSeededRandom: 1
-  minWeight: 1
-  maxWeight: 10
+  gridManager: {fileID: 0}
 --- !u!1 &171974294
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,26 +209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridSettings: {fileID: 11400000, guid: 87ba9beb7a5ae5a4eb735e4358d85e60, type: 2}
-  AllNodes: []
-  pathFinder: {fileID: 45725960}
-  StartNode:
-    Name: 
-    WorldPosition: {x: 0, y: 0, z: 0}
-    Walkable: 0
-    Weight: 0
-    isWall: 0
-    fCost: 0
-    gCost: 0
-    hCost: 0
-  EndNode:
-    Name: 
-    WorldPosition: {x: 0, y: 0, z: 0}
-    Walkable: 0
-    Weight: 0
-    isWall: 0
-    fCost: 0
-    gCost: 0
-    hCost: 0
+  pathFinder: {fileID: 0}
   finalPathColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &258641336
 GameObject:
@@ -309,24 +256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridTest: {fileID: 613031042}
-  startNode:
-    Name: 
-    WorldPosition: {x: 0, y: 0, z: 0}
-    Walkable: 0
-    Weight: 0
-    isWall: 0
-    fCost: 0
-    gCost: 0
-    hCost: 0
-  endNode:
-    Name: 
-    WorldPosition: {x: 0, y: 0, z: 0}
-    Walkable: 0
-    Weight: 0
-    isWall: 0
-    fCost: 0
-    gCost: 0
-    hCost: 0
+  gridManager: {fileID: 0}
   dummyPrefab: {fileID: 1476368009}
 --- !u!1 &585328260
 GameObject:
@@ -703,8 +633,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0335bf412d97fcd46b2bdab7b21572ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 171974297}
-  pathfinder: {fileID: 45725960}
+  gridManager: {fileID: 0}
+  pathfinder: {fileID: 0}
   startMarker: {fileID: 600104306}
   endMarker: {fileID: 1476368013}
   pathLine: {fileID: 613031039}
@@ -913,7 +843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe4bde077af2df840a9c6b3661583474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 171974297}
+  gridManager: {fileID: 0}
   unitManager: {fileID: 258641339}
 --- !u!1 &1476368009
 GameObject:
