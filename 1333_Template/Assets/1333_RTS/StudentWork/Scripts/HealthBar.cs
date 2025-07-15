@@ -28,7 +28,9 @@ public class HealthBar : MonoBehaviour
         pivotTransform.rotation = Quaternion.LookRotation(
             pivotTransform.position - mainCamera.transform.position
         );
-
+    }
+    public void UpdateHealthBar(float currentValue, float maxValue)
+    {
         if (slider != null && targetHealth != null)
         {
             slider.value = targetHealth.CurrentHealth / targetHealth.MaxHealth;
