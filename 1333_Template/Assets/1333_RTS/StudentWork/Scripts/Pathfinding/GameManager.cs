@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         gridManager.InitializeGrid();
-        unitManager.SpawnDummyUnit();
+        //unitManager.SpawnDummyUnit();
     }
 
     void Start()

@@ -92,7 +92,7 @@ public class ArmyData : MonoBehaviour, IArmyData
 
 
         GameObject hb = Instantiate(healthBarPrefab);
-        hb.GetComponent<HealthBar>().Initialize(instance.transform, instance, mainCamera);
+        hb.GetComponent<HealthBar>().Initialize(instance.transform, instance, mainCamera, new Vector3(0, 2, 0));
 
         // Convert position to grid coords
         Vector2Int gridPos = new Vector2Int(

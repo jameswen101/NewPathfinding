@@ -93,7 +93,8 @@ public class EnemySpawner : MonoBehaviour
                 hb.Initialize(
                     enemyObj.transform,
                     unit,
-                    mainCamera
+                    mainCamera,
+                    new Vector3(0, 2, 0) // Offset for the health bar
                 );
             }
             else

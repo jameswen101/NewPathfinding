@@ -8,15 +8,38 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Transform targetTransform;
     [SerializeField] private Transform pivotTransform; // << reference to the pivot
     [SerializeField] private Slider slider;
-    [SerializeField] private TextMeshProUGUI healthText; // for displaying health value
+    [SerializeField] private Vector3 offset;
+    public TextMeshProUGUI healthText; // for displaying health value
 
     private IHasHealth targetHealth;
 
-    public void Initialize(Transform target, IHasHealth healthSource, Camera camera)
+    public void Initialize(Transform target, IHasHealth healthSource, Camera camera, Vector3 offset)
     {
         targetTransform = target;
         targetHealth = healthSource;
         mainCamera = camera;
+        this.offset = offset;
+
+        if (targetTransform == null)
+        {
+            Debug.LogError("Target Transform is not assigned in HealthBar.");
+            return;
+        }
+
+        if (targetHealth == null)
+        {
+            Debug.LogError("Target Health is not assigned in HealthBar.");
+            return;
+        }
+
+        if (slider == null)
+        {
+            slider = GetComponentInChildren<Slider>();
+            if (slider == null)
+            {
+                Debug.LogError("Slider component not found in HealthBar.");
+            }
+        }
     }
 
     private void Update()
@@ -36,6 +59,7 @@ public class HealthBar : MonoBehaviour
         if (slider != null && targetHealth != null)
         {
             slider.value = targetHealth.CurrentHealth / targetHealth.MaxHealth;
+            Debug.Log($"HealthBar updated: {currentValue}/{maxValue}");
         }
     }
 
@@ -44,6 +68,7 @@ public class HealthBar : MonoBehaviour
         if (healthText != null)
         {
             healthText.text = $"{currentValue}/{maxValue}";
+            Debug.Log(maxValue + " " + currentValue);
         }
         else
         {

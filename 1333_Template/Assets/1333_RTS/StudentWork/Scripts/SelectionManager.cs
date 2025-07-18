@@ -103,7 +103,7 @@ public class SelectionManager : MonoBehaviour
                 }
 
                 // Only allow player-controlled units as source
-                if (sourceUnit == null)
+                if (sourceUnit == null) //if player hasn't selected a source unit yet
                 {
                     // Fallback: attempt to resolve missing Army
                     if (clickedUnit.Army == null && AllArmiesManager.Instance != null)
@@ -120,7 +120,7 @@ public class SelectionManager : MonoBehaviour
                         }
                     }
 
-                    if (clickedUnit.Army != null && clickedUnit.Army.IsPlayerControlled)
+                    if (clickedUnit.Army != null && clickedUnit.Army.IsPlayerControlled) //if player selects a player unit
                     {
                         sourceUnit = clickedUnit;
                         statusText.text = $"Source unit selected: {sourceUnit.name}";
@@ -140,6 +140,30 @@ public class SelectionManager : MonoBehaviour
                             ? "Unit has no army assigned."
                             : "Cannot select enemy units as source.";
                         return;
+                    }
+                }
+                //choose target unit
+                else if (sourceUnit != null && sourceUnit.Army != null && sourceUnit.Army.IsPlayerControlled) //if player has selected a source unit
+                {
+                    targetObject = clicked.transform;
+                    targetUnit = clickedUnit;
+                    if (targetUnit == null)
+                    {
+                        Debug.LogError("Target unit is NULL after clicking on unit!");
+                        return;
+                    }
+                    // Check if the target unit is from the same army
+                    if (targetUnit.Army != null && targetUnit.Army.IsPlayerControlled)
+                    {
+                        Debug.Log("Cannot select player units as target.");
+                        statusText.text = "Cannot select player units as target.";
+                        return;
+                    }
+                    else
+                    {
+                        Debug.Log($"Target unit selected: {targetUnit.name}");
+                        statusText.text = $"Target unit selected: {targetUnit.name}";
+                        ConfirmSelection();
                     }
                 }
 
@@ -230,9 +254,20 @@ public class SelectionManager : MonoBehaviour
 
                     if (sourceUnit.UnitType.CanAttackUnits)
                     {
-                        sourceUnit.Attack(targetUnit);
-                        Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
-                        Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+                        //compare unit types; if source unit is NOT an enemy unit type + if enemy unit IS an enemy unit type, then attack
+
+                        if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy" || sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy")
+                        {
+                            sourceUnit.Attack(targetUnit);
+                            Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
+                            Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+                        }
+
+                        else
+                        {
+                            Debug.Log("Cannot attack unit on the same team.");
+                            statusText.text = "Cannot attack unit on the same team.";
+                        }
                     }
                     else
                     {

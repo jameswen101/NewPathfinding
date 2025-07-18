@@ -110,6 +110,9 @@ public class UnitInstance : UnitBase, IHasHealth
         Army = armyData;
         this.ArmyID = ArmyID;
 
+        CurrentHealth = unitType.MaxHp;
+        MaxHealth = unitType.MaxHp;
+
         // Debug logs
         Debug.Log($"ArmyData is {(armyData == null ? "NULL" : "OK")}, ArmyID = {ArmyID}");
 
@@ -168,10 +171,11 @@ public class UnitInstance : UnitBase, IHasHealth
         HealthBar healthBar = healthBarObj.GetComponent<HealthBar>();
 
         // Initialize it
-        healthBar.Initialize(this.transform, this, Camera.main);
+        healthBar.Initialize(this.transform, this, Camera.main, new Vector3(0, 2f, 0));
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
         Debug.Log($"{name}'s starting health: {CurrentHealth}/{MaxHealth}");
+        Debug.Log($"{healthBar.healthText.text}");
     }
 
 

@@ -49,6 +49,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
         BuildingData = buildingData; // this stores it in the field
         Origin = origin;
         CurrentHp = buildingData.currentHealth;
+        MaxHealth = buildingData.maxHealth;
     }
     public void TakeDamage(int incomingDamage)
     {

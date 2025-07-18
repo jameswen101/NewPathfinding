@@ -110,7 +110,8 @@ public class SoldierPlacer : MonoBehaviour
                 hb.Initialize(
                     ghostSoldier.transform,     // Target transform to follow
                     unitInstance,               // IHasHealth reference (make sure UnitInstance implements IHasHealth)
-                    mainCamera                    // Camera to convert world to screen
+                    mainCamera,                    // Camera to convert world to screen
+                    new Vector3(0, 2, 0) // Offset for the health bar
                 );
             }
             else
