@@ -1,5 +1,7 @@
 using System;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
     public abstract class BuildingBase : MonoBehaviour
@@ -7,7 +9,7 @@ using UnityEngine;
         [SerializeField] protected BuildingData BuildingData;
         [SerializeField] protected int CurrentHp;
         [SerializeField] protected Vector2Int Origin;
-        protected IArmyData OwningArmy;
+        protected ArmyData OwningArmy;
 
         public BuildingData Data => BuildingData;
 
@@ -17,9 +19,11 @@ using UnityEngine;
 
         public abstract void Initialize(BuildingData buildingData, Vector2Int origin);
 
-        public IArmyData ParentArmy => OwningArmy;
+        public ArmyData ParentArmy => OwningArmy;
 
-        public virtual void AssignToArmy(IArmyData army)
+    public bool IsDead { get; protected set; }
+
+    public virtual void AssignToArmy(ArmyData army)
         {
             OwningArmy = army;
         }
@@ -30,4 +34,5 @@ using UnityEngine;
             ParentArmy.RemoveBuilding(this);
     }
 
+    
 }

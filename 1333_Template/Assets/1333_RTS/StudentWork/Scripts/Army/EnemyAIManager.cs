@@ -32,11 +32,11 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         // Start timer when the 2nd unit spawns
-        if (alivePlayerUnits >= 2 && !delayTimerStarted)
+        if (alivePlayerUnits >= 5 && !delayTimerStarted)
         {
             delayTimerStarted = true;
             delayStartTime = Time.time;
-            Debug.Log("2 player units detected, starting 5-second delay...");
+            Debug.Log("5 player units detected, starting 5-second delay...");
         }
 
         // If timer has started, but not yet reached 5 seconds, wait
@@ -47,7 +47,7 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         // If fewer than 2 player units, do nothing
-        if (alivePlayerUnits < 2)
+        if (alivePlayerUnits < 5)
         {
             return;
         }
@@ -69,8 +69,8 @@ public class EnemyAIManager : MonoBehaviour
         UnitInstance chosenTarget = null;
         float minOverallDistance = Mathf.Infinity;
 
-        //How to restrict attacks when there are <2 player units haven't been set yet? 
-        //Limit attacks to at least 5 seconds after the 2nd unit is spawned
+        //How to restrict attacks when there are <5 player units haven't been set yet? 
+        //Limit attacks to at least 5 seconds after the 5th unit is spawned
 
         // Loop through each enemy
         foreach (var enemy in enemyUnits)

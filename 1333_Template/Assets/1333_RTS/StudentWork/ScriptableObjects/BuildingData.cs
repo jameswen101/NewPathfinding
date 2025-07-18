@@ -15,4 +15,7 @@ public class BuildingData: ScriptableObject
     public Sprite buildingIcon;
     public bool IsSolid;
     public int moveCost = -1; //terrain color = rock/danger's color?
+
+    //public int BuildTime = 5; //time to build this building
+    //public int BuildCost = 100; //cost to build this building
 }

@@ -128,14 +128,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: a66fe725f54b1184c8f156c3146ce5a3, type: 2}
+  healthBar: {fileID: 375114076333812342}
   animator: {fileID: 1854497433783678023}
   skinRoot: {fileID: 4186638767369967124}
   pathLine: {fileID: -8976441711769034568}
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
-  IsDead: 0
-  healthBar: {fileID: 375114076333812342}
+  audioManager: {fileID: 0}
+  healthText: {fileID: 0}
+  healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+  bloodFXPrefab: {fileID: 6837061768053742933, guid: c041548ad5f52014d8ae27de23cf2764, type: 3}
 --- !u!120 &-8976441711769034568
 LineRenderer:
   serializedVersion: 2
@@ -378,7 +381,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalRotation.w
@@ -398,11 +401,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 2.69
+      value: 0.09
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1.07
+      value: 3.09
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

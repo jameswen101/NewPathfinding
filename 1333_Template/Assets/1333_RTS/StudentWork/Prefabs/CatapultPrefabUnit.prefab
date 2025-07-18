@@ -197,14 +197,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: c32555cf3210a5f49a794a54d0aa90f9, type: 2}
+  healthBar: {fileID: 5026147330785109692}
   animator: {fileID: 8547187476541419258}
   skinRoot: {fileID: 4625885196819267898}
   pathLine: {fileID: -6158453703600361841}
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
-  IsDead: 0
-  healthBar: {fileID: 5026147330785109692}
+  audioManager: {fileID: 0}
+  healthText: {fileID: 0}
+  healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+  bloodFXPrefab: {fileID: 6837061768053742933, guid: c041548ad5f52014d8ae27de23cf2764, type: 3}
 --- !u!114 &-1313160654126679048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,7 +272,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.4
+      value: 0.88
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalRotation.w
@@ -289,11 +292,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 2.96
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.52
+      value: 2.81
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

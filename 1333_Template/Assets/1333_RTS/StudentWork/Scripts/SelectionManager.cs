@@ -1,5 +1,7 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using static UnitType;
 
 public class SelectionManager : MonoBehaviour
 {
@@ -7,11 +9,40 @@ public class SelectionManager : MonoBehaviour
     private Transform targetObject;
     private UnitInstance sourceUnit;
     private UnitInstance targetUnit;
+    private BuildingInstance targetBuilding;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private TextMeshProUGUI statusText;
+    private bool sourceWasMoving = false;
 
     void Update()
     {
+        if (sourceUnit != null)
+        {
+            if (!sourceUnit.IsDead)
+            {
+                // Check if movement just stopped
+                if (sourceWasMoving && !sourceUnit.IsMoving)
+                {
+                    Debug.Log($"Deselecting {sourceUnit.name} because it finished moving.");
+                    sourceUnit = null;
+                    sourceWasMoving = false;
+                    statusText.text = "Unit deselected.";
+                }
+                else
+                {
+                    // Update moving state for next frame
+                    sourceWasMoving = sourceUnit.IsMoving;
+                }
+            }
+            else
+            {
+                Debug.Log($"Deselecting {sourceUnit.name} because it has died.");
+                sourceUnit = null;
+                sourceWasMoving = false;
+                statusText.text = "Unit deselected.";
+            }
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             if (mainCamera == null)
@@ -21,7 +52,39 @@ public class SelectionManager : MonoBehaviour
             }
             HandleClick();
         }
+
+        if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete) && sourceUnit != null) //change to either backspace/delete/tab
+        {
+            DeselectAll();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Delete) && sourceUnit == null) //change to either backspace/delete/tab
+        {
+            Debug.Log("No unit to deselect");
+            return;
+        }
     }
+
+    public void DeselectAll()
+    {
+        sourceUnit = null;
+        targetUnit = null;
+        statusText.text = "All units deselected";
+        StartCoroutine(ClearStatusTextAfterDelay(2f)); // 2 seconds delay
+
+        if (sourceUnit != null)
+        {
+            Debug.Log("Unable to deselect unit");
+        }
+    }
+
+
+    private IEnumerator ClearStatusTextAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        statusText.text = "";
+    }
+
 
     void HandleClick()
     {
@@ -32,7 +95,6 @@ public class SelectionManager : MonoBehaviour
 
             if (clicked.CompareTag("Unit"))
             {
-                Debug.Log("Clicked on object with tag unit");
                 UnitInstance clickedUnit = clicked.GetComponent<UnitInstance>();
                 if (clickedUnit == null)
                 {
@@ -40,26 +102,47 @@ public class SelectionManager : MonoBehaviour
                     return;
                 }
 
+                // Only allow player-controlled units as source
                 if (sourceUnit == null)
                 {
-                    sourceUnit = clickedUnit;
-                    Debug.Log($"Source unit selected: {sourceUnit.name} (ArmyID {sourceUnit.ArmyID})");
-                    statusText.text = $"Source unit selected: {sourceUnit.name}";
-                }
-                else
-                {
-                    targetUnit = clickedUnit;
-                    Debug.Log($"Target unit selected: {targetUnit.name} (ArmyID {targetUnit.ArmyID})");
-                    if (sourceUnit == null)
+                    // Fallback: attempt to resolve missing Army
+                    if (clickedUnit.Army == null && AllArmiesManager.Instance != null)
                     {
-                        Debug.LogError("sourceUnit is null before ConfirmSelection!");
+                        if (AllArmiesManager.Instance.TryGetArmy(clickedUnit.ArmyID, out ArmyData fallbackArmy))
+                        {
+                            clickedUnit.Army = fallbackArmy;
+                            Debug.Log($"[{clickedUnit.name}] Fallback assigned Army: {fallbackArmy.name}");
+                            Debug.Log($"[{clickedUnit.name}] Army ID: {clickedUnit.ArmyID}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[{clickedUnit.name}] Army still null after TryGetArmy with ID={clickedUnit.ArmyID}");
+                        }
                     }
-                    if (targetUnit == null)
+
+                    if (clickedUnit.Army != null && clickedUnit.Army.IsPlayerControlled)
                     {
-                        Debug.LogError("targetUnit is null before ConfirmSelection!");
+                        sourceUnit = clickedUnit;
+                        statusText.text = $"Source unit selected: {sourceUnit.name}";
                     }
-                    ConfirmSelection();
+                    else
+                    {
+                        Debug.Log($"Clicked unit: {clickedUnit.name}");
+                        Debug.Log($"Army null? {(clickedUnit.Army == null ? "YES" : "NO")}");
+                        if (clickedUnit.Army != null)
+                            Debug.Log($"IsPlayerControlled: {clickedUnit.Army.IsPlayerControlled}");
+                            Debug.Log($"ArmyID: {clickedUnit.Army.ArmyID}");
+                        if (clickedUnit.Army.ArmyID == 0)
+                        {
+                            clickedUnit.Army.IsPlayerControlled = true; // This is a player unit
+                        }
+                        statusText.text = clickedUnit.Army == null
+                            ? "Unit has no army assigned."
+                            : "Cannot select enemy units as source.";
+                        return;
+                    }
                 }
+
             }
             else if (clicked.CompareTag("Building"))
             {
@@ -67,7 +150,32 @@ public class SelectionManager : MonoBehaviour
                 if (sourceUnit != null)
                 {
                     targetObject = clicked.transform;
-                    Debug.Log($"Target building selected: {targetObject.name}");
+                    BuildingInstance clickedBuilding = clicked.GetComponent<BuildingInstance>();
+                    if (clickedBuilding == null)
+                    {
+                        Debug.LogWarning("Clicked object has no BuildingInstance component!");
+                        return;
+                    }
+                    //should player unit only be able to select enemy buildings to attack, or be able to hide in player buildings as well?
+                    if (clickedBuilding.GetComponent<BuildingInstance>().Army != null && clickedBuilding.GetComponent<BuildingInstance>().Army.IsPlayerControlled) //if building belongs to player's army
+                    {
+                        Debug.Log("Cannot select player buildings as target.");
+                        statusText.text = "Cannot select player buildings as target.";
+                        return;
+                    }
+                    else
+                    {
+                        targetBuilding = clickedBuilding;
+                        targetUnit = null; // Clear target unit since we're selecting a building
+                        if (targetObject == null)
+                        {
+                            Debug.LogError("Target object is NULL after clicking on building!");
+                            return;
+                        }
+                    }
+
+                        Debug.Log($"Target building selected: {targetBuilding.name}"); //should it be target building or target object?
+                    statusText.text = $"Target building selected: {targetBuilding.name}";
                     ConfirmSelection();
                 }
                 else
@@ -92,9 +200,9 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
-    void ConfirmSelection()
+    void ConfirmSelection() //try to expand this to allow buildings
     {
-        Debug.Log($"Ready to issue order: {sourceUnit.name} -> {targetUnit?.name ?? "no target"}");
+        Debug.Log($"Ready to issue order: {sourceUnit.name} -> {targetUnit?.name ?? "no target"}"); //how to expand this to allow buildings?
 
         if (sourceUnit != null && targetUnit != null)
         {
@@ -113,9 +221,24 @@ public class SelectionManager : MonoBehaviour
                         Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
                         return;
                     }
-                    sourceUnit.Attack(targetUnit); //play attack SFX here?
-                    Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
-                    Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+
+                    // Determine what type of target this is
+                    bool isTargetBuilding = targetObject != null && targetObject.CompareTag("Building");
+
+                    // Get the source attack type
+                    AttackType attackType = sourceUnit.UnitType.attackType;
+
+                    if (sourceUnit.UnitType.CanAttackUnits)
+                    {
+                        sourceUnit.Attack(targetUnit);
+                        Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
+                        Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+                    }
+                    else
+                    {
+                        Debug.Log($"{sourceUnit.UnitType.unitTypeName} with attack type {attackType} cannot attack units.");
+                        statusText.text = $"{sourceUnit.UnitType.unitTypeName} cannot attack units.";
+                    }
                 }
             }
             else
@@ -126,9 +249,25 @@ public class SelectionManager : MonoBehaviour
                     Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
                     return;
                 }
-                sourceUnit.Attack(targetUnit);
-                Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
-                Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+                //sourceUnit.Attack(targetUnit);
+                //Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
+                //Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+            }
+        }
+        else if (sourceUnit != null && targetBuilding != null)
+        {
+            // If the target is a building, check if the source can attack buildings
+            AttackType attackType = sourceUnit.UnitType.attackType;
+            if (sourceUnit.UnitType.CanAttackBuildings)
+            {
+                sourceUnit.AttackBuilding(targetBuilding);
+                Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetBuilding.name}");
+                Debug.Log($"Target health remaining: {targetBuilding.CurrentHealth}");
+            }
+            else
+            {
+                Debug.Log($"{sourceUnit.UnitType.unitTypeName} with attack type {attackType} cannot attack buildings.");
+                statusText.text = $"{sourceUnit.UnitType.unitTypeName} cannot attack buildings.";
             }
         }
         else
@@ -139,6 +278,7 @@ public class SelectionManager : MonoBehaviour
         // Reset selection
         sourceUnit = null;
         targetUnit = null;
+        targetBuilding = null;
     }
 
 }

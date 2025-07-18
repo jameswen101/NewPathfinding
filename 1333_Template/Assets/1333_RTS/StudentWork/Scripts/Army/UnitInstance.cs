@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UnitInstance : UnitBase, IHasHealth
 {
@@ -24,7 +25,15 @@ public class UnitInstance : UnitBase, IHasHealth
     public bool IsMoving => moving; //how to use IsMoving?
     public UnitType UnitType => unitType;
     public Vector2Int OriginPoint { get; private set; }
-    [SerializeField] public ArmyData Army { get; set; }
+
+    [SerializeField] private ArmyData army;
+
+    public ArmyData Army
+    {
+        get => army;
+        set => army = value;
+    }
+
 
     [SerializeField] public int ArmyID { get; set; }
 
@@ -35,6 +44,9 @@ public class UnitInstance : UnitBase, IHasHealth
     public TextMeshPro healthText;
 
     [SerializeField] private GameObject healthBarPrefab;
+
+    [SerializeField] private GameObject bloodFXPrefab;
+
 
     public void UpdateHealthText()
     {
@@ -97,6 +109,41 @@ public class UnitInstance : UnitBase, IHasHealth
         this.OriginPoint = OriginPoint;
         Army = armyData;
         this.ArmyID = ArmyID;
+
+        // Debug logs
+        Debug.Log($"ArmyData is {(armyData == null ? "NULL" : "OK")}, ArmyID = {ArmyID}");
+
+        // Early validation
+        if (armyData == null)
+        {
+            Debug.LogError($"[UnitInstance.Initialize] {name} missing ArmyData!");
+            return;
+        }
+
+        if (ArmyID < 0)
+        {
+            Debug.LogError($"[UnitInstance.Initialize] {name} has invalid ArmyID: {ArmyID}");
+            return;
+        }
+
+        // Fallback: if army wasn't passed in, look it up by ID
+        if (Army == null)
+        {
+            if (AllArmiesManager.Instance != null)
+            {
+                if (AllArmiesManager.Instance.TryGetArmy(ArmyID, out ArmyData foundArmy))
+                {
+                    Army = foundArmy;
+                    Debug.Log($"[{name}] Fallback assigned Army: {foundArmy.name}");
+                    Debug.Log($"[{name}] Fallback assigned ArmyID: {foundArmy.ArmyID}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[{name}] Army still null after TryGetArmy with ID={ArmyID}");
+                }
+            }
+        }
+
 
         // Apply team color
         foreach (var renderer in skinRoot.GetComponentsInChildren<Renderer>())
@@ -262,6 +309,18 @@ public class UnitInstance : UnitBase, IHasHealth
 
         //Play attack SFX
         audioManager.PlaySFX("Knife Stabbing");
+
+        // Spawn blood FX
+        if (bloodFXPrefab != null)
+        {
+            // Instantiate at target's position + offset (e.g., above ground)
+            Vector3 spawnPosition = target.transform.position + Vector3.up * 1.0f;
+            GameObject bloodFX = Instantiate(bloodFXPrefab, spawnPosition, Quaternion.identity);
+
+            // Optional: Destroy after X seconds to clean up
+            Destroy(bloodFX, 2.0f);
+        }
+
         target.TakeDamage(UnitType.Damage);
 
         Debug.Log($"{UnitType.unitTypeName} attacked {target.UnitType.unitTypeName} for {UnitType.Damage} damage.");
@@ -270,6 +329,70 @@ public class UnitInstance : UnitBase, IHasHealth
         {
             target.Die();
             Debug.Log($"{target.UnitType.unitTypeName} has died.");
+        }
+    }
+
+    public void AttackBuilding(BuildingInstance target)
+    {
+        if (target == null || target.IsDead)
+            return;
+
+        // Prevent attacking same team
+        if (Army != null && target.Army != null)
+        {
+            if (Army.TeamMaterial == target.Army.TeamMaterial)
+            {
+                Debug.Log("Cannot attack unit on same team.");
+                return;
+            }
+        }
+
+        //check if BuildingData is null
+        if (target.Data == null)
+        {
+            Debug.LogError("BuildingData undefined"); //currently null
+        }
+
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        if (audioManager == null)
+        {
+            Debug.LogError("audioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+
+        //Play attack SFX
+        audioManager.PlaySFX("Knife Stabbing");
+
+        // Spawn blood FX
+        if (bloodFXPrefab != null)
+        {
+            // Instantiate at target's position + offset (e.g., above ground)
+            Vector3 spawnPosition = target.transform.position + Vector3.up * 1.0f;
+            GameObject bloodFX = Instantiate(bloodFXPrefab, spawnPosition, Quaternion.identity);
+
+            // Optional: Destroy after X seconds to clean up
+            Destroy(bloodFX, 2.0f);
+        }
+
+        target.TakeDamage(UnitType.Damage);
+
+        Debug.Log($"{UnitType.unitTypeName} attacked {target.Data.buildingName} for {UnitType.Damage} damage.");
+
+        if (target.IsDead)
+        {
+            target.Die();
+            Debug.Log($"{target.Data.buildingName} has collapsed.");
         }
     }
 
@@ -282,6 +405,19 @@ public class UnitInstance : UnitBase, IHasHealth
         // play particle FX
         // Disable the unit after a short delay
         Destroy(gameObject, 2f);
+        if (Army != null)
+        {
+            Army.Units.Remove(this);
+            Debug.Log($"{Army.name} has {Army.Units.Count} units remaining.");
+            if (!Army.IsPlayerControlled && Army.Units.Count == 0)
+            {
+                Debug.Log("Player Wins!");
+                // You can trigger a victory UI here:
+                SceneManager.LoadScene("WinScreen");
+            }
+
+        }
+
     }
 
     public void SetPath(List<Vector3> path)

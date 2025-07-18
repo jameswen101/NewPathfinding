@@ -23,3 +23,6 @@ MonoBehaviour:
   unitTypeName: Spearman
   unitPrefab: {fileID: 4655823230317744030, guid: d4680be6bf918b54aaa017f6f1f6056c, type: 3}
   unitIcon: {fileID: 21300000, guid: f1e22036f1163484681e160b3b68dbc4, type: 3}
+  placementOffset: {x: 0, y: 2, z: 0}
+  CanAttackUnits: 1
+  CanAttackBuildings: 0

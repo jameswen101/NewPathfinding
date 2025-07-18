@@ -33,7 +33,7 @@ public class SoldierPlacer : MonoBehaviour
         GridNode targetNode = gridManager.GetNodeFromWorldPosition(node.WorldPosition + new Vector3(gridOffset.x, 0, gridOffset.y));
         if (!gridManager.IsValidCoordinate((int)targetNode.WorldPosition.x, (int)targetNode.WorldPosition.z)) return;
 
-        ghostSoldier.transform.position = targetNode.WorldPosition;
+        ghostSoldier.transform.position = targetNode.WorldPosition + currentUnitType.PlacementOffset;
 
         // Optional: Validity check for placement (eg. grid occupied)
         bool validPlacement = IsValidPlacement(targetNode);
@@ -137,7 +137,12 @@ public class SoldierPlacer : MonoBehaviour
 
     private void PlaceSoldier(GridNode node)
     {
-        GameObject unitInstance = Instantiate(currentUnitType.unitPrefab, node.WorldPosition, Quaternion.identity);
+        GameObject unitInstance = Instantiate(
+    currentUnitType.unitPrefab,
+    node.WorldPosition + currentUnitType.PlacementOffset,
+    Quaternion.identity
+);
+        Debug.Log($"Placing {currentUnitType.name} at {node.WorldPosition} + offset {currentUnitType.PlacementOffset}");
 
         UnitInstance unitComponent = unitInstance.GetComponent<UnitInstance>();
         if (unitComponent == null)

@@ -33,6 +33,7 @@ public class ArmyData : MonoBehaviour, IArmyData
 
     public GameObject healthBarPrefab;
 
+    public bool IsPlayerControlled;
 
     private void Awake()
     {
