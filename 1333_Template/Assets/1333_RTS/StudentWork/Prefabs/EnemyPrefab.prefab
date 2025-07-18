@@ -163,6 +163,7 @@ MonoBehaviour:
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
+  army: {fileID: 0}
   audioManager: {fileID: 0}
   healthText: {fileID: 0}
   healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
@@ -289,6 +290,10 @@ PrefabInstance:
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4125130764801569287, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: target

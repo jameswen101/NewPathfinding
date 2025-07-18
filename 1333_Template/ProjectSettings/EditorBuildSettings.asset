@@ -9,11 +9,17 @@ EditorBuildSettings:
     path: Assets/1333_RTS/StudentWork/Scenes/MainMenu.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/1333_RTS/StudentWork/Scenes/HowToPlay.unity
+    guid: 8d79063a6ae12a240a3a25d061ced1d4
+  - enabled: 1
     path: Assets/1333_RTS/StudentWork/Scenes/PathfindingTest.unity
     guid: e368fb95212c692498315bbce6691da0
   - enabled: 1
     path: Assets/1333_RTS/StudentWork/Scenes/PauseMenu.unity
     guid: 5b37e47b73b06e647aae24fe34982ce5
+  - enabled: 1
+    path: Assets/1333_RTS/StudentWork/Scenes/WinScreen.unity
+    guid: 47190fc191cc28044a2706baeba42bf8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

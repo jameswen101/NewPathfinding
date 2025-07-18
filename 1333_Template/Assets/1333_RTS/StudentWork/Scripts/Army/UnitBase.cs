@@ -23,6 +23,7 @@ public abstract class UnitBase : MonoBehaviour
         int mitigated = Mathf.Max(incomingDamage - Defence, 1); //no need to say UnitType.Defence
         CurrentHealth -= mitigated;
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth);
+        healthBar.SetHealthText(CurrentHealth, MaxHealth); // Update the health text display
         Debug.Log($"{UnitName} took {mitigated} damage (after {Defence} defence).");  //no need to say UnitType.unitTypeName
 
         if (CurrentHealth <= 0)

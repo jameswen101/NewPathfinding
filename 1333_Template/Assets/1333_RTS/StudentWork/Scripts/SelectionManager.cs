@@ -263,6 +263,18 @@ public class SelectionManager : MonoBehaviour
                 sourceUnit.AttackBuilding(targetBuilding);
                 Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetBuilding.name}");
                 Debug.Log($"Target health remaining: {targetBuilding.CurrentHealth}");
+                if (targetBuilding.name == "Castle" && targetBuilding.CurrentHealth <= 0)
+                {
+                    Debug.Log("Castle destroyed! Game over.");
+                    statusText.text = "Castle destroyed! Game over.";
+                    // Here you can add logic to end the game or trigger a game over state
+                    targetBuilding.Win();
+                }
+                if (targetBuilding.name == "Castle" && targetBuilding.CurrentHealth > 0)
+                {
+                    Debug.Log("Castle is still standing.");
+                    statusText.text = "Castle is still standing.";
+                }
             }
             else
             {

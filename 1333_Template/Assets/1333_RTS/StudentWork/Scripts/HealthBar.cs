@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +8,7 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Transform targetTransform;
     [SerializeField] private Transform pivotTransform; // << reference to the pivot
     [SerializeField] private Slider slider;
+    [SerializeField] private TextMeshProUGUI healthText; // for displaying health value
 
     private IHasHealth targetHealth;
 
@@ -34,6 +36,18 @@ public class HealthBar : MonoBehaviour
         if (slider != null && targetHealth != null)
         {
             slider.value = targetHealth.CurrentHealth / targetHealth.MaxHealth;
+        }
+    }
+
+    public void SetHealthText(float currentValue, float maxValue)
+    {
+        if (healthText != null)
+        {
+            healthText.text = $"{currentValue}/{maxValue}";
+        }
+        else
+        {
+            Debug.LogWarning("HealthText is not assigned in HealthBar.");
         }
     }
 }

@@ -41,17 +41,17 @@ public class UnitInstance : UnitBase, IHasHealth
 
     private float walkingSFXCooldown = 0f;
 
-    public TextMeshPro healthText;
+    //public TextMeshPro healthText;
 
     [SerializeField] private GameObject healthBarPrefab;
 
     [SerializeField] private GameObject bloodFXPrefab;
 
 
-    public void UpdateHealthText()
-    {
-        healthText.text = $"{CurrentHealth} / {MaxHealth}";
-    }
+    //public void UpdateHealthText()
+    //{
+    //    healthText.text = $"{CurrentHealth} / {MaxHealth}";
+    //}
 
 
     protected override void Awake()
@@ -81,14 +81,14 @@ public class UnitInstance : UnitBase, IHasHealth
         {
             Debug.LogWarning($"Unit {name} has no HealthBar assigned at Awake.");
         }
-        if (healthText == null)
-        {
-            healthText = GetComponentInChildren<TextMeshPro>();
-            if (healthText == null)
-            {
-                Debug.LogWarning($"Unit {name} has no HealthText assigned at Awake.");
-            }
-        }
+        //if (healthText == null)
+        //{
+        //    healthText = GetComponentInChildren<TextMeshPro>();
+        //    if (healthText == null)
+        //    {
+        //        Debug.LogWarning($"Unit {name} has no HealthText assigned at Awake.");
+        //    }
+        //}
     }
 
 
@@ -169,6 +169,9 @@ public class UnitInstance : UnitBase, IHasHealth
 
         // Initialize it
         healthBar.Initialize(this.transform, this, Camera.main);
+        healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
+        healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
+        Debug.Log($"{name}'s starting health: {CurrentHealth}/{MaxHealth}");
     }
 
 

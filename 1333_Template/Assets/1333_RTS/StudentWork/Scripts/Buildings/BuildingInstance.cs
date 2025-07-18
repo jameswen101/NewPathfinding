@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -53,6 +54,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
     {
         CurrentHealth -= incomingDamage;
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth);
+        healthBar.SetHealthText(CurrentHealth, MaxHealth); // Update the health text display
         Debug.Log($"{BuildingData.buildingName} took {incomingDamage} damage.");
 
         if (CurrentHealth <= 0)
@@ -73,15 +75,21 @@ public class BuildingInstance : BuildingBase, IHasHealth
         {
             OwningArmy.Buildings.Remove(this);
             Debug.Log($"{OwningArmy.name} has {OwningArmy.Buildings.Count} units remaining.");
-            if (!OwningArmy.IsPlayerControlled && OwningArmy.Buildings.Count == 0)
+            if (!OwningArmy.IsPlayerControlled && (!OwningArmy.Buildings.Any(b => b.name.Contains("Castle"))))
             {
-                Debug.Log("Player Wins!");
-                // You can trigger a victory UI here:
-                SceneManager.LoadScene("WinScreen");
+                Debug.Log("Castle destroyed");
+                Win();
             }
 
         }
 
+    }
+
+    public void Win()
+    {
+        Debug.Log("Player Wins!");
+        // You can trigger a victory UI here:
+        SceneManager.LoadScene("WinScreen");
     }
 }
 
