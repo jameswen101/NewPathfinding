@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class ArmyMaterialSelector : MonoBehaviour
@@ -8,13 +10,16 @@ public class ArmyMaterialSelector : MonoBehaviour
     [SerializeField] private GameObject selectionPanel; // parent object for the buttons
     [SerializeField] private TeamMaterialsCollection teamMaterials;
     [SerializeField] private ArmyMaterialButton selectMaterialButton;
-
+    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private float selectionTime = 10f; // Time limit for material selection
+    private bool hasAutoSelected = false;
     private bool playerSelected = false;
     GameObject[] armyObjects;
     ArmyData playerArmy = null;
     ArmyData enemyArmy = null;
     private void Start()
     {
+        timerText.text = $"Time left: {selectionTime:F1} seconds";
         foreach (GameObject obj in armyObjects)
         {
             ArmyData data = obj.GetComponent<ArmyData>();
@@ -33,6 +38,27 @@ public class ArmyMaterialSelector : MonoBehaviour
         armyObjects = GameObject.FindGameObjectsWithTag("Army");
     }
 
+    private void Update()
+    {
+        selectionTime -= Time.deltaTime;
+        if (selectionTime >= 0f)
+        {
+            // Update the timer text
+            timerText.text = $"Time left: {selectionTime:F1} seconds";
+        }
+        else
+        {
+            // Time is up, handle auto-selection if not already done
+            if (!hasAutoSelected && !playerSelected)
+            {
+                AutoSelectMaterials();
+                hasAutoSelected = true;  // Prevent any future calls
+                timerText.text = $"Time left: {selectionTime:F1} seconds"; //how can this be changed when time is up?
+
+            }
+        }
+    }
+
 
     public void PlayerSelectMaterial(TeamMaterialInfo chosenMaterial)
     {
@@ -49,8 +75,36 @@ public class ArmyMaterialSelector : MonoBehaviour
 
         // Hide UI
         selectionPanel.SetActive(false);
-
+        StartCoroutine(ClearTimerText());
         Debug.Log($"Player picked {chosenMaterial.name}, enemy picked {enemyMaterial.name}");
+    }
+
+    private void AutoSelectMaterials()
+    {
+        if (availableMaterials.Count < 2)
+        {
+            Debug.LogError("Not enough materials available for auto-selection.");
+            return;
+        }
+        // Randomly select two different materials
+        TeamMaterialInfo playerMaterial = availableMaterials[Random.Range(0, availableMaterials.Count)];
+        availableMaterials.Remove(playerMaterial);
+        TeamMaterialInfo enemyMaterial = availableMaterials[Random.Range(0, availableMaterials.Count)];
+        // Assign materials to armies
+        playerArmy.SetTeamMaterial(playerMaterial.material);
+        enemyArmy.SetTeamMaterial(enemyMaterial.material);
+        // Hide UI
+        selectionPanel.SetActive(false);
+        Debug.Log($"Auto-selected: Player picked {playerMaterial.name}, Enemy picked {enemyMaterial.name}");
+        timerText.text = "Time's up! Materials auto-selected.";
+        // change text to blank after 2 seconds
+        StartCoroutine(ClearTimerText());
+    }
+
+    private IEnumerator ClearTimerText()
+    {
+        yield return new WaitForSeconds(2f);
+        timerText.text = "";
     }
 }
 

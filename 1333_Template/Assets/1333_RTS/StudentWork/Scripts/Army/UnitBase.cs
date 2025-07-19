@@ -12,8 +12,8 @@ public abstract class UnitBase : MonoBehaviour
     public int Defence => unitType != null ? unitType.Defence : 0;
     public string UnitName => unitType != null ? unitType.unitTypeName : "Unknown";
 
-    public float CurrentHealth { get; protected set; }
-    public float MaxHealth { get; protected set; }
+    public float CurrentHealth { get; set; }
+    public float MaxHealth { get; set; }
     public bool IsDead { get; protected set; }
 
     [SerializeField] protected HealthBar healthBar;

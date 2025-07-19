@@ -256,7 +256,8 @@ public class SelectionManager : MonoBehaviour
                     {
                         //compare unit types; if source unit is NOT an enemy unit type + if enemy unit IS an enemy unit type, then attack
 
-                        if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy" || sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy")
+                        if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy" || sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy") 
+                            //if unit types are from different sides
                         {
                             sourceUnit.Attack(targetUnit);
                             Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
@@ -265,8 +266,16 @@ public class SelectionManager : MonoBehaviour
 
                         else
                         {
-                            Debug.Log("Cannot attack unit on the same team.");
-                            statusText.text = "Cannot attack unit on the same team.";
+                            if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy")
+                            {
+                                Debug.Log("Enemy units cannot attack each other.");
+                                statusText.text = "Enemy units cannot attack each other.";
+                            }
+                            if (sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy")
+                            {
+                                Debug.Log("Player units cannot attack each other.");
+                                statusText.text = "Player units cannot attack each other.";
+                            }
                         }
                     }
                     else

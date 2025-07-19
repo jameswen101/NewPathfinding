@@ -11,6 +11,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject healthBarPrefab;
+    [SerializeField] private UnitType unitType; // Reference to the UnitType asset
+    [SerializeField] private PathFinder pathFinder; // Reference to the PathFinder component
 
     private int spawnCount = 0; // Track how many enemies spawned
     [SerializeField] private int maxSpawnCount = 5; // Limit for testing, will be removed later
@@ -42,6 +44,7 @@ public class EnemySpawner : MonoBehaviour
 
         // Pick a random spawn point
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        Vector2Int spawnPoint2 = new Vector2Int ((int)spawnPoint.position.x, (int)spawnPoint.position.z);
 
         // Instantiate the enemy prefab
         GameObject enemyObj = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
@@ -68,6 +71,10 @@ public class EnemySpawner : MonoBehaviour
             {
                 Debug.LogError("Could not find ArmyData with ArmyID 1!");
             }
+
+            unit.Initialize(pathFinder, armyData.TeamMaterial, gridManager, unitType, spawnPoint2, armyData, 1);
+            unit.MaxHealth = unitType.MaxHp;
+            unit.CurrentHealth = unitType.MaxHp;
 
             // Calculate path
             GridNode startNode = gridManager.GetNodeFromWorldPosition(spawnPoint.position);

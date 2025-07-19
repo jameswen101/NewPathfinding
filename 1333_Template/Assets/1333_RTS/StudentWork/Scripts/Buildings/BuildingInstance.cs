@@ -50,6 +50,11 @@ public class BuildingInstance : BuildingBase, IHasHealth
         Origin = origin;
         CurrentHp = buildingData.currentHealth;
         MaxHealth = buildingData.maxHealth;
+        healthBar.Initialize(this.transform, this, Camera.main, new Vector3(0, 2f, 0));
+        healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
+        healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
+        Debug.Log($"{name}'s starting health: {CurrentHealth}/{MaxHealth}");
+        Debug.Log($"{healthBar.healthText.text}");
     }
     public void TakeDamage(int incomingDamage)
     {
