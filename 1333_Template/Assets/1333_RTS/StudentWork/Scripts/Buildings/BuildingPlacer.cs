@@ -127,6 +127,11 @@ public class BuildingPlacer : MonoBehaviour
         else if (currentArmy != null)
         {
             currentArmy.Buildings.Add(buildingComponent);
+            currentArmy.NonStartingBuildings.Add(buildingComponent);
+            if (currentArmy.hasAddedBuildings == false)
+            {
+                currentArmy.hasAddedBuildings = true;
+            }
         }
         else
         {

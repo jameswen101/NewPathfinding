@@ -25,6 +25,8 @@ public class ArmyData : MonoBehaviour, IArmyData
     public IList<UnitInstance> Units => _units;
     public IList<BuildingBase> Buildings => _buildings;
 
+    public List<BuildingBase> NonStartingBuildings = new(); //holds all buildings that are not starting buildings, e.g. factories, barracks, etc.
+
     public Material TeamMaterial { get; set; }
 
     public List<MachineInstance> _machines = new();
@@ -34,6 +36,14 @@ public class ArmyData : MonoBehaviour, IArmyData
     public GameObject healthBarPrefab;
 
     public bool IsPlayerControlled;
+
+    public bool hasAddedBuildings;
+
+    public bool AllBuildingsDestroyed => Buildings.Count == 0;
+    public bool FinalWaveActivated { get; private set; }
+
+    public event Action<ArmyData> OnFinalWaveStart;
+
 
     private void Awake()
     {
@@ -255,6 +265,16 @@ public class ArmyData : MonoBehaviour, IArmyData
     {
         AllArmiesManager.Instance?.UnregisterArmy(ArmyID);
     }
+
+    public void CheckFinalWave()
+    {
+        if (AllBuildingsDestroyed && !FinalWaveActivated)
+        {
+            FinalWaveActivated = true;
+            OnFinalWaveStart?.Invoke(this);
+        }
+    }
+
 
     public void SpawnUnit(UnitData data)
     {

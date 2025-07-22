@@ -14,9 +14,14 @@ public class ArmyMaterialSelector : MonoBehaviour
     [SerializeField] private float selectionTime = 10f; // Time limit for material selection
     private bool hasAutoSelected = false;
     private bool playerSelected = false;
+    public bool materialsSelected => playerSelected || hasAutoSelected;
     GameObject[] armyObjects;
     ArmyData playerArmy = null;
     ArmyData enemyArmy = null;
+    public event System.Action OnArmiesReady;
+    private bool armiesReady = false;
+
+
     private void Start()
     {
         timerText.text = $"Time left: {selectionTime:F1} seconds";
@@ -76,6 +81,11 @@ public class ArmyMaterialSelector : MonoBehaviour
         // Hide UI
         selectionPanel.SetActive(false);
         StartCoroutine(ClearTimerText());
+        if (!armiesReady)
+        {
+            armiesReady = true;
+            OnArmiesReady?.Invoke();
+        }
         Debug.Log($"Player picked {chosenMaterial.name}, enemy picked {enemyMaterial.name}");
     }
 
@@ -97,6 +107,11 @@ public class ArmyMaterialSelector : MonoBehaviour
         selectionPanel.SetActive(false);
         Debug.Log($"Auto-selected: Player picked {playerMaterial.name}, Enemy picked {enemyMaterial.name}");
         timerText.text = "Time's up! Materials auto-selected.";
+        if (!armiesReady)
+        {
+            armiesReady = true;
+            OnArmiesReady?.Invoke();
+        }
         // change text to blank after 2 seconds
         StartCoroutine(ClearTimerText());
     }
@@ -105,6 +120,15 @@ public class ArmyMaterialSelector : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
         timerText.text = "";
+    }
+
+    private void TryInvokeArmiesReady()
+    {
+        if (!armiesReady)
+        {
+            armiesReady = true;
+            OnArmiesReady?.Invoke();
+        }
     }
 }
 

@@ -13,14 +13,109 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private GameObject healthBarPrefab;
     [SerializeField] private UnitType unitType; // Reference to the UnitType asset
     [SerializeField] private PathFinder pathFinder; // Reference to the PathFinder component
+    [SerializeField] private ArmyMaterialSelector armyMaterialSelector; // Reference to the ArmyMaterialSelector component
 
     private int spawnCount = 0; // Track how many enemies spawned
-    [SerializeField] private int maxSpawnCount = 5; // Limit for testing, will be removed later
+    [SerializeField] private int maxSpawnCount = 13;
+    [SerializeField] private ArmyData finalWaveArmy;
+
+    private IEnumerator StartSpawningWhenReady()
+    {
+        // Wait until both player and enemy are set
+        yield return new WaitUntil(() => armyMaterialSelector.materialsSelected);
+        // now safe to spawn
+        StartCoroutine(SpawnLoop());
+        Debug.Log("Enemy spawner started spawning enemies.");
+    }
 
     private void Start()
     {
-        StartCoroutine(SpawnLoop());
+        if (armyMaterialSelector == null)
+        {
+            Debug.LogError("ArmyMaterialSelector reference not assigned in EnemySpawner!");
+        }
+        else
+        {
+            armyMaterialSelector.OnArmiesReady += SetupSpawning;
+            Debug.Log("ArmyMaterialSelector is assigned.");
+        }
+        if (finalWaveArmy == null)
+        {
+            Debug.LogError("FinalWaveArmy reference not assigned in EnemySpawner!");
+        }
+        else
+        {
+            finalWaveArmy.OnFinalWaveStart += StartFinalWave;
+        }          
+        StartCoroutine(StartSpawningWhenReady());
+        Debug.Log("EnemySpawner is waiting for materials to be selected.");
     }
+
+    private void SetupSpawning()
+    {
+        StartCoroutine(SpawnLoop());
+        Debug.Log("EnemySpawner: started spawning.");
+    }
+
+    void StartFinalWave(ArmyData triggeringArmy)
+    {
+        StartCoroutine(SpawnFinalWaveForArmy(triggeringArmy));
+    }
+
+    IEnumerator SpawnFinalWaveForArmy(ArmyData army)
+    {
+        GameObject castleObj = army.Buildings
+            .FirstOrDefault(b => b.Data.buildingName == "Castle")?.gameObject;
+
+        if (castleObj == null)
+        {
+            Debug.LogWarning("Final wave: no castle found!");
+            yield break;
+        }
+
+        Transform castlePoint = castleObj.transform;
+        for (int i = 0; i < spawnPoints.Length; i++)
+        {
+            GameObject unitObj = Instantiate(enemyPrefab, castlePoint.position, Quaternion.identity);
+            var unit = unitObj.GetComponent<UnitInstance>();
+            // Initialize unit (pathfinder, materials…)
+            // ...
+
+            Vector3 dest = spawnPoints[i].position;
+            unit.SetDestination(dest);
+            army.Units.Add(unit);
+            yield return new WaitForSeconds(0.3f);
+        }
+
+        StartCoroutine(FinalWaveAI(army));
+    }
+
+    IEnumerator FinalWaveAI(ArmyData army)
+    {
+        while (army.Units.Count > 0)
+        {
+            foreach (var unit in army.Units.ToList())
+            {
+                if (unit.IsDead) continue;
+
+                var enemyUnits = AllArmiesManager.Instance
+                                    .AllArmies
+                                    .Where(a => a != army)
+                                    .SelectMany(a => a.Units)
+                                    .Where(u => !u.IsDead);
+
+                UnitInstance target = enemyUnits
+                    .OrderBy(u => Vector3.Distance(unit.transform.position, u.transform.position))
+                    .ThenBy(u => u.CurrentHealth)
+                    .FirstOrDefault();
+
+                if (target != null)
+                    unit.Attack(target);
+            }
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
 
     private IEnumerator SpawnLoop()
     {
@@ -36,9 +131,10 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        if (spawnPoints.Length == 0)
+        Debug.Log($"SpawnPoints array is {(spawnPoints == null ? "NULL" : spawnPoints.Length.ToString())}");
+        if (spawnPoints == null || spawnPoints.Length == 0)
         {
-            Debug.LogWarning("No spawn points assigned!");
+            Debug.LogError("No spawn points assigned — aborting spawn.");
             return;
         }
 

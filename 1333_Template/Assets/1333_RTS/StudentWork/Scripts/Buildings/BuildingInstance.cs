@@ -80,6 +80,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
         if (OwningArmy != null)
         {
             OwningArmy.Buildings.Remove(this);
+            OwningArmy.CheckFinalWave();
             Debug.Log($"{OwningArmy.name} has {OwningArmy.Buildings.Count} units remaining.");
             if (!OwningArmy.IsPlayerControlled && (!OwningArmy.Buildings.Any(b => b.name.Contains("Castle"))))
             {

@@ -23,6 +23,16 @@ public class EnemyAIManager : MonoBehaviour
 
     private void UpdateEnemyAI()
     {
+        // How many player buildings exist?
+        int numPlayerBuildings = playerArmyData.Buildings.Count;
+
+        // Require castle + 3 other buildings
+        if (numPlayerBuildings < 4)
+        {
+            Debug.Log($"Player has only {numPlayerBuildings} buildings. Needs 4+ to trigger AI.");
+            return;
+        }
+
         // Check how many player units are alive
         int alivePlayerUnits = 0;
         foreach (var unit in playerArmyData.Units)
@@ -32,7 +42,7 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         // Start timer when the 2nd unit spawns
-        if (alivePlayerUnits >= 5 && !delayTimerStarted)
+        if (alivePlayerUnits >= 5 && !delayTimerStarted && numPlayerBuildings >= 4)
         {
             delayTimerStarted = true;
             delayStartTime = Time.time;
@@ -49,6 +59,7 @@ public class EnemyAIManager : MonoBehaviour
         // If fewer than 2 player units, do nothing
         if (alivePlayerUnits < 5)
         {
+            Debug.Log("Player doesn't have enough units to trigger AI attack.");
             return;
         }
 
