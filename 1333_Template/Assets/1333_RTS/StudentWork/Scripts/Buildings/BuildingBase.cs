@@ -9,15 +9,15 @@ using UnityEngine.SceneManagement;
         [SerializeField] protected BuildingData BuildingData;
         [SerializeField] protected int CurrentHp;
         [SerializeField] protected Vector2Int Origin;
-        protected ArmyData OwningArmy;
+        [SerializeField] protected ArmyData OwningArmy;
 
-        public BuildingData Data => BuildingData;
+    public BuildingData Data => BuildingData;
 
         public int Hp => CurrentHp;
         public int ArmyId => OwningArmy.ArmyID;
         public Vector2Int OriginPoint => Origin;
 
-        public abstract void Initialize(BuildingData buildingData, Vector2Int origin);
+        public abstract void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder);
 
         public ArmyData ParentArmy => OwningArmy;
 

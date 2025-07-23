@@ -149,12 +149,26 @@ public class EnemySpawner : MonoBehaviour
         UnitInstance unit = enemyObj.GetComponent<UnitInstance>();
         if (unit != null)
         {
-            // Always assign ArmyID 1
-            unit.ArmyID = 1;
+            //// Always assign ArmyID 1
+            //unit.ArmyID = 1;
 
-            // Try to find the ArmyData with ID 1
-            ArmyData armyData = FindObjectsOfType<ArmyData>()
-                .FirstOrDefault(a => a.ArmyID == 1);
+            //// Try to find the ArmyData with ID 1
+            //ArmyData armyData = FindObjectsOfType<ArmyData>()
+            //    .FirstOrDefault(a => a.ArmyID == 1);
+
+            GameObject armyGO = GameObject.Find("AM (1)");
+            if (armyGO == null)
+            {
+                Debug.LogError("Army GameObject 'AM (1)' not found!");
+                return;
+            }
+
+            ArmyData armyData = armyGO.GetComponent<ArmyData>();
+            if (armyData == null)
+            {
+                Debug.LogError("'AM (1)' does not have an ArmyData component!");
+                return;
+            }
 
             if (armyData != null)
             {

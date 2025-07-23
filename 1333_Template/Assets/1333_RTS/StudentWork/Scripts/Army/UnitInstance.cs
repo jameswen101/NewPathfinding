@@ -424,7 +424,10 @@ public class UnitInstance : UnitBase, IHasHealth
             }
 
         }
-
+        else
+        {
+            Debug.LogWarning($"Army is null, cannot remove {name}.");
+        }
     }
 
     public void SetPath(List<Vector3> path)

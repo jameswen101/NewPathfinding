@@ -151,6 +151,17 @@ public class PathFinder : MonoBehaviour
         return lowest * 14 + horizontalMovesRequired * 10; //should it be sqrt(200) instead?
     }
 
-
+    public void UpdateNodeWalkability(int minX, int minZ, int maxX, int maxZ, bool walkable)
+    {
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int z = minZ; z <= maxZ; z++)
+            {
+                if (x < 0 || z < 0 || x >= gridManager.GridSettings.GridSizeX || z >= gridManager.GridSettings.GridSizeY)
+                    continue;
+                gridManager.gridNodes[x, z].Walkable = walkable;
+            }
+        }
+    }
 
 }

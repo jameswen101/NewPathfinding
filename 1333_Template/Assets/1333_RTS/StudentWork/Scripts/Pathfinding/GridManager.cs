@@ -432,6 +432,16 @@ public class GridManager : MonoBehaviour
         return x >= 0 && x < gridSettings.GridSizeX && y >= 0 && y < gridSettings.GridSizeY;
     }
 
+    public int WorldToGridX(float worldX)
+    {
+        return Mathf.RoundToInt(worldX / gridSettings.NodeSize);
+    }
+
+    public int WorldToGridZ(float worldZ)
+    {
+        return Mathf.RoundToInt(worldZ / gridSettings.NodeSize);
+    }
+
     [CustomEditor(typeof(GridManager))]
     public class GridManagerEditor : Editor
     {

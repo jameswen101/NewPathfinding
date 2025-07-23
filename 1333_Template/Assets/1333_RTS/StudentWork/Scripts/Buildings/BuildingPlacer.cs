@@ -9,6 +9,7 @@ public class BuildingPlacer : MonoBehaviour
     [SerializeField] private ArmyData armyData;
     [SerializeField] private GameObject healthBarPrefab;
     [SerializeField] private AudioManager audioManager;
+    [SerializeField] private PathFinder pathFinder;
 
     private BuildingData selectedBuilding;
     private GameObject previewObject;
@@ -117,7 +118,12 @@ public class BuildingPlacer : MonoBehaviour
         // 2. Try to get the BuildingInstance (or BuildingBase)
         BuildingBase buildingComponent = buildingInstance.GetComponent<BuildingBase>();
         BuildingInstance buildingIns = buildingInstance.GetComponent<BuildingInstance>();
-
+        buildingIns.Initialize(
+            currentBuildingData,
+            node.Coordinates,
+            gridManager,
+            pathFinder
+        );
         IHasHealth healthComponent = buildingIns.GetComponent<IHasHealth>();
 
         if (buildingComponent == null)
@@ -128,6 +134,8 @@ public class BuildingPlacer : MonoBehaviour
         {
             currentArmy.Buildings.Add(buildingComponent);
             currentArmy.NonStartingBuildings.Add(buildingComponent);
+            buildingIns.FindBounds(); // Find bounds for the building
+
             if (currentArmy.hasAddedBuildings == false)
             {
                 currentArmy.hasAddedBuildings = true;

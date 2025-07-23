@@ -109,8 +109,7 @@ public class ArmyMaterialSelector : MonoBehaviour
         timerText.text = "Time's up! Materials auto-selected.";
         if (!armiesReady)
         {
-            armiesReady = true;
-            OnArmiesReady?.Invoke();
+            TryInvokeArmiesReady();
         }
         // change text to blank after 2 seconds
         StartCoroutine(ClearTimerText());
@@ -120,6 +119,13 @@ public class ArmyMaterialSelector : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
         timerText.text = "";
+        timerText.gameObject.SetActive(false);
+        if (!timerText.gameObject.activeSelf)
+            Debug.Log("Timer text is inactive on itself.");
+        else
+        {
+            Debug.Log("Timer text is still active on itself.");
+        }
     }
 
     private void TryInvokeArmiesReady()

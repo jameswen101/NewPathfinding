@@ -23,6 +23,6 @@ MonoBehaviour:
   unitTypeName: Enemy
   unitPrefab: {fileID: 4059513959329778922, guid: 61e232b8036dcfe47a361896212adea3, type: 3}
   unitIcon: {fileID: 21300000, guid: a4d2a497aa0f78d49a28fe04372033b7, type: 3}
-  placementOffset: {x: 0, y: 0, z: 0}
+  placementOffset: {x: 0, y: 2, z: 0}
   CanAttackUnits: 1
   CanAttackBuildings: 1

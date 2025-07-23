@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class EnemyAIManager : MonoBehaviour
@@ -8,23 +9,65 @@ public class EnemyAIManager : MonoBehaviour
     [SerializeField] private ArmyData enemyArmyData;
     private List<UnitInstance> playerUnits = new();
     private List<UnitInstance> enemyUnits = new();
+    private List <BuildingBase> playerBuildings = new();
+    private List<BuildingBase> enemyBuildings = new();
     private bool delayTimerStarted = false;
     private float delayStartTime;
 
     private void Start()
     {
         // List of all player units
-        List<UnitInstance> playerUnits = (List<UnitInstance>)playerArmyData.Units;
+        List<UnitInstance> playerUnits = (List<UnitInstance>)playerArmyData.Units; //needs to get it from player's army data
+        List<BuildingBase> playerBuildings = (List<BuildingBase>)playerArmyData.Buildings; //needs to get it from player's army data
+        if (playerArmyData == null)
+        {
+            Debug.LogError("Player Army Data is not assigned in EnemyAIManager!");
+            return;
+        }
 
-        // List of all enemy units
-        List<UnitInstance> enemyUnits = (List<UnitInstance>)enemyArmyData.Units;
-        InvokeRepeating(nameof(UpdateEnemyAI), 1f, 1f);
+        else
+        {
+            if (playerArmyData.Units == null)
+            {
+                Debug.LogError("Player Army Data Units list is null!");
+                return;
+            }
+            if (playerArmyData.Buildings == null)
+            {
+                Debug.LogError("Player Army Data Buildings list is null!");
+                return;
+            }
+        }
+
+            // List of all enemy units
+            List<UnitInstance> enemyUnits = (List<UnitInstance>)enemyArmyData.Units;
+
+        if (enemyArmyData == null)
+        {
+            Debug.LogError("Enemy Army Data is not assigned in EnemyAIManager!");
+            return;
+        }
+        else
+        {
+            if (enemyArmyData.Units == null)
+            {
+                Debug.LogError("Enemy Army Data Units list is null!");
+                return;
+            }
+            if (enemyArmyData.Buildings == null)
+            {
+                Debug.LogError("Enemy Army Data Buildings list is null!");
+                return;
+            }
+        }
+
+            InvokeRepeating(nameof(UpdateEnemyAI), 1f, 1f);
     }
 
     private void UpdateEnemyAI()
     {
         // How many player buildings exist?
-        int numPlayerBuildings = playerArmyData.Buildings.Count;
+        int numPlayerBuildings = playerBuildings.Count;
 
         // Require castle + 3 other buildings
         if (numPlayerBuildings < 4)
@@ -41,7 +84,7 @@ public class EnemyAIManager : MonoBehaviour
                 alivePlayerUnits++;
         }
 
-        // Start timer when the 2nd unit spawns
+        // Start timer when the 5th unit spawns
         if (alivePlayerUnits >= 5 && !delayTimerStarted && numPlayerBuildings >= 4)
         {
             delayTimerStarted = true;
@@ -64,71 +107,223 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         // All conditions met: attack
-        FindAndAttackClosestPlayerUnit();
+        //how to decide which one first?
+        AttackBestTarget();
+        //FindAndAttackClosestPlayerUnit();
+        //FindAndAttackClosestPlayerBuilding();
+        Debug.Log("Enemy AI is attacking player units now.");
     }
 
-    public void FindAndAttackClosestPlayerUnit()
+    //public void FindAndAttackClosestPlayerUnit() //how to merge with AttackBestTarget()?
+    //{
+    //    // Make sure you have enemies and players
+    //    if (enemyUnits == null || playerUnits == null)
+    //    {
+    //        Debug.LogError("Enemy or Player units list not set.");
+    //        return;
+    //    }
+
+    //    UnitInstance chosenEnemy = null;
+    //    UnitInstance chosenTarget = null;
+    //    float minOverallDistance = Mathf.Infinity;
+
+    //    //How to restrict attacks when there are <5 player units haven't been set yet? 
+    //    //Limit attacks to at least 5 seconds after the 5th unit is spawned
+
+    //    // Loop through each enemy
+    //    foreach (var enemy in enemyUnits)
+    //    {
+    //        if (enemy == null || enemy.IsDead)
+    //            continue;
+
+    //        UnitInstance closestPlayer = null;
+    //        float minDistance = Mathf.Infinity;
+
+    //        // For this enemy, find the closest player unit
+    //        foreach (var player in playerUnits)
+    //        {
+    //            if (player == null || player.IsDead)
+    //                continue;
+
+    //            float dist = Vector3.Distance(enemy.transform.position, player.transform.position);
+    //            if (dist < minDistance)
+    //            {
+    //                minDistance = dist;
+    //                closestPlayer = player;
+    //            }
+    //        }
+
+    //        // Compare to overall best so far
+    //        if (closestPlayer != null && minDistance < minOverallDistance)
+    //        {
+    //            minOverallDistance = minDistance;
+    //            chosenEnemy = enemy;
+    //            chosenTarget = closestPlayer;
+    //        }
+    //    }
+
+    //    if (chosenEnemy != null && chosenTarget != null)
+    //    {
+    //        Debug.Log($"Enemy {chosenEnemy.name} will chase {chosenTarget.name} at distance {minOverallDistance}");
+
+    //        // Tell the enemy to move towards the target's position
+    //        chosenEnemy.SetDestination(chosenTarget.transform.position);
+    //        chosenEnemy.Attack(chosenTarget);
+    //    }
+    //    else
+    //    {
+    //        if (chosenEnemy == null)
+    //            Debug.LogWarning("No valid enemy found to attack.");
+    //        if (chosenTarget == null)
+    //            Debug.LogWarning("No valid target found for enemy to attack.");
+    //    }
+    //}
+
+    //public void FindAndAttackClosestPlayerBuilding() //how to merge with AttackBestTarget()?
+    //{
+    //    // Make sure you have enemies and players
+    //    if (enemyUnits == null || playerBuildings == null)
+    //    {
+    //        Debug.LogError("Enemy units or Player buildings list not set.");
+    //        return;
+    //    }
+
+    //    UnitInstance chosenEnemy = null;
+    //    BuildingInstance chosenTargetBuilding = null;
+    //    float minOverallDistance = Mathf.Infinity;
+
+    //    //How to restrict attacks when there are <5 player units haven't been set yet? 
+    //    //Limit attacks to at least 5 seconds after the 5th unit is spawned
+
+    //    // Loop through each enemy
+    //    foreach (var enemy in enemyUnits)
+    //    {
+    //        if (enemy == null || enemy.IsDead)
+    //            continue;
+
+    //        BuildingInstance closestBuilding = null;
+    //        float minDistance = Mathf.Infinity;
+
+    //        // For this enemy, find the closest player unit
+    //        foreach (var building in playerBuildings)
+    //        {
+    //            if (building == null || building.IsDead)
+    //                continue;
+
+    //            float dist = Vector3.Distance(enemy.transform.position, building.transform.position);
+    //            if (dist < minDistance)
+    //            {
+    //                minDistance = dist;
+    //                closestBuilding = (BuildingInstance)building;
+    //            }
+    //        }
+
+    //        // Compare to overall best so far
+    //        if (closestBuilding != null && minDistance < minOverallDistance)
+    //        {
+    //            minOverallDistance = minDistance;
+    //            chosenEnemy = enemy;
+    //            chosenTargetBuilding = closestBuilding;
+    //        }
+    //    }
+
+    //    if (chosenEnemy != null && chosenTargetBuilding != null)
+    //    {
+    //        Debug.Log($"Enemy {chosenEnemy.name} will chase {chosenTargetBuilding.name} at distance {minOverallDistance}");
+
+    //        // Tell the enemy to move towards the target's position
+    //        chosenEnemy.SetDestination(chosenTargetBuilding.transform.position);
+    //        chosenEnemy.AttackBuilding(chosenTargetBuilding);
+    //    }
+    //    else
+    //    {
+    //        if (chosenEnemy == null)
+    //            Debug.LogWarning("No valid enemy found to attack.");
+    //        if (chosenTargetBuilding == null)
+    //            Debug.LogWarning("No valid target building found for enemy to attack.");
+    //    }
+    //}
+
+    void AttackBestTarget()
     {
-        // Make sure you have enemies and players
-        if (enemyUnits == null || playerUnits == null)
+        if (enemyUnits == null)
         {
-            Debug.LogError("Enemy or Player units list not set.");
+            Debug.LogError("Missing lists for enemy units.");
             return;
         }
 
-        UnitInstance chosenEnemy = null;
-        UnitInstance chosenTarget = null;
-        float minOverallDistance = Mathf.Infinity;
+        if (playerUnits == null)
+        {
+            Debug.LogError("Missing lists for player units.");
+            return;
+        }
+        
+        if (playerBuildings == null)
+        {
+            Debug.LogError("Missing lists for player buildings.");
+            return;
+        }
 
-        //How to restrict attacks when there are <5 player units haven't been set yet? 
-        //Limit attacks to at least 5 seconds after the 5th unit is spawned
+        UnitInstance selectedEnemy = null;
+        object selectedTarget = null;  // can be UnitInstance or BuildingBase
+        float bestScore = Mathf.Infinity;
 
-        // Loop through each enemy
+        // Combine units & buildings
+        var players = new List<object>();
+        players.AddRange(playerUnits.Where(u => u != null && !u.IsDead));
+        players.AddRange(playerBuildings.Where(b => b != null && !b.IsDead));
+
         foreach (var enemy in enemyUnits)
         {
-            if (enemy == null || enemy.IsDead)
-                continue;
+            if (enemy == null || enemy.IsDead) continue;
 
-            UnitInstance closestPlayer = null;
-            float minDistance = Mathf.Infinity;
-
-            // For this enemy, find the closest player unit
-            foreach (var player in playerUnits)
+            foreach (var target in players)
             {
-                if (player == null || player.IsDead)
-                    continue;
+                Vector3 targetPos = (target is UnitInstance u) ? u.transform.position
+                                      : (target as BuildingBase).transform.position;
+                float distance = Vector3.Distance(enemy.transform.position, targetPos);
+                float hp = (target is UnitInstance ui) ? ui.CurrentHealth : (target as BuildingBase).Hp;
+                float maxHp = (target is UnitInstance u1) ? u1.MaxHealth : (target as BuildingInstance).MaxHealth;
 
-                float dist = Vector3.Distance(enemy.transform.position, player.transform.position);
-                if (dist < minDistance)
+                float healthRatio = hp / maxHp;
+                float weight = 30f; // tweak until behavior feels right
+                float score = distance + healthRatio * weight;
+
+                if (score < bestScore)
                 {
-                    minDistance = dist;
-                    closestPlayer = player;
+                    bestScore = score;
+                    selectedEnemy = enemy;
+                    selectedTarget = target;
                 }
-            }
-
-            // Compare to overall best so far
-            if (closestPlayer != null && minDistance < minOverallDistance)
-            {
-                minOverallDistance = minDistance;
-                chosenEnemy = enemy;
-                chosenTarget = closestPlayer;
             }
         }
 
-        if (chosenEnemy != null && chosenTarget != null)
+        if (selectedEnemy != null && selectedTarget != null)
         {
-            Debug.Log($"Enemy {chosenEnemy.name} will chase {chosenTarget.name} at distance {minOverallDistance}");
+            Vector3 dest = (selectedTarget is UnitInstance uT)
+                ? uT.transform.position
+                : (selectedTarget as BuildingBase).transform.position;
 
-            // Tell the enemy to move towards the target's position
-            chosenEnemy.SetDestination(chosenTarget.transform.position);
-            chosenEnemy.Attack(chosenTarget);
+            selectedEnemy.SetDestination(dest);
+            if (selectedTarget is UnitInstance uiT)
+            {
+                selectedEnemy.Attack(uiT);
+            }
+            else
+            {
+                selectedEnemy.AttackBuilding(selectedTarget as BuildingInstance);
+            }
+
+            Debug.Log($"AI: {selectedEnemy.name} ? attacking target {selectedTarget} (score: {bestScore})");
         }
         else
         {
-            Debug.LogWarning("No valid enemy and target found for attack.");
+            if (selectedEnemy == null)
+                Debug.LogWarning("No valid enemy found for attack.");
+            if (selectedTarget == null)
+                Debug.LogWarning("No valid target found for attack.");
         }
     }
-
 
 
 }
