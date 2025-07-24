@@ -64,6 +64,7 @@ public class PauseMenuUI : MonoBehaviour
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.LogError("[PauseMenuUI] introAudioManager is NULL when trying to play SFX!");
         introAudioManager.PlaySFX("Answer Button");
     }
 }

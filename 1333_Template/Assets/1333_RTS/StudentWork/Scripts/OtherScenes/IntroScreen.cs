@@ -14,9 +14,14 @@ public class IntroScreen : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"IntroScreen.Start: introAudioManager = {(introAudioManager == null ? "NULL" : introAudioManager.name)}, playButton={(playButton == null ? "NULL" : "OK")}");
         playButton.onClick.AddListener(StartGame);
         howToPlayButton.onClick.AddListener(HowToPlay);
         quitButton.onClick.AddListener(QuitGame);
+        if (introAudioManager == null)
+        {
+            Debug.LogError("[IntroScreen] introAudioManager is NULL before calling StopMusic!");
+        }
         introAudioManager.PlayMusic("Gamela", true);
     }
 

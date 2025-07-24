@@ -675,7 +675,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 480951125383370600, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -71
+      value: -79.1
       objectReference: {fileID: 0}
     - target: {fileID: 480951125383370600, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -707,20 +707,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2830090423562226579, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 46.5
+      value: 47.7
       objectReference: {fileID: 0}
     - target: {fileID: 4206710543513462561, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_text
-      value: "How to Play\n1. Both your army and the enemy army will start with a
-        \ncastle, surrounded by walls.\n2. You can add buildings and soldiers for
-        your army to the \ngame grid anytime.\n3. First army to destroy the other
-        army's castle wins.\n4. Once the entire wall surrounding the castle for\neither
-        side gets destroyed, watch out- a huge wave of \nsoldiers will be spawned
-        to help them protect their castle!"
+      value: "Rules\n1. Both your army and the enemy army will start with a castle.\n2.
+        You can add buildings and soldiers for your army to the game grid anytime.\n3.
+        First army to destroy the other army's castle wins.\n4. Once the entire wall
+        surrounding the castle for either side gets destroyed, \nwatch out- a wave
+        of soldiers will spawn to help them protect their castle!\n\nControls\nWASD-
+        move camera forward/left/backward/right\nArrow keys- change placement position
+        of unit/building- positions are permanent\nQ/E- rotate camera by 90 degrees
+        left/right\nBackspace/delete- deselect source unit + target unit/building\nLeft
+        mouse button click- select source unit + target unit/building\nEscape- pause\nEnter-
+        confirm unit/building placement\nRight mouse button click- cancel unit/building
+        placement (before confirming only)"
       objectReference: {fileID: 0}
     - target: {fileID: 4206710543513462561, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_fontSize
-      value: 60
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 4206710543513462561, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_fontColor.b
@@ -736,7 +741,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4206710543513462561, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_fontSizeBase
-      value: 60
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 4206710543513462561, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_fontColor32.rgba
