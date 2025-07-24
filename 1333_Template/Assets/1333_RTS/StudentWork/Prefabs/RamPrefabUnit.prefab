@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7151879905973808842}
   - component: {fileID: -8976441711769034568}
   - component: {fileID: 5470732887654692327}
+  - component: {fileID: 6369225065078572676}
   m_Layer: 0
   m_Name: RamPrefabUnit
   m_TagString: Unit
@@ -135,8 +136,8 @@ MonoBehaviour:
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
+  army: {fileID: 0}
   audioManager: {fileID: 0}
-  healthText: {fileID: 0}
   healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
   bloodFXPrefab: {fileID: 6837061768053742933, guid: c041548ad5f52014d8ae27de23cf2764, type: 3}
 --- !u!120 &-8976441711769034568
@@ -259,6 +260,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: a66fe725f54b1184c8f156c3146ce5a3, type: 2}
   prefab: {fileID: 1854497433776408477}
+--- !u!114 &6369225065078572676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4186638767369967124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae695cd98bb5d32428401d00da24e103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1854497433776308519
 PrefabInstance:
   m_ObjectHideFlags: 0

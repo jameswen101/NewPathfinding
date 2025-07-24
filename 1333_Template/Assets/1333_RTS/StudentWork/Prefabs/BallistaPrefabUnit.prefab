@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2295196386896997320}
   - component: {fileID: -4297814436628416590}
   - component: {fileID: 7568622262378273229}
+  - component: {fileID: 6637104104801213892}
   m_Layer: 0
   m_Name: BallistaPrefabUnit
   m_TagString: Unit
@@ -205,8 +206,8 @@ MonoBehaviour:
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
+  army: {fileID: 0}
   audioManager: {fileID: 0}
-  healthText: {fileID: 0}
   healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
   bloodFXPrefab: {fileID: 6837061768053742933, guid: c041548ad5f52014d8ae27de23cf2764, type: 3}
 --- !u!114 &7568622262378273229
@@ -223,6 +224,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: 438affa5b49b9184da69f35422c73fb7, type: 2}
   prefab: {fileID: 7001709924389640821}
+--- !u!114 &6637104104801213892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7001709924389640821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae695cd98bb5d32428401d00da24e103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2066640750656272216
 PrefabInstance:
   m_ObjectHideFlags: 0

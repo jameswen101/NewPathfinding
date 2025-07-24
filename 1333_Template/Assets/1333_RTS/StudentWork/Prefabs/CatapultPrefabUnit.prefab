@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -4968056823114475209}
   - component: {fileID: 8980076342090238114}
   - component: {fileID: -1313160654126679048}
+  - component: {fileID: -1444179684454657235}
   m_Layer: 0
   m_Name: CatapultPrefabUnit
   m_TagString: Unit
@@ -204,8 +205,8 @@ MonoBehaviour:
   moveSpeed: 3
   gridM: {fileID: 0}
   path: []
+  army: {fileID: 0}
   audioManager: {fileID: 0}
-  healthText: {fileID: 0}
   healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
   bloodFXPrefab: {fileID: 6837061768053742933, guid: c041548ad5f52014d8ae27de23cf2764, type: 3}
 --- !u!114 &-1313160654126679048
@@ -222,6 +223,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitType: {fileID: 11400000, guid: c32555cf3210a5f49a794a54d0aa90f9, type: 2}
   prefab: {fileID: 8547187476534025560}
+--- !u!114 &-1444179684454657235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4625885196819267898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae695cd98bb5d32428401d00da24e103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &738877687036071025
 PrefabInstance:
   m_ObjectHideFlags: 0

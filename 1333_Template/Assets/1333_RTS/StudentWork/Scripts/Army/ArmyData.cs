@@ -175,7 +175,7 @@ public class ArmyData : MonoBehaviour, IArmyData
         }
 
         // Initialize + register building
-        building.Initialize(buildingData, origin, GridManager, Pathfinder); // Fix: Use the instance property 'Pathfinder' instead of the type 'PathFinder'
+        building.Initialize(buildingData, origin, GridManager, Pathfinder, this); // Fix: Use the instance property 'Pathfinder' instead of the type 'PathFinder'
         building.AssignToArmy(this);
 
         // Place on grid + store in AAM

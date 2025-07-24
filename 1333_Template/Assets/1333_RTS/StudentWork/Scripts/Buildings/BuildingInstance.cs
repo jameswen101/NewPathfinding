@@ -52,14 +52,18 @@ public class BuildingInstance : BuildingBase, IHasHealth
         audioManager = FindObjectOfType<AudioManager>();
     }
 
-    public override void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder)
+    public override void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder, ArmyData armyData)
     {
         BuildingData = buildingData; // this stores it in the field
         Origin = origin;
         this.gridManager = gridManager;
         this.pathFinder = pathFinder;
-        CurrentHp = buildingData.currentHealth;
+        CurrentHealth = CurrentHp = buildingData.currentHealth; 
+        //CurrentHp = buildingData.currentHealth;
         MaxHealth = buildingData.maxHealth;
+        OwningArmy = armyData; // this stores it in the field
+        ArmyID = OwningArmy.ArmyID; // this stores it in the field
+        Army = OwningArmy; // this stores it in the field
         if (gridManager == null)
         {
             Debug.LogError("GridManager is not assigned in BuildingInstance.");
@@ -68,11 +72,24 @@ public class BuildingInstance : BuildingBase, IHasHealth
         {
             Debug.LogError("PathFinder is not assigned in BuildingInstance.");
         }
+        if (OwningArmy == null)
+        {
+            Debug.LogError("OwningArmy is not assigned in BuildingInstance.");
+        }
         healthBar.Initialize(this.transform, this, Camera.main, new Vector3(0, 2f, 0));
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
         Debug.Log($"{name}'s starting health: {CurrentHealth}/{MaxHealth}");
         Debug.Log($"{healthBar.healthText.text}");
+        if (CurrentHealth == 0)
+        {
+            Debug.LogWarning($"{name} has zero health at initialization.");
+        }
+        else
+        {
+            //FindBounds(); // Find bounds for the building
+            Debug.Log($"{name} initialized with health: {CurrentHealth}/{MaxHealth}");
+        }
     }
 
     public void FindBounds()

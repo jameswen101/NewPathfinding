@@ -233,7 +233,7 @@ public class SelectionManager : MonoBehaviour
             // Check if they are enemies
             if (sourceUnit.Army != null && targetUnit.Army != null)
             {
-                if (sourceUnit.Army.TeamMaterial == targetUnit.Army.TeamMaterial)
+                if (sourceUnit.Army.TeamMaterial == targetUnit.Army.TeamMaterial) //change to Army ID
                 {
                     Debug.Log("Cannot attack unit on the same team.");
                 }

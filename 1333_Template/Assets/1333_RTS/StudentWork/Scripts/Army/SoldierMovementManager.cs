@@ -53,6 +53,7 @@ public class SoldierMovementManager : MonoBehaviour
 
                     // Move to target
                     MoveTo(clicked.transform.position);
+                    Debug.Log($"Moving {selectedSoldier.name} to {clicked.name} at position {clicked.transform.position}");
                 }
             }
             // If clicking a building
@@ -68,6 +69,7 @@ public class SoldierMovementManager : MonoBehaviour
                 if (selectedSoldier != null)
                 {
                     MoveTo(clicked.transform.position);
+                    Debug.Log($"Moving {selectedSoldier.name} to building at position {clicked.transform.position}");
                 }
             }
             // If clicking a machine
