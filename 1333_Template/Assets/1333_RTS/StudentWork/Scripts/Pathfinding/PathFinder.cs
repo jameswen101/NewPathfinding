@@ -46,43 +46,6 @@ public class PathFinder : MonoBehaviour
     [SerializeField] private float minWeight = 1f;
     [SerializeField] private float maxWeight = 10f;
 
-    /*
-    protected void FindPath(GridNode StartNode, GridNode EndNode)
-    {
-        List<GridNode> searchedNodes = new List<GridNode>(); //starts with nothing
-        List<GridNode> nodesToSearch = new List<GridNode> { StartNode }; //starts with all
-        List<GridNode> finalPath = new List<GridNode>(); //start with nothing
-
-        StartNode.gCost = 0;
-        StartNode.hCost = GetDistance(StartNode, EndNode);
-        StartNode.fCost = GetDistance(StartNode, EndNode);
-
-        while (nodesToSearch.Count > 0)
-        {
-            //decide the node search order
-            GridNode nodeToSearch = nodesToSearch[0];
-            GridNode bestNeighbor = StartNode;
-            foreach (GridNode node in nodesToSearch)
-            {
-                if (node.fCost < gridManager.AllNodes[cellToSearch].fCost ||
-                    (node.fCost == cells[cellToSearch].fCost && node.hCost == cells[cellToSearch].hCost))
-                    //compare among cell (x-1), cell (x+1), cell (z-1), and cell (z+1)
-                    if (node.WorldPosition.x == StartNode.WorldPosition.x-1)
-                    {
-                        bestNeighbor = node;
-                        nodesToSearch[1] = node;
-                    }
-                    if (node.WorldPosition.x < StartNode.WorldPosition.x-1)
-                    {
-
-                    }
-            }
-
-        }
-
-    }
-    */
-
     public List<Vector3> CalculatePath(GridNode StartNode, GridNode EndNode)
     {
         List<Vector3> searchedNodes = new List<Vector3>(); //starts with nothing

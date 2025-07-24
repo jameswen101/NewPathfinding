@@ -16,6 +16,8 @@ public class EnemyAIManager : MonoBehaviour
     private bool readyToAttack = false;
     private float aiTimer = 0f;
     private bool startedAttacking = false;
+    private bool attackCoolingDown = false;
+    private float cooldownTimer = 2f; // Timer for attack cooldown
 
     private void Start()
     {
@@ -132,10 +134,25 @@ public class EnemyAIManager : MonoBehaviour
             readyToAttack = true;
             Debug.Log("Enemy AI is attacking player units now.");
             startedAttacking = true;
-            while (playerUnits.Count > 0 || playerBuildings.Count > 0)
+            int limiter = 0, maxTicks = 50;
+            while ((playerUnits.Count > 0 || playerBuildings.Count > 0) && limiter++ < maxTicks)
             {
-                AttackBestTarget();
+                while (cooldownTimer > 0f)
+                {
+                    cooldownTimer -= Time.deltaTime;
+                }
+                if (cooldownTimer <= 0f)
+                {
+                    attackCoolingDown = false;
+                    if (!attackCoolingDown)
+                    {
+                        Debug.Log("Enemy AI is ready to attack.");
+                        AttackBestTarget();
+                    }
+                }
             }
+            if (limiter >= maxTicks)
+                Debug.LogError("AI loop capped out at maxTicks — possible infinite loop avoided.");
         }
     }
 
@@ -210,6 +227,8 @@ public class EnemyAIManager : MonoBehaviour
             }
 
             Debug.Log($"AI: {selectedEnemy.name} → attacking target {selectedTarget} (score: {bestScore})");
+            cooldownTimer = 2f; // reset cooldown timer
+            attackCoolingDown = true; // start cooldown after attack
         }
         else
         {
