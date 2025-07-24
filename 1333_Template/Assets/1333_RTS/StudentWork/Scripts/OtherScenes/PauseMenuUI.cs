@@ -43,7 +43,8 @@ public class PauseMenuUI : MonoBehaviour
             Debug.LogError("[PauseMenuUI] introAudioManager is NULL when trying to stop/play music!");
         }
 
-        SceneManager.LoadScene("PathfindingTest");
+        //SceneManager.LoadScene("PathfindingTest");
+        SceneManager.UnloadSceneAsync("PauseMenu");
     }
 
     public void QuitGame()

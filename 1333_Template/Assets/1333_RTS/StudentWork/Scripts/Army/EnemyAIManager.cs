@@ -137,9 +137,10 @@ public class EnemyAIManager : MonoBehaviour
             int limiter = 0, maxTicks = 50;
             while ((playerUnits.Count > 0 || playerBuildings.Count > 0) && limiter++ < maxTicks)
             {
-                while (cooldownTimer > 0f)
+                while (cooldownTimer > 0f && attackCoolingDown)
                 {
                     cooldownTimer -= Time.deltaTime;
+                    Debug.Log($"Cooldown timer: {cooldownTimer:F2} seconds remaining.");
                 }
                 if (cooldownTimer <= 0f)
                 {
@@ -229,6 +230,7 @@ public class EnemyAIManager : MonoBehaviour
             Debug.Log($"AI: {selectedEnemy.name} → attacking target {selectedTarget} (score: {bestScore})");
             cooldownTimer = 2f; // reset cooldown timer
             attackCoolingDown = true; // start cooldown after attack
+            Debug.Log("Enemy AI has attacked the target and is now cooling down.");
         }
         else
         {

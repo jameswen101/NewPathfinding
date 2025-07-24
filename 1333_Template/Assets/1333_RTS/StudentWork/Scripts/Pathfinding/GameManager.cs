@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             audioManager.StopMusic(); // stop music
-            SceneManager.LoadScene("PauseMenu");
+            SceneManager.LoadScene("PauseMenu", LoadSceneMode.Additive);
         }
     }
 
