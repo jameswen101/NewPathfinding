@@ -9,16 +9,16 @@ public class SoldierPlacer : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject healthBarPrefab;
     [SerializeField] private AudioManager audioManager;
+    [SerializeField] private ArmyData currentArmy;
 
     private GameObject ghostSoldier;
     private UnitType currentUnitType;
     private Vector2Int gridOffset = Vector2Int.zero;
-    private ArmyData currentArmy;
 
-    public void SetArmyData(ArmyData army)
-    {
-        currentArmy = army;
-    }
+    //public void SetArmyData(ArmyData army)
+    //{
+    //    currentArmy = army;
+    //}
 
     void Update()
     {
@@ -88,7 +88,7 @@ public class SoldierPlacer : MonoBehaviour
         if (unitInstance != null)
         {
 
-         Debug.Log($"currentArmy = {(currentArmy == null ? "NULL" : currentArmy.name)}");
+         Debug.Log($"{unitType.name}'s currentArmy = {(currentArmy == null ? "NULL" : currentArmy.name)}");
 
 
             // Initialize the UnitInstance

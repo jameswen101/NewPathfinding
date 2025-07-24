@@ -4,9 +4,9 @@ using UnityEngine;
 public class SoldierMovementManager : MonoBehaviour
 {
     private SoldierUnit selectedSoldier;      // source
-    private Highlightable selectedHighlight;  // highlight for source
+    //private Highlightable selectedHighlight;  // highlight for source
 
-    private Highlightable targetHighlight;    // highlight for target
+    //private Highlightable targetHighlight;    // highlight for target
 
     [SerializeField] private GridManager gridManager;
     [SerializeField] private PathFinder pathfinder;
@@ -21,7 +21,14 @@ public class SoldierMovementManager : MonoBehaviour
 
     void HandleClick()
     {
+        Debug.Log($"HandleClick: mainCamera={(mainCamera == null ? "NULL" : "OK")}, selectedSoldier={(selectedSoldier == null ? "null" : "has value")}");
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (ray.origin == null || ray.direction == null)
+        {
+            Debug.LogError("Ray origin or direction is null. Cannot proceed with raycasting.");
+            return;
+        }
+        Debug.Log($"Ray origin: {ray.origin}, direction: {ray.direction}");
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             GameObject clicked = hit.collider.gameObject;
@@ -34,22 +41,23 @@ public class SoldierMovementManager : MonoBehaviour
                 {
                     selectedSoldier = soldier;
 
-                    if (selectedHighlight != null)
-                        selectedHighlight.SetHighlight(false);
+                    //    if (selectedHighlight != null)
+                    //        selectedHighlight.SetHighlight(false);
 
-                    selectedHighlight = soldier.GetComponent<Highlightable>();
-                    if (selectedHighlight != null)
-                        selectedHighlight.SetHighlight(true);
+                    //    selectedHighlight = soldier.GetComponent<Highlightable>();
+                    //    if (selectedHighlight != null)
+                    //        selectedHighlight.SetHighlight(true);
+                    //
                 }
                 else
                 {
                     // This becomes the target soldier
-                    if (targetHighlight != null)
-                        targetHighlight.SetHighlight(false);
+                    //if (targetHighlight != null)
+                    //    targetHighlight.SetHighlight(false);
 
-                    targetHighlight = soldier.GetComponent<Highlightable>();
-                    if (targetHighlight != null)
-                        targetHighlight.SetHighlight(true);
+                    //targetHighlight = soldier.GetComponent<Highlightable>();
+                    //if (targetHighlight != null)
+                    //    targetHighlight.SetHighlight(true);
 
                     // Move to target
                     MoveTo(clicked.transform.position);
@@ -57,14 +65,14 @@ public class SoldierMovementManager : MonoBehaviour
                 }
             }
             // If clicking a building
-            else if (clicked.CompareTag("Building")) 
+            else if (clicked.CompareTag("Building"))
             {
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(false);
+                //if (targetHighlight != null)
+                //    targetHighlight.SetHighlight(false);
 
-                targetHighlight = clicked.GetComponent<Highlightable>();
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(true);
+                //targetHighlight = clicked.GetComponent<Highlightable>();
+                //if (targetHighlight != null)
+                //    targetHighlight.SetHighlight(true);
 
                 if (selectedSoldier != null)
                 {
@@ -73,14 +81,14 @@ public class SoldierMovementManager : MonoBehaviour
                 }
             }
             // If clicking a machine
-            else if (clicked.CompareTag("Machine")) 
+            else if (clicked.CompareTag("Machine"))
             {
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(false);
+                //if (targetHighlight != null)
+                //    targetHighlight.SetHighlight(false);
 
-                targetHighlight = clicked.GetComponent<Highlightable>();
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(true);
+                //targetHighlight = clicked.GetComponent<Highlightable>();
+                //if (targetHighlight != null)
+                //    targetHighlight.SetHighlight(true);
 
                 if (selectedSoldier != null)
                 {
@@ -100,6 +108,13 @@ public class SoldierMovementManager : MonoBehaviour
 
     void MoveTo(Vector3 destination)
     {
+        Debug.Log($"MoveTo: selectedSoldier={(selectedSoldier == null ? "NULL" : "OK")}, pathfinder={(pathfinder == null ? "NULL" : "OK")}, " +
+            $"gridManager={(gridManager == null ? "NULL" : "OK")}, lineRenderer={(lineRenderer == null ? "NULL" : "OK")}");
+        if (selectedSoldier == null)
+        {
+            Debug.LogError("MoveTo called with no soldier selected.");
+            return;
+        }
         Vector3 start = selectedSoldier.transform.position;
         List<Vector3> path = pathfinder.CalculatePath(
             gridManager.GetNodeFromWorldPosition(start),
@@ -111,13 +126,13 @@ public class SoldierMovementManager : MonoBehaviour
         lineRenderer.SetPositions(path.ToArray());
 
         // Clear highlights
-        if (selectedHighlight != null)
-            selectedHighlight.SetHighlight(false);
-        if (targetHighlight != null)
-            targetHighlight.SetHighlight(false);
+        //if (selectedHighlight != null)
+        //    selectedHighlight.SetHighlight(false);
+        //if (targetHighlight != null)
+        //    targetHighlight.SetHighlight(false);
 
         selectedSoldier = null;
-        selectedHighlight = null;
-        targetHighlight = null;
+        //selectedHighlight = null;
+        //targetHighlight = null;
     }
 }

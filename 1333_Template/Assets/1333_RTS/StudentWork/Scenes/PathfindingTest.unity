@@ -2773,6 +2773,7 @@ MonoBehaviour:
   mainCamera: {fileID: 830550825}
   healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
   audioManager: {fileID: 1516349752}
+  currentArmy: {fileID: 847158489}
 --- !u!4 &702948298
 Transform:
   m_ObjectHideFlags: 0

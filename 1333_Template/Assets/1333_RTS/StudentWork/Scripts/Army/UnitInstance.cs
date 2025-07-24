@@ -26,13 +26,13 @@ public class UnitInstance : UnitBase, IHasHealth
     public UnitType UnitType => unitType;
     public Vector2Int OriginPoint { get; private set; }
 
-    [SerializeField] private ArmyData army;
+    //[SerializeField] private ArmyData army;
 
-    public ArmyData Army
-    {
-        get => army;
-        set => army = value;
-    }
+    public ArmyData Army;
+    //{
+    //    get => army;
+    //    set => army = value;
+    //}
 
 
     [SerializeField] public int ArmyID { get; set; }
@@ -114,7 +114,7 @@ public class UnitInstance : UnitBase, IHasHealth
         MaxHealth = unitType.MaxHp;
 
         // Debug logs
-        Debug.Log($"ArmyData is {(armyData == null ? "NULL" : "OK")}, ArmyID = {ArmyID}");
+        Debug.Log($"{unitType.name}'s ArmyData is {(armyData == null ? "NULL" : "OK")}, ArmyID = {ArmyID}");
 
         // Early validation
         if (armyData == null)
@@ -188,18 +188,30 @@ public class UnitInstance : UnitBase, IHasHealth
         path = pathfinder.CalculatePath(gridM.GetNodeFromWorldPosition(transform.position), gridM.GetNodeFromWorldPosition(targetPosition));
         pathIndex = 0;
         moving = path != null && path.Count > 1;
-
+        Debug.Log($"Setting destination to {targetPosition} for {name}. Moving: {moving}, Path count: {path?.Count ?? 0}");
         DrawPathLine();
+        if (moving)
+        {
+            animator.SetBool("IsMoving", true);
+            Debug.Log($"Unit {name} is now moving towards {targetPosition}.");
+        }
+        else
+        {
+            animator.SetBool("IsMoving", false);
+            Debug.Log($"Unit {name} cannot move to {targetPosition}. No valid path found.");
+        }
     }
 
     public void SetDestination(GridNode node)
     {
         SetDestination(node.WorldPosition);
+        Debug.Log($"Setting destination to node at {node.WorldPosition} for {name}.");
     }
 
     public override void MoveTo(GridNode node)
     {
         SetDestination(node);
+        Debug.Log($"Moving {name} to node at {node.WorldPosition}.");
     }
 
     private void Update()

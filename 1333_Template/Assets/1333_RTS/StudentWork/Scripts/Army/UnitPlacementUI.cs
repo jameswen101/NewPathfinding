@@ -14,7 +14,7 @@ public class UnitPlacementUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        soldierPlacer.SetArmyData(armyData);
+        //soldierPlacer.SetArmyData(armyData);
         foreach (UnitType ut in availableTeamUnits.AvailableUnits)
         {
             var buttonGO = Instantiate(ButtonPrefab, layoutGroupParent);
