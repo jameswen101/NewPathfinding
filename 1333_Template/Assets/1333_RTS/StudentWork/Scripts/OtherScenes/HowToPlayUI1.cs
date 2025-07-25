@@ -5,9 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class HowToPlayUI : MonoBehaviour
+public class HowToPlayUI1 : MonoBehaviour
 {
-
     public Button playButton;
     [SerializeField] private IntroAudioManager introAudioManager;
     //public TimerUI timer;
@@ -26,7 +25,7 @@ public class HowToPlayUI : MonoBehaviour
 
         //add another listener for GoToPauseMenu
 
-        playButton.onClick.AddListener(GoToMainMenu);
+        playButton.onClick.AddListener(GoToPauseMenu);
 
         if (introAudioManager != null)
         {
@@ -37,13 +36,9 @@ public class HowToPlayUI : MonoBehaviour
             Debug.LogError("[WinScreenUI] introAudioManager is NULL when trying to play SFX!");
         }
     }
-
-
-
-    public void GoToMainMenu()
+    public void GoToPauseMenu()
     {
-        Debug.Log($"[WinScreenUI] GoToMainGame called. introAudioManager = {(introAudioManager == null ? "NULL" : introAudioManager.name)}");
-
+        Debug.Log($"[WinScreenUI] GoToPauseMenu called. introAudioManager = {(introAudioManager == null ? "NULL" : introAudioManager.name)}");
         if (introAudioManager != null)
         {
             introAudioManager.StopMusic();
@@ -53,10 +48,8 @@ public class HowToPlayUI : MonoBehaviour
         {
             Debug.LogError("[WinScreenUI] introAudioManager is NULL when trying to stop/play music!");
         }
-
-        // When switching scenes:
         SceneTracker.SceneHistory.Add(SceneManager.GetActiveScene().name); //get name of current scene
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.UnloadSceneAsync("HowToPlay 1");
     }
 
     public void OnPointerEnter(PointerEventData eventData)

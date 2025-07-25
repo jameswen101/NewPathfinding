@@ -28,14 +28,15 @@ public class IntroScreen : MonoBehaviour
     public void StartGame()
     {
         introAudioManager.StopMusic(); // stop music
-        introAudioManager.PlayMusic("Beep Short");
+        introAudioManager.PlaySFX("Beep Short");
         SceneManager.LoadScene("PathfindingTest");
     }
 
     public void HowToPlay()
     {
         //no need to stop playing music in How to Play screen
-        introAudioManager.PlayMusic("Beep Short");
+        introAudioManager.PlaySFX("Beep Short");
+        SceneTracker.SceneHistory.Add(SceneManager.GetActiveScene().name); //get name of current scene
         SceneManager.LoadScene("HowToPlay");
     }
 
@@ -44,7 +45,7 @@ public class IntroScreen : MonoBehaviour
         if (introAudioManager != null)
         {
             introAudioManager.StopMusic();
-            introAudioManager.PlayMusic("Beep Short");
+            introAudioManager.PlaySFX("Beep Short");
         }
         else
         {

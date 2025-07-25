@@ -766,14 +766,14 @@ PrefabInstance:
     - target: {fileID: 4381441374671320602, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1397257579}
+      objectReference: {fileID: 0}
     - target: {fileID: 4381441374671320602, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4381441374671320602, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: GoToMainMenu
+      value: GoToPauseMenu
       objectReference: {fileID: 0}
     - target: {fileID: 4381441374671320602, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -781,7 +781,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4381441374671320602, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: HowToPlayUI, Assembly-CSharp
+      value: HowToPlayUI1, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4381441374671320602, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
@@ -793,15 +793,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4675132275003451171, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_text
-      value: Return to Main Menu
+      value: Return to Pause Menu
       objectReference: {fileID: 0}
     - target: {fileID: 4675132275003451171, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_fontSize
-      value: 16
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 4675132275003451171, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_fontSizeBase
-      value: 16
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5137225031142794996, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_LocalScale.x
@@ -941,7 +941,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1397257578}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cfcbf7a4ce9eb145a3b9978de0c3d86, type: 3}
+  m_Script: {fileID: 11500000, guid: 69c8620d5a6399b48b25c8476e8d2239, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playButton: {fileID: 1397257577}

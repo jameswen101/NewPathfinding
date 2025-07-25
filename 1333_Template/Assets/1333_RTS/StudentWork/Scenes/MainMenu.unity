@@ -537,6 +537,7 @@ MonoBehaviour:
   defaultPosition: {x: 0, y: 0, z: 0}
   topDownPosition: {x: 0, y: 0, z: 0}
   isTopDown: 0
+  rotationSpeed: 5
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,7 +876,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1873608674}
         m_TargetAssemblyTypeName: IntroScreen, Assembly-CSharp
-        m_MethodName: StartGame
+        m_MethodName: HowToPlay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1186,7 +1187,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1873608674}
         m_TargetAssemblyTypeName: IntroScreen, Assembly-CSharp
-        m_MethodName: StartGame
+        m_MethodName: QuitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1776,6 +1777,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playButton: {fileID: 1873608672}
+  howToPlayButton: {fileID: 590863380}
+  quitButton: {fileID: 1327519147}
   introAudioManager: {fileID: 1704227262}
 --- !u!224 &1873608675 stripped
 RectTransform:
