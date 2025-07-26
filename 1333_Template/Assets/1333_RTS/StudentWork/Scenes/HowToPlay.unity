@@ -719,9 +719,9 @@ PrefabInstance:
         move camera forward/left/backward/right\nArrow keys- change placement position
         of unit/building- positions are permanent\nQ/E- rotate camera by 90 degrees
         left/right\nBackspace/delete- deselect source unit + target unit/building\nLeft
-        mouse button click- select source unit + target unit/building\nEscape- pause\nEnter-
-        confirm unit/building placement\nRight mouse button click- cancel unit/building
-        placement (before confirming only)"
+        mouse button click- select source unit + target unit/building/attack (if
+        target is enemy)\nEscape- pause\nEnter- confirm unit/building placement\nRight
+        mouse button click- cancel unit/building placement (before confirming only)"
       objectReference: {fileID: 0}
     - target: {fileID: 4206710543513462561, guid: b2e69e2b44417a342b8129d2b845e77e, type: 3}
       propertyPath: m_fontSize

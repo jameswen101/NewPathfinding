@@ -17,7 +17,7 @@ using UnityEngine.SceneManagement;
         public int ArmyId => OwningArmy.ArmyID;
         public Vector2Int OriginPoint => Origin;
 
-        public abstract void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder, ArmyData armyData);
+        public abstract void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder, ArmyData armyData, Material teamMaterial);
 
         public ArmyData ParentArmy => OwningArmy;
 

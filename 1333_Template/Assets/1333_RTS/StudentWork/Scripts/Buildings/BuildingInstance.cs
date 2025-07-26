@@ -52,7 +52,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
         audioManager = FindObjectOfType<AudioManager>();
     }
 
-    public override void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder, ArmyData armyData)
+    public override void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder, ArmyData armyData, Material teamMaterial)
     {
         BuildingData = buildingData; // this stores it in the field
         Origin = origin;
@@ -75,6 +75,20 @@ public class BuildingInstance : BuildingBase, IHasHealth
         if (OwningArmy == null)
         {
             Debug.LogError("OwningArmy is not assigned in BuildingInstance.");
+        }
+        if (teamMaterial == null)
+        {
+            Debug.LogError("TeamMaterial is not assigned in BuildingInstance.");
+        }
+        else
+        {
+            Debug.Log("Applying team material to building: " + teamMaterial.name);
+            // Apply the team material to the building
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                renderer.material = teamMaterial;
+            }
         }
         healthBar.Initialize(this.transform, this, Camera.main, new Vector3(0, 2f, 0));
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text

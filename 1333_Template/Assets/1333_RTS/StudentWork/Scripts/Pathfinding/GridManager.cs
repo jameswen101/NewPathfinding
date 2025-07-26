@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -88,7 +87,7 @@ public class GridManager : MonoBehaviour
     }
 
 
-    private void PopulateDebugList()
+    public void PopulateDebugList()
     {
         AllNodes.Clear();
         for (int x = 0;x < gridSettings.GridSizeX;x++)
@@ -442,20 +441,5 @@ public class GridManager : MonoBehaviour
         return Mathf.RoundToInt(worldZ / gridSettings.NodeSize);
     }
 
-    [CustomEditor(typeof(GridManager))]
-    public class GridManagerEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            DrawDefaultInspector();
-            GridManager grid = (GridManager)target;
-            if (grid.IsInitialized)
-            {
-                if (GUILayout.Button("Refresh Grid Debug View"))
-                {
-                    grid.PopulateDebugList();
-                }
-            }
-        }
-    }
+   
 }

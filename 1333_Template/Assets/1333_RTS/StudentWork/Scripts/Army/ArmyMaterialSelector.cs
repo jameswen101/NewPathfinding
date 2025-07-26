@@ -68,8 +68,23 @@ public class ArmyMaterialSelector : MonoBehaviour
     public void PlayerSelectMaterial(TeamMaterialInfo chosenMaterial)
     {
         // Assign material to player
-        playerArmy.SetTeamMaterial(chosenMaterial.material);
+        playerArmy.SetTeamMaterial(chosenMaterial.material); //if we separate unit + building materials, we will need to make 2 functions for setting materials
         playerSelected = true;
+        foreach (BuildingInstance building in playerArmy.Buildings)
+        {
+            Renderer[] renderers = building.GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                Material[] mats = renderer.materials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    mats[i] = chosenMaterial.material;
+                }
+                renderer.materials = mats;
+
+            }
+            Debug.Log($"Player building {building.name} set to material {chosenMaterial.name}.");
+        }
 
         // Remove chosen from pool
         availableMaterials.Remove(chosenMaterial);
@@ -77,6 +92,20 @@ public class ArmyMaterialSelector : MonoBehaviour
         // Randomly pick for enemy
         TeamMaterialInfo enemyMaterial = availableMaterials[Random.Range(0, availableMaterials.Count)];
         enemyArmy.SetTeamMaterial(enemyMaterial.material);
+        foreach (BuildingInstance building in enemyArmy.Buildings)
+        {
+            Renderer[] renderers = building.GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                Material[] mats = renderer.materials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    mats[i] = enemyMaterial.material;
+                }
+                renderer.materials = mats;
+            }
+            Debug.Log($"Enemy building {building.name} set to material {enemyMaterial.name}.");
+        }
 
         // Hide UI
         selectionPanel.SetActive(false);

@@ -123,7 +123,8 @@ public class BuildingPlacer : MonoBehaviour
             node.Coordinates,
             gridManager,
             pathFinder,
-            currentArmy // Assign the current army
+            currentArmy, // Assign the current army
+            currentArmy.TeamMaterial // Assuming you have a TeamMaterial in ArmyData
         );
         IHasHealth healthComponent = buildingIns.GetComponent<IHasHealth>();
 
