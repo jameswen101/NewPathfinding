@@ -40,6 +40,7 @@ public class SoldierMovementManager : MonoBehaviour
                 if (selectedSoldier == null)
                 {
                     selectedSoldier = soldier;
+                    Debug.Log($"Selected soldier: {selectedSoldier.name}");
 
                     //    if (selectedHighlight != null)
                     //        selectedHighlight.SetHighlight(false);
@@ -61,6 +62,18 @@ public class SoldierMovementManager : MonoBehaviour
 
                     // Move to target
                     MoveTo(clicked.transform.position);
+                    if (selectedSoldier == null)
+                    {
+                        Debug.LogError("Selected soldier is null when trying to move.");
+                    }
+                    if (clicked.name == null)
+                    {
+                        Debug.LogError("Clicked object name is null when trying to move.");
+                    }
+                    if (clicked.transform == null)
+                    {
+                        Debug.LogError("Clicked object transform is null when trying to move.");
+                    }
                     Debug.Log($"Moving {selectedSoldier.name} to {clicked.name} at position {clicked.transform.position}");
                 }
             }

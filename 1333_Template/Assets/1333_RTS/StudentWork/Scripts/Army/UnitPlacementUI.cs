@@ -8,6 +8,7 @@ public class UnitPlacementUI : MonoBehaviour
     [SerializeField] private SelectUnitButton ButtonPrefab;
     [SerializeField] private AvailableTeamUnits availableTeamUnits;
     [SerializeField] private SoldierPlacer soldierPlacer;
+    [SerializeField] private UnitPlacementManager unitPlacementManager;
     [SerializeField] private ArmyData armyData;
     [SerializeField] private AudioManager audioManager;
 
@@ -19,7 +20,7 @@ public class UnitPlacementUI : MonoBehaviour
         {
             var buttonGO = Instantiate(ButtonPrefab, layoutGroupParent);
             var button = buttonGO.GetComponent<SelectUnitButton>();
-            button.Setup(ut, soldierPlacer, audioManager);
+            button.Setup(ut, soldierPlacer, audioManager, unitPlacementManager);
         }
     }
 

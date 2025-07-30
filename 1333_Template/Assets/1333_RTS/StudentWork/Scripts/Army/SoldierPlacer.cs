@@ -153,6 +153,8 @@ public class SoldierPlacer : MonoBehaviour
         else if (currentArmy != null)
         {
             currentArmy.Units.Add(unitComponent); //adds unit to army
+            unitComponent.Army = currentArmy; // sets the army reference
+            Debug.Log($"{unitComponent.name}'s army = {(unitComponent.Army == null ? "NULL" : unitComponent.Army.name)}");
         }
         else
         {
@@ -179,12 +181,14 @@ public class SoldierPlacer : MonoBehaviour
         return node.Walkable; // You can expand this logic
     }
 
-    private void SetGhostColor(Color color)
+    private void SetGhostColor(Color color) //change that to material
     {
         var renderer = ghostSoldier.GetComponentInChildren<Renderer>();
         if (renderer != null)
         {
-            renderer.material.color = color;
+            var c = renderer.material.color;
+            c.a = 1f; // or 0.5f for transparency
+            renderer.material.color = c;
         }
     }
 

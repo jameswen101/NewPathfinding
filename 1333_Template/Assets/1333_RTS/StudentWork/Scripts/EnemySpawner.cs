@@ -10,7 +10,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private Transform[] spawnPoints; // array of positions to pick from
     [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private GameObject healthBarPrefab;
+    [SerializeField] private GameObject healthBarPrefab; //goal: pass camera to HealthBar component
     [SerializeField] private UnitType unitType; // Reference to the UnitType asset
     [SerializeField] private PathFinder pathFinder; // Reference to the PathFinder component
     [SerializeField] private ArmyMaterialSelector armyMaterialSelector; // Reference to the ArmyMaterialSelector component
@@ -204,15 +204,28 @@ public class EnemySpawner : MonoBehaviour
         if (healthBarPrefab != null)
         {
             GameObject hbObj = Instantiate(healthBarPrefab);
+            Debug.Log($"Instantiated HealthBar for unit {spawnCount}- {unit.name}");
             HealthBar hb = hbObj.GetComponent<HealthBar>();
             if (hb != null)
             {
-                hb.Initialize(
-                    enemyObj.transform,
-                    unit,
-                    mainCamera,
-                    new Vector3(0, 2, 0) // Offset for the health bar
-                );
+                if (mainCamera == null)
+                {
+                    // Fallback: Try to find camera by tag
+                    mainCamera = Camera.main;
+                    Debug.LogWarning("Main camera was null, passing Camera.main to HealthBar instead.");
+                }
+                else
+                {
+                    Debug.Log($"Using assigned main camera: {mainCamera.name} for health bar.");
+                }
+
+                    hb.Initialize(
+                        enemyObj.transform,
+                        unit,
+                        mainCamera,
+                        new Vector3(0, 2, 0) // Offset for the health bar
+                    );
+                Debug.Log($"HealthBar initialized for unit {unit.name} at position {enemyObj.transform.position} with offset (0, 2, 0).");
             }
             else
             {

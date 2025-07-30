@@ -13,15 +13,18 @@ MonoBehaviour:
   m_Name: ArmyComposition
   m_EditorClassIdentifier: 
   entries:
+  - unitType: {fileID: 11400000, guid: a98c977496a706042be06485f78c493e, type: 2}
+    unitTypePrefab: {fileID: 4239128402812587453, guid: b00e534af99ad4541ac272181d9560f9, type: 3}
+    count: 1
   - unitType: {fileID: 11400000, guid: e5ee1cbe2c04c0543b94ce29eb913113, type: 2}
-    unitTypePrefab: {fileID: -5563753542605743974, guid: 0755a95e2e1b5f44e8226989fb76f2cf, type: 3}
+    unitTypePrefab: {fileID: 6947572776370043405, guid: d4680be6bf918b54aaa017f6f1f6056c, type: 3}
     count: 1
   - unitType: {fileID: 11400000, guid: cd2f36815721d1d438ab21d8edb6cfbf, type: 2}
-    unitTypePrefab: {fileID: -5563753542605743974, guid: 0755a95e2e1b5f44e8226989fb76f2cf, type: 3}
+    unitTypePrefab: {fileID: 8063495358525420338, guid: 99a5b7b989afd164289e880729f01ad6, type: 3}
     count: 1
   - unitType: {fileID: 11400000, guid: ab7d10a4f307f11419d8bd4c12ab4d30, type: 2}
-    unitTypePrefab: {fileID: -5563753542605743974, guid: 0755a95e2e1b5f44e8226989fb76f2cf, type: 3}
+    unitTypePrefab: {fileID: 7431833861520088453, guid: 2b9771a46a5e16142abc01adf54b601a, type: 3}
     count: 1
   - unitType: {fileID: 11400000, guid: 1c23b03c97b6b004e97d811a81c29fd5, type: 2}
-    unitTypePrefab: {fileID: -5563753542605743974, guid: 0755a95e2e1b5f44e8226989fb76f2cf, type: 3}
+    unitTypePrefab: {fileID: 7964921484599520738, guid: bb833a5ac7b433f4a8bd7d0c199ac398, type: 3}
     count: 1

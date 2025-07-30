@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AvailableTeamUnits
   m_EditorClassIdentifier: 
   AvailableUnits:
+  - {fileID: 11400000, guid: a98c977496a706042be06485f78c493e, type: 2}
   - {fileID: 11400000, guid: cd2f36815721d1d438ab21d8edb6cfbf, type: 2}
   - {fileID: 11400000, guid: ab7d10a4f307f11419d8bd4c12ab4d30, type: 2}
   - {fileID: 11400000, guid: e5ee1cbe2c04c0543b94ce29eb913113, type: 2}

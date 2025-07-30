@@ -47,6 +47,8 @@ public class UnitInstance : UnitBase, IHasHealth
 
     [SerializeField] private GameObject bloodFXPrefab;
 
+    [SerializeField] private GameObject buildingDestroyedFXPrefab;
+
 
     //public void UpdateHealthText()
     //{
@@ -369,7 +371,7 @@ public class UnitInstance : UnitBase, IHasHealth
         //check if BuildingData is null
         if (target.Data == null)
         {
-            Debug.LogError("BuildingData undefined"); //currently null
+            Debug.LogError("BuildingData undefined"); 
         }
 
         if (audioManager == null)
@@ -393,15 +395,15 @@ public class UnitInstance : UnitBase, IHasHealth
         //Play attack SFX
         audioManager.PlaySFX("Knife Stabbing");
 
-        // Spawn blood FX
-        if (bloodFXPrefab != null)
+        // Spawn building destroyed FX
+        if (buildingDestroyedFXPrefab != null)
         {
             // Instantiate at target's position + offset (e.g., above ground)
             Vector3 spawnPosition = target.transform.position + Vector3.up * 1.0f;
-            GameObject bloodFX = Instantiate(bloodFXPrefab, spawnPosition, Quaternion.identity);
+            GameObject buildingDestroyedFX = Instantiate(buildingDestroyedFXPrefab, spawnPosition, Quaternion.identity);
 
             // Optional: Destroy after X seconds to clean up
-            Destroy(bloodFX, 2.0f);
+            Destroy(buildingDestroyedFX, 2.0f);
         }
 
         target.TakeDamage(UnitType.Damage);
@@ -410,6 +412,7 @@ public class UnitInstance : UnitBase, IHasHealth
 
         if (target.IsDead)
         {
+            // have the building burn for 2 secs before collapsing?
             target.Die();
             Debug.Log($"{target.Data.buildingName} has collapsed.");
         }

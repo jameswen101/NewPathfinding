@@ -13,6 +13,7 @@ public class SelectUnitButton : MonoBehaviour, IPointerEnterHandler
     // Start is called before the first frame update
     [SerializeField] private UnitType unitType;
     [SerializeField] private SoldierPlacer soldierPlacer;
+    [SerializeField] private UnitPlacementManager unitPlacementManager; 
     [SerializeField] private AudioManager audioManager;
     public void OnClick()
     {
@@ -20,11 +21,12 @@ public class SelectUnitButton : MonoBehaviour, IPointerEnterHandler
         soldierPlacer.StartPlacingSoldier(unitType);
     }
 
-    public void Setup(UnitType unitType, SoldierPlacer soldierPlacer, AudioManager audioManager) //add soldierPlacer as parameter
+    public void Setup(UnitType unitType, SoldierPlacer soldierPlacer, AudioManager audioManager, UnitPlacementManager unitPlacementManager) //add soldierPlacer as parameter
     {
         this.unitType = unitType;
         this.soldierPlacer = soldierPlacer;
         this.audioManager = audioManager;
+        this.unitPlacementManager = unitPlacementManager;
 
         buttonText.text = unitType.unitTypeName;
         buttonImage.sprite = unitType.unitIcon; //make sure every UnitType has unitIcon set up

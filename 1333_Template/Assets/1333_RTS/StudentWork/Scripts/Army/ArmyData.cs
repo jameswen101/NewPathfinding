@@ -8,6 +8,7 @@ public class ArmyData : MonoBehaviour, IArmyData
 {
     [SerializeField] private string _factionName;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private AllArmiesManager allArmiesManager;
 
     public GridManager GridManager;
     [field: SerializeField]
@@ -271,6 +272,7 @@ public class ArmyData : MonoBehaviour, IArmyData
         if (AllBuildingsDestroyed && !FinalWaveActivated)
         {
             FinalWaveActivated = true;
+            Debug.Log($"Final wave activated for Army {ArmyID}");
             OnFinalWaveStart?.Invoke(this);
         }
     }

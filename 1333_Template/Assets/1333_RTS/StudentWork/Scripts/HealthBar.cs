@@ -17,7 +17,7 @@ public class HealthBar : MonoBehaviour
     {
         targetTransform = target;
         targetHealth = healthSource;
-        mainCamera = camera;
+        mainCamera = camera; //something is wrong with setting mainCamera to be camera?
         this.offset = offset;
 
         if (targetTransform == null)
@@ -25,11 +25,25 @@ public class HealthBar : MonoBehaviour
             Debug.LogError("Target Transform is not assigned in HealthBar.");
             return;
         }
+        else
+        {
+            Debug.Log($"Target assigned to health bar: {targetTransform.name} ");
+        }
 
         if (targetHealth == null)
         {
             Debug.LogError("Target Health is not assigned in HealthBar.");
             return;
+        }
+
+        if (mainCamera == null)
+        {
+            Debug.LogError("Main Camera is not assigned in HealthBar.");
+            return;
+        }
+        else
+        {
+            Debug.Log($"Camera assigned to health bar: {camera.name} ");
         }
 
         if (slider == null)
@@ -42,17 +56,31 @@ public class HealthBar : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void Start()
     {
-        if (targetTransform == null) return;
-
+        targetTransform = targetTransform.parent != null ? targetTransform.parent : targetTransform;
+        Debug.Log($"Target Transform: {targetTransform.name}");
         // Keep the bar at a fixed world position above the target
         transform.position = targetTransform.position + Vector3.up * 2f;
 
-        // Rotate only the pivot to face camera
-        pivotTransform.rotation = Quaternion.LookRotation(
-            pivotTransform.position - mainCamera.transform.position
-        );
+        if (mainCamera != null)
+        {
+            // Rotate only the pivot to face camera
+            pivotTransform.rotation = Quaternion.LookRotation(
+                pivotTransform.position - mainCamera.transform.position
+            );
+        }
+        else
+        {
+            Debug.LogWarning("Main Camera is not assigned in HealthBar.");
+            mainCamera = Camera.main; // Fallback to Camera.main
+            Debug.Log($"Main Camera set to: {mainCamera.name}");
+        }
+    }
+
+    private void Update()
+    {
+        
     }
     public void UpdateHealthBar(float currentValue, float maxValue)
     {
