@@ -19,6 +19,10 @@ public class EnemyAIManager : MonoBehaviour
     private bool attackCoolingDown = false;
     private float cooldownTimer = 2f; // Timer for attack cooldown
 
+    private bool isAttacking = false;
+    private float attackInterval = 2f; // attack every 2 seconds
+    private int enemiesPerWave = 2;
+
     private void Start()
     {
         // List of all player units
@@ -134,8 +138,8 @@ public class EnemyAIManager : MonoBehaviour
             readyToAttack = true;
             Debug.Log("Enemy AI is attacking player units now.");
             startedAttacking = true;
-            int limiter = 0, maxTicks = 50;
-            while ((playerUnits.Count > 0 || playerBuildings.Count > 0) && limiter++ < maxTicks)
+            //int limiter = 0, maxTicks = 50;
+            while (playerUnits.Count > 0 || playerBuildings.Count > 0) //remove limiter ++ < maxTicks
             {
                 while (cooldownTimer > 0f && attackCoolingDown)
                 {
@@ -148,14 +152,34 @@ public class EnemyAIManager : MonoBehaviour
                     if (!attackCoolingDown)
                     {
                         Debug.Log("Enemy AI is ready to attack.");
-                        AttackBestTarget();
+                        StartCoroutine(AttackRoutine());
                     }
                 }
             }
-            if (limiter >= maxTicks)
-                Debug.LogError("AI loop capped out at maxTicks — possible infinite loop avoided.");
         }
     }
+
+    private IEnumerator AttackRoutine()
+    {
+        isAttacking = true;
+
+        while (playerUnits.Count > 0 || playerBuildings.Count > 0)
+        {
+            for (int i = 0; i < enemiesPerWave; i++)
+            {
+                if (enemyUnits.Count == 0)
+                    break;
+
+                Debug.Log($"Enemy attacker {i + 1} is attacking...");
+                AttackBestTarget(); // Implement logic to choose target and attacker
+            }
+
+            yield return new WaitForSeconds(attackInterval);
+        }
+
+        isAttacking = false;
+    }
+
 
     void AttackBestTarget()
     {
