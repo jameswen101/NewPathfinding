@@ -416,6 +416,12 @@ public class UnitInstance : UnitBase, IHasHealth
             target.Die();
             Debug.Log($"{target.Data.buildingName} has collapsed.");
         }
+
+        if (target.Data.IsDefensiveStructure)
+        {
+            TakeDamage(target.Data.retaliationDamage);
+            Debug.Log($"{name} took {target.Data.retaliationDamage} for attacking tower.");
+        }
     }
 
     public void Die()

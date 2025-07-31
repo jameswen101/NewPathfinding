@@ -58,7 +58,17 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
-        targetTransform = targetTransform.parent != null ? targetTransform.parent : targetTransform;
+        if (targetTransform == null)
+        {
+            Debug.LogError("targetTransform is not assigned before Start.");
+            return;
+        }
+
+        if (targetTransform.parent != null)
+        {
+            targetTransform = targetTransform.parent;
+        }
+
         Debug.Log($"Target Transform: {targetTransform.name}");
         // Keep the bar at a fixed world position above the target
         transform.position = targetTransform.position + Vector3.up * 2f;

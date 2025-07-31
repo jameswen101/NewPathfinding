@@ -152,7 +152,13 @@ public class EnemyAIManager : MonoBehaviour
                     if (!attackCoolingDown)
                     {
                         Debug.Log("Enemy AI is ready to attack.");
-                        StartCoroutine(AttackRoutine());
+                        if (!isAttacking)
+                        {
+                            Debug.Log("Starting attack routine...");
+                            isAttacking = true;
+                            // Start the attack coroutine
+                            StartCoroutine(AttackRoutine());
+                        }
                     }
                 }
             }
@@ -161,8 +167,6 @@ public class EnemyAIManager : MonoBehaviour
 
     private IEnumerator AttackRoutine()
     {
-        isAttacking = true;
-
         while (playerUnits.Count > 0 || playerBuildings.Count > 0)
         {
             for (int i = 0; i < enemiesPerWave; i++)

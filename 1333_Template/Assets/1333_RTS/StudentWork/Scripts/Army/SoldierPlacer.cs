@@ -20,6 +20,18 @@ public class SoldierPlacer : MonoBehaviour
     //    currentArmy = army;
     //}
 
+    private void Start()
+    {
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
+    }
+
     void Update()
     {
         if (ghostSoldier == null) return;
@@ -62,16 +74,12 @@ public class SoldierPlacer : MonoBehaviour
         }
         // Cancel placement with right-click
         if (Input.GetMouseButtonDown(1)) CancelPlacement();
-        if (audioManager == null)
+
+        if (audioManager != null)
         {
-            Debug.LogError("AudioManager is NULL! No audio will play.");
-        }
-        else
-        {
-            Debug.Log("AudioManager exists.");
+            audioManager.PlaySFX("Wrong Answer");
         }
 
-        audioManager.PlaySFX("Wrong Answer");
     }
 
     public void StartPlacingSoldier(UnitType unitType)
