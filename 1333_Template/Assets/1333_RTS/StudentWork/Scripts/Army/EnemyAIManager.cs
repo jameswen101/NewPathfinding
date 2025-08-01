@@ -201,7 +201,10 @@ public class EnemyAIManager : MonoBehaviour
             }
 
             delayStartTime -= Time.deltaTime;
-            selectionManager.statusText.text = $"Enemy attacks in: {Mathf.Ceil(delayStartTime)}s";
+            if (delayStartTime >= 0)
+            {
+                selectionManager.statusText.text = $"Enemy attacks in: {Mathf.Ceil(delayStartTime)}s";
+            }
 
             if (delayStartTime <= 0f && !startedAttacking)
             {

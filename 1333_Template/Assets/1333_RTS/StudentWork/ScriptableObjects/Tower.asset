@@ -23,3 +23,4 @@ MonoBehaviour:
   IsSolid: 1
   moveCost: -1
   IsDefensiveStructure: 1
+  retaliationDamage: 40
