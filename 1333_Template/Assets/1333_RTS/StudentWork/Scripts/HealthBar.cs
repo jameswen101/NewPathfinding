@@ -10,11 +10,13 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Slider slider;
     [SerializeField] private Vector3 offset;
     public TextMeshProUGUI healthText; // for displaying health value
+    private bool hasInitialized = false;
 
     private IHasHealth targetHealth;
 
     public void Initialize(Transform target, IHasHealth healthSource, Camera camera, Vector3 offset)
     {
+        hasInitialized = true;
         targetTransform = target;
         targetHealth = healthSource;
         mainCamera = camera; //something is wrong with setting mainCamera to be camera?
@@ -29,6 +31,12 @@ public class HealthBar : MonoBehaviour
         {
             Debug.Log($"Target assigned to health bar: {targetTransform.name} ");
         }
+
+        if (targetTransform.parent != null)
+        {
+            targetTransform = targetTransform.parent;
+        }
+        transform.position = targetTransform.position + Vector3.up * 2f;
 
         if (targetHealth == null)
         {
@@ -58,21 +66,6 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
-        if (targetTransform == null)
-        {
-            Debug.LogError("targetTransform is not assigned before Start.");
-            return;
-        }
-
-        if (targetTransform.parent != null)
-        {
-            targetTransform = targetTransform.parent;
-        }
-
-        Debug.Log($"Target Transform: {targetTransform.name}");
-        // Keep the bar at a fixed world position above the target
-        transform.position = targetTransform.position + Vector3.up * 2f;
-
         if (mainCamera != null)
         {
             // Rotate only the pivot to face camera

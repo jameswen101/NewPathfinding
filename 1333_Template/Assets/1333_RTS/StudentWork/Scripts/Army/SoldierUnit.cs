@@ -12,25 +12,24 @@ public class SoldierUnit : MonoBehaviour //controls solider movement
     public IEnumerator FollowPath(List<Vector3> path)
     {
         int count = path.Count;
+        Debug.Log($"FollowPath called, path length: {count}");
+
+        if (path == null || count <= 2)
+        {
+            Debug.Log("Skipping movement — path too short or null");
+            yield break;
+        }
+
         for (int i = 0; i < count; i++)
         {
-            // Only go to the second‑last node, if path length >= 3
-            Vector3 point = (i == count - 1 && count >= 3)
-                ? path[count - 2]
-                : path[i];
-
-            //if path = 2 -> go to the very end
+            Vector3 point = path[i];
+            Debug.Log($"Moving to path[{i}] = {point}");
 
             while (Vector3.Distance(transform.position, point) > 0.1f)
             {
-                transform.position = Vector3.MoveTowards(transform.position,
-                    point, 5f * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, point, 5f * Time.deltaTime);
                 yield return null;
             }
-
-            // Stop early
-            if (i == count - 2)
-                yield break;
         }
     }
 

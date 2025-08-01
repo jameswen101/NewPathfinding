@@ -7,12 +7,17 @@ public class EnemyAIManager : MonoBehaviour
 {
     [SerializeField] private ArmyData playerArmyData;
     [SerializeField] private ArmyData enemyArmyData;
+    [SerializeField] private SelectionManager selectionManager;
     private List<UnitInstance> playerUnits;
     private List<UnitInstance> enemyUnits;
     private List <BuildingBase> playerBuildings;
     private List<BuildingBase> enemyBuildings;
+    private int alivePlayerUnits;
+    private int numPlayerBuildings;
+
     private bool delayTimerStarted = false;
     private float delayStartTime;
+    [SerializeField] private float attackDelayDuration = 5f; // 5 seconds delay before AI attacks
     private bool readyToAttack = false;
     private float aiTimer = 0f;
     private bool startedAttacking = false;
@@ -66,44 +71,115 @@ public class EnemyAIManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    void Update()
     {
-        aiTimer += Time.deltaTime;
-        if (aiTimer >= 1f)
+        UpdateEnemyAI();
+        if (!startedAttacking)
         {
-            if (!startedAttacking)
-            {
-                Debug.Log($"readyToAttack = {readyToAttack}");
-            }
-            aiTimer = 0f;
-            if (!readyToAttack)
-            {
-                UpdateEnemyAI();
-            }    
+            HandleDelayCountdown(alivePlayerUnits, numPlayerBuildings);
         }
     }
 
 
+
+    //private void UpdateEnemyAI()
+    //{
+    //    // Use the class-level fields—not new local vars!
+    //    playerUnits = playerArmyData.Units.ToList();
+    //    playerBuildings = playerArmyData.Buildings.ToList();
+
+    //    // Similarly for enemyUnits/playerBuildings
+    //    enemyUnits = enemyArmyData.Units.ToList();
+    //    enemyBuildings = enemyArmyData.Buildings.ToList();
+
+    //    // How many player buildings exist?
+    //    int numPlayerBuildings = playerBuildings.Count;
+
+    //    // Require castle + 3 other buildings
+    //    if (numPlayerBuildings < 4)
+    //    {
+    //        Debug.Log($"Player has only {numPlayerBuildings} buildings. Needs 4+ to trigger AI.");
+    //    }
+
+    //    // Check how many player units are alive
+    //    int alivePlayerUnits = 0;
+    //    foreach (var unit in playerArmyData.Units)
+    //    {
+    //        if (unit != null && !unit.IsDead)
+    //            alivePlayerUnits++;
+    //    }
+
+    //    // Start timer when the 5th unit spawns
+    //    if (alivePlayerUnits >= 5 && !delayTimerStarted && numPlayerBuildings >= 4)
+    //    {
+    //        //move everything timer-related to a new function
+    //        delayTimerStarted = true;
+    //        delayStartTime = Time.time;
+    //        Debug.Log("5 player units detected, starting 5-second delay...");
+    //    }
+
+    //    // If timer has started, but not yet reached 5 seconds, wait
+    //    if (delayTimerStarted && Time.time < delayStartTime + 5f)
+    //    {
+    //        Debug.Log("Waiting for 5-second delay before AI attacks...");
+    //        //show countdown using SelectionManager.statusText
+    //        selectionManager.statusText.text = $"Enemy will attack in: {Mathf.Ceil(delayStartTime + 5f - Time.time)} seconds";
+    //    }
+
+    //    // If fewer than 2 player units, do nothing
+    //    if (alivePlayerUnits < 5)
+    //    {
+    //        Debug.Log("Player doesn't have enough units to trigger AI attack.");
+    //    }
+
+    //    // All conditions met: attack
+    //    //how to decide which one first?
+    //    if (alivePlayerUnits >= 5 && delayTimerStarted && numPlayerBuildings >= 4 && Time.time > delayStartTime + 5f)
+    //    {
+    //        readyToAttack = true;
+    //        Debug.Log("Enemy AI is attacking player units now.");
+    //        selectionManager.statusText.text = "Watch out! Enemy AI will attack you!";
+    //        startedAttacking = true;
+    //        //int limiter = 0, maxTicks = 50;
+    //        if (playerUnits.Count > 0 || playerBuildings.Count > 0) //remove limiter ++ < maxTicks
+    //        {
+    //            if (cooldownTimer > 0f && attackCoolingDown)
+    //            {
+    //                cooldownTimer -= Time.deltaTime;
+    //                Debug.Log($"Cooldown timer: {cooldownTimer:F2} seconds remaining.");
+    //            }
+    //            if (cooldownTimer <= 0f)
+    //            {
+    //                attackCoolingDown = false;
+    //                if (!attackCoolingDown)
+    //                {
+    //                    Debug.Log("Enemy AI is ready to attack.");
+    //                    if (!isAttacking)
+    //                    {
+    //                        Debug.Log("Starting attack routine...");
+    //                        isAttacking = true;
+    //                        // Start the attack coroutine
+    //                        StartCoroutine(AttackRoutine());
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
     private void UpdateEnemyAI()
     {
-        // Use the class-level fields—not new local vars!
-        playerUnits = playerArmyData.Units.ToList();
-        playerBuildings = playerArmyData.Buildings.ToList();
+    playerUnits = playerArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
+    enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
+    playerBuildings = playerArmyData.Buildings.Where(b => b != null && !b.IsDead).ToList();
+    enemyBuildings = enemyArmyData.Buildings.Where(b => b != null && !b.IsDead).ToList();
 
-        // Similarly for enemyUnits/playerBuildings
-        enemyUnits = enemyArmyData.Units.ToList();
-        enemyBuildings = enemyArmyData.Buildings.ToList();
-
-        // How many player buildings exist?
         int numPlayerBuildings = playerBuildings.Count;
-
-        // Require castle + 3 other buildings
         if (numPlayerBuildings < 4)
         {
             Debug.Log($"Player has only {numPlayerBuildings} buildings. Needs 4+ to trigger AI.");
         }
 
-        // Check how many player units are alive
         int alivePlayerUnits = 0;
         foreach (var unit in playerArmyData.Units)
         {
@@ -111,56 +187,28 @@ public class EnemyAIManager : MonoBehaviour
                 alivePlayerUnits++;
         }
 
-        // Start timer when the 5th unit spawns
-        if (alivePlayerUnits >= 5 && !delayTimerStarted && numPlayerBuildings >= 4)
-        {
-            delayTimerStarted = true;
-            delayStartTime = Time.time;
-            Debug.Log("5 player units detected, starting 5-second delay...");
-        }
+        HandleDelayCountdown(alivePlayerUnits, numPlayerBuildings);
+    }
 
-        // If timer has started, but not yet reached 5 seconds, wait
-        if (delayTimerStarted && Time.time < delayStartTime + 5f)
+    void HandleDelayCountdown(int aliveUnits, int numBuildings)
+    {
+        if (aliveUnits >= 5 && numBuildings >= 4)
         {
-            Debug.Log("Waiting for 5-second delay before AI attacks...");
-        }
-
-        // If fewer than 2 player units, do nothing
-        if (alivePlayerUnits < 5)
-        {
-            Debug.Log("Player doesn't have enough units to trigger AI attack.");
-        }
-
-        // All conditions met: attack
-        //how to decide which one first?
-        if (alivePlayerUnits >= 5 && delayTimerStarted && numPlayerBuildings >= 4 && Time.time > delayStartTime + 5f)
-        {
-            readyToAttack = true;
-            Debug.Log("Enemy AI is attacking player units now.");
-            startedAttacking = true;
-            //int limiter = 0, maxTicks = 50;
-            while (playerUnits.Count > 0 || playerBuildings.Count > 0) //remove limiter ++ < maxTicks
+            if (!delayTimerStarted)
             {
-                while (cooldownTimer > 0f && attackCoolingDown)
-                {
-                    cooldownTimer -= Time.deltaTime;
-                    Debug.Log($"Cooldown timer: {cooldownTimer:F2} seconds remaining.");
-                }
-                if (cooldownTimer <= 0f)
-                {
-                    attackCoolingDown = false;
-                    if (!attackCoolingDown)
-                    {
-                        Debug.Log("Enemy AI is ready to attack.");
-                        if (!isAttacking)
-                        {
-                            Debug.Log("Starting attack routine...");
-                            isAttacking = true;
-                            // Start the attack coroutine
-                            StartCoroutine(AttackRoutine());
-                        }
-                    }
-                }
+                delayTimerStarted = true;
+                delayStartTime = attackDelayDuration; // e.g. 5 seconds
+            }
+
+            delayStartTime -= Time.deltaTime;
+            selectionManager.statusText.text = $"Enemy attacks in: {Mathf.Ceil(delayStartTime)}s";
+
+            if (delayStartTime <= 0f && !startedAttacking)
+            {
+                readyToAttack = true;
+                startedAttacking = true;
+                selectionManager.statusText.text = "Enemy is attacking!";
+                StartCoroutine(AttackRoutine());
             }
         }
     }
@@ -198,7 +246,7 @@ public class EnemyAIManager : MonoBehaviour
             Debug.LogError("Missing lists for player units.");
             return;
         }
-        
+
         if (playerBuildings == null)
         {
             Debug.LogError("Missing lists for player buildings.");
@@ -256,6 +304,7 @@ public class EnemyAIManager : MonoBehaviour
             }
 
             Debug.Log($"AI: {selectedEnemy.name} → attacking target {selectedTarget} (score: {bestScore})");
+            selectionManager.statusText.text = $"Enemy AI is attacking {selectedTarget}";
             cooldownTimer = 2f; // reset cooldown timer
             attackCoolingDown = true; // start cooldown after attack
             Debug.Log("Enemy AI has attacked the target and is now cooling down.");

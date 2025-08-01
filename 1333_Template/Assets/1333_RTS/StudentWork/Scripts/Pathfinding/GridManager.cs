@@ -115,6 +115,10 @@ public class GridManager : MonoBehaviour
     public void SetWalkable(int x, int y, bool walkable)
     {
         gridNodes[x,y].Walkable = walkable;
+        if (gridNodes[x,y].Walkable)
+        {
+            Debug.Log($"Node ({x}, {y}) is now walkable.");
+        }
     }
 
     public void ComputeDebugPath()

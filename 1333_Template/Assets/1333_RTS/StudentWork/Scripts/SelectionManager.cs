@@ -11,7 +11,7 @@ public class SelectionManager : MonoBehaviour
     private UnitInstance targetUnit;
     private BuildingInstance targetBuilding;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private TextMeshProUGUI statusText;
+    public TextMeshProUGUI statusText;
     private bool sourceWasMoving = false;
 
     void Update()
@@ -92,6 +92,13 @@ public class SelectionManager : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             GameObject clicked = hit.collider.gameObject;
+
+            ClickProxy clickProxy = hit.collider.GetComponent<ClickProxy>();
+            if (clickProxy != null)
+            {
+                Debug.Log("Clicked on a ClickProxy attached to a health bar or child object.");
+                clicked = clickProxy.linkedUnit.gameObject; // Redirect the selection to the unit
+            }
 
             if (clicked.CompareTag("Unit"))
             {
@@ -262,19 +269,28 @@ public class SelectionManager : MonoBehaviour
                             sourceUnit.Attack(targetUnit);
                             Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
                             Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
+                            statusText.text = $"Target health remaining: {targetUnit.CurrentHealth}";
+                            if (targetUnit.CurrentHealth <= 0)
+                            {
+                                statusText.text = $"{targetUnit.name} has died.";
+                            }
+                            sourceUnit = null; // Reset source unit after attack
+                            targetUnit = null; // Reset target unit after attack
+                            targetObject = null; // Reset target object after attack
                         }
-
                         else
                         {
                             if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy")
                             {
                                 Debug.Log("Enemy units cannot attack each other.");
                                 statusText.text = "Enemy units cannot attack each other.";
+                                sourceUnit = null; targetUnit = null;
                             }
                             if (sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy")
                             {
                                 Debug.Log("Player units cannot attack each other.");
                                 statusText.text = "Player units cannot attack each other.";
+                                targetUnit = null;
                             }
                         }
                     }
@@ -282,6 +298,7 @@ public class SelectionManager : MonoBehaviour
                     {
                         Debug.Log($"{sourceUnit.UnitType.unitTypeName} with attack type {attackType} cannot attack units.");
                         statusText.text = $"{sourceUnit.UnitType.unitTypeName} cannot attack units.";
+                        targetUnit = null; // Reset target unit if it cannot be attacked
                     }
                 }
             }

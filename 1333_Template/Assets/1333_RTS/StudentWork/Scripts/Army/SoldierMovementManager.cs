@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SoldierMovementManager : MonoBehaviour
@@ -119,33 +120,38 @@ public class SoldierMovementManager : MonoBehaviour
         }
     }
 
-    void MoveTo(Vector3 destination)
+    void MoveTo(Vector3 destination, int stopBeforeLast = 3)
     {
-        Debug.Log($"MoveTo: selectedSoldier={(selectedSoldier == null ? "NULL" : "OK")}, pathfinder={(pathfinder == null ? "NULL" : "OK")}, " +
-            $"gridManager={(gridManager == null ? "NULL" : "OK")}, lineRenderer={(lineRenderer == null ? "NULL" : "OK")}");
-        if (selectedSoldier == null)
+        Debug.Log($"Calculating path with stopBeforeLast = {stopBeforeLast}");
+
+        Vector3 start = selectedSoldier.transform.position;
+        List<Vector3> fullPath = pathfinder.CalculatePath(
+            gridManager.GetNodeFromWorldPosition(start),
+            gridManager.GetNodeFromWorldPosition(destination)
+        );
+
+        int count = fullPath.Count;
+        Debug.Log($"Full path length: {count}");
+
+        if (fullPath == null || count < 3)
         {
-            Debug.LogError("MoveTo called with no soldier selected.");
+            Debug.Log("Path too short (<3 nodes). Movement skipped.");
             return;
         }
-        Vector3 start = selectedSoldier.transform.position;
-        List<Vector3> path = pathfinder.CalculatePath(
-            gridManager.GetNodeFromWorldPosition(start),
-            gridManager.GetNodeFromWorldPosition(destination));
 
-        selectedSoldier.MoveAlongPath(path);
+        // Decide where to stop: e.g. stopBeforeLast = 2 or 3
+        int targetIndex = Mathf.Max(0, count - stopBeforeLast);
+        Debug.Log($"Truncated path to stop at index: {targetIndex}");
 
-        lineRenderer.positionCount = path.Count;
-        lineRenderer.SetPositions(path.ToArray());
+        List<Vector3> truncated = fullPath.Take(targetIndex + 1).ToList();
 
-        // Clear highlights
-        //if (selectedHighlight != null)
-        //    selectedHighlight.SetHighlight(false);
-        //if (targetHighlight != null)
-        //    targetHighlight.SetHighlight(false);
+        selectedSoldier.MoveAlongPath(truncated);
+
+        lineRenderer.positionCount = truncated.Count;
+        lineRenderer.SetPositions(truncated.ToArray());
 
         selectedSoldier = null;
-        //selectedHighlight = null;
-        //targetHighlight = null;
     }
+
+
 }

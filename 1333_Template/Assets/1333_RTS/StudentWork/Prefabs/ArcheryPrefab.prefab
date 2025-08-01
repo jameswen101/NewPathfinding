@@ -50,8 +50,11 @@ MonoBehaviour:
   BuildingData: {fileID: 11400000, guid: 8afaed5f5b7db7d4b95d24df2687d9a5, type: 2}
   CurrentHp: 0
   Origin: {x: 0, y: 0}
+  OwningArmy: {fileID: 0}
   healthBar: {fileID: 5750732907582547044}
   audioManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  pathFinder: {fileID: 0}
 --- !u!136 &3016291847664709223
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -149,7 +152,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 4.3
+      value: 6.07
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -169,6 +172,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: target
+      value: 
+      objectReference: {fileID: 7134330771379447738}
+    - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: offset.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: targetTransform
       value: 
       objectReference: {fileID: 7134330771379447738}
     - target: {fileID: 6879022286885001475, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}

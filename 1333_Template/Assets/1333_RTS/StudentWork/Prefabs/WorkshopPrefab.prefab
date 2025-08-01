@@ -50,7 +50,11 @@ MonoBehaviour:
   BuildingData: {fileID: 11400000, guid: e1d4a9e5082d9e74081b2c695b7b882d, type: 2}
   CurrentHp: 0
   Origin: {x: 0, y: 0}
+  OwningArmy: {fileID: 0}
   healthBar: {fileID: 2659632926336614439}
+  audioManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  pathFinder: {fileID: 0}
 --- !u!136 &7132879356238567488
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -230,6 +234,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: target
+      value: 
+      objectReference: {fileID: 3932144045923571386}
+    - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: targetTransform
       value: 
       objectReference: {fileID: 3932144045923571386}
     - target: {fileID: 6879022286885001475, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}

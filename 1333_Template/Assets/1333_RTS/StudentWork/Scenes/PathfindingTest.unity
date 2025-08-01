@@ -1608,6 +1608,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerArmyData: {fileID: 847158489}
   enemyArmyData: {fileID: 578459199}
+  selectionManager: {fileID: 691228439}
 --- !u!4 &410287880
 Transform:
   m_ObjectHideFlags: 0

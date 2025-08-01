@@ -214,10 +214,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.5, z: 0.5}
+  m_Radius: 1.25
+  m_Height: 3.25
+  m_Direction: 2
+  m_Center: {x: 0, y: 1, z: 0.5}
 --- !u!1001 &3975788524874894333
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -310,6 +310,10 @@ PrefabInstance:
       propertyPath: m_PresetInfoIsWorld
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4536633602300384127, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: linkedUnit
+      value: 
+      objectReference: {fileID: 5055989960033338190}
     - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: target
       value: 
