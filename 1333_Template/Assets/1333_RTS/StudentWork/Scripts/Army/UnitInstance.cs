@@ -160,20 +160,20 @@ public class UnitInstance : UnitBase, IHasHealth
             }
             renderer.materials = mats;
         }
-        // Instantiate as child of the unit
-        GameObject healthBarObj = Instantiate(
-            healthBarPrefab,
-            transform // parent transform
-        );
+        //// Instantiate as child of the unit
+        //GameObject healthBarObj = Instantiate(
+        //    healthBarPrefab,
+        //    transform // parent transform
+        //);
 
-        // Optional: set local offset
-        healthBarObj.transform.localPosition = new Vector3(0, 2f, 2f);
+        //// Optional: set local offset
+        
 
-        // Get HealthBar component
-        HealthBar healthBar = healthBarObj.GetComponent<HealthBar>();
-
+        //// Get HealthBar component
+        //HealthBar healthBar = healthBarObj.GetComponent<HealthBar>();
+        //healthBar.transform.localPosition = new Vector3(0, 2f, 2f);
         // Initialize it
-        healthBar.Initialize(this.transform, this, Camera.main, new Vector3(0, 2f, 0));
+        healthBar.Initialize(this.transform, this, Camera.main);
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
         Debug.Log($"{name}'s starting health: {CurrentHealth}/{MaxHealth}");

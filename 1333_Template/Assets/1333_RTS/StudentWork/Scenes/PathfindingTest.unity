@@ -1609,6 +1609,7 @@ MonoBehaviour:
   playerArmyData: {fileID: 847158489}
   enemyArmyData: {fileID: 578459199}
   selectionManager: {fileID: 691228439}
+  attackDelayDuration: 5
 --- !u!4 &410287880
 Transform:
   m_ObjectHideFlags: 0
@@ -2225,7 +2226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _factionName: 
   mainCamera: {fileID: 830550825}
-  allArmiesManager: {fileID: 0}
+  allArmiesManager: {fileID: 2033059237}
   GridManager: {fileID: 171974295}
   <Pathfinder>k__BackingField: {fileID: 45725958}
   <ArmyID>k__BackingField: 1
@@ -2272,7 +2273,7 @@ MonoBehaviour:
   - {fileID: 303928810}
   - {fileID: 1764285003}
   _machines: []
-  healthBarPrefab: {fileID: 7398545278097855426, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+  healthBarPrefab: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
   IsPlayerControlled: 0
   hasAddedBuildings: 1
 --- !u!4 &578459200
@@ -7454,6 +7455,14 @@ PrefabInstance:
       propertyPath: GridManager
       value: 
       objectReference: {fileID: 171974295}
+    - target: {fileID: 2855319738059324192, guid: 8276fa9c22b7d1b499d7fd656deb0277, type: 3}
+      propertyPath: healthBarPrefab
+      value: 
+      objectReference: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+    - target: {fileID: 2855319738059324192, guid: 8276fa9c22b7d1b499d7fd656deb0277, type: 3}
+      propertyPath: allArmiesManager
+      value: 
+      objectReference: {fileID: 2033059237}
     - target: {fileID: 2855319738059324192, guid: 8276fa9c22b7d1b499d7fd656deb0277, type: 3}
       propertyPath: '_buildings.Array.data[0]'
       value: 

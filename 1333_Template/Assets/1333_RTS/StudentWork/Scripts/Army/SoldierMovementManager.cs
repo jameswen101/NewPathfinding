@@ -5,10 +5,6 @@ using UnityEngine;
 public class SoldierMovementManager : MonoBehaviour
 {
     private SoldierUnit selectedSoldier;      // source
-    //private Highlightable selectedHighlight;  // highlight for source
-
-    //private Highlightable targetHighlight;    // highlight for target
-
     [SerializeField] private GridManager gridManager;
     [SerializeField] private PathFinder pathfinder;
     [SerializeField] private LineRenderer lineRenderer;
@@ -42,31 +38,15 @@ public class SoldierMovementManager : MonoBehaviour
                 {
                     selectedSoldier = soldier;
                     Debug.Log($"Selected soldier: {selectedSoldier.name}");
-
-                    //    if (selectedHighlight != null)
-                    //        selectedHighlight.SetHighlight(false);
-
-                    //    selectedHighlight = soldier.GetComponent<Highlightable>();
-                    //    if (selectedHighlight != null)
-                    //        selectedHighlight.SetHighlight(true);
-                    //
                 }
                 else
                 {
-                    // This becomes the target soldier
-                    //if (targetHighlight != null)
-                    //    targetHighlight.SetHighlight(false);
-
-                    //targetHighlight = soldier.GetComponent<Highlightable>();
-                    //if (targetHighlight != null)
-                    //    targetHighlight.SetHighlight(true);
-
                     // Move to target
                     MoveTo(clicked.transform.position);
-                    if (selectedSoldier == null)
-                    {
-                        Debug.LogError("Selected soldier is null when trying to move.");
-                    }
+                    //if (selectedSoldier == null) 
+                    //{
+                    //    Debug.LogError("Selected soldier is null when trying to move.");
+                    //}
                     if (clicked.name == null)
                     {
                         Debug.LogError("Clicked object name is null when trying to move.");
@@ -81,13 +61,6 @@ public class SoldierMovementManager : MonoBehaviour
             // If clicking a building
             else if (clicked.CompareTag("Building"))
             {
-                //if (targetHighlight != null)
-                //    targetHighlight.SetHighlight(false);
-
-                //targetHighlight = clicked.GetComponent<Highlightable>();
-                //if (targetHighlight != null)
-                //    targetHighlight.SetHighlight(true);
-
                 if (selectedSoldier != null)
                 {
                     MoveTo(clicked.transform.position);
@@ -96,14 +69,7 @@ public class SoldierMovementManager : MonoBehaviour
             }
             // If clicking a machine
             else if (clicked.CompareTag("Machine"))
-            {
-                //if (targetHighlight != null)
-                //    targetHighlight.SetHighlight(false);
-
-                //targetHighlight = clicked.GetComponent<Highlightable>();
-                //if (targetHighlight != null)
-                //    targetHighlight.SetHighlight(true);
-
+            { 
                 if (selectedSoldier != null)
                 {
                     MoveTo(clicked.transform.position);

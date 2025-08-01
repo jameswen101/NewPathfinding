@@ -90,7 +90,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
                 renderer.material = teamMaterial;
             }
         }
-        healthBar.Initialize(this.transform, this, Camera.main, new Vector3(0, 2f, 0));
+        healthBar.Initialize(this.transform, this, Camera.main);
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
         Debug.Log($"{name}'s starting health: {CurrentHealth}/{MaxHealth}");
@@ -177,6 +177,11 @@ public class BuildingInstance : BuildingBase, IHasHealth
                 Debug.Log("Castle destroyed");
                 Win();
             }
+            if (OwningArmy.IsPlayerControlled && (!OwningArmy.Buildings.Any(b => b.name.Contains("Castle"))))
+            {
+                Debug.Log("Castle destroyed");
+                Lose();
+            }
 
         }
         else
@@ -191,6 +196,12 @@ public class BuildingInstance : BuildingBase, IHasHealth
         Debug.Log("Player Wins!");
         // You can trigger a victory UI here:
         SceneManager.LoadScene("WinScreen");
+    }
+
+    public void Lose()
+    {
+        Debug.Log("Player Loses!");
+        SceneManager.LoadScene("LoseScreen");
     }
 }
 

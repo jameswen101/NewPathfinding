@@ -138,7 +138,7 @@ public class SelectionManager : MonoBehaviour
                         Debug.Log($"Army null? {(clickedUnit.Army == null ? "YES" : "NO")}");
                         if (clickedUnit.Army != null)
                             Debug.Log($"IsPlayerControlled: {clickedUnit.Army.IsPlayerControlled}");
-                            Debug.Log($"ArmyID: {clickedUnit.Army.ArmyID}");
+                        Debug.Log($"ArmyID: {clickedUnit.Army.ArmyID}");
                         if (clickedUnit.Army.ArmyID == 0)
                         {
                             clickedUnit.Army.IsPlayerControlled = true; // This is a player unit
@@ -205,7 +205,7 @@ public class SelectionManager : MonoBehaviour
                         }
                     }
 
-                        Debug.Log($"Target building selected: {targetBuilding.name}"); //should it be target building or target object?
+                    Debug.Log($"Target building selected: {targetBuilding.name}"); //should it be target building or target object?
                     statusText.text = $"Target building selected: {targetBuilding.name}";
                     ConfirmSelection();
                 }

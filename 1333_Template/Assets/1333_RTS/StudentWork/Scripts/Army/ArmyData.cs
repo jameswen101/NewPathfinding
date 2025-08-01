@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 [Serializable]
 public class ArmyData : MonoBehaviour, IArmyData
@@ -34,11 +35,13 @@ public class ArmyData : MonoBehaviour, IArmyData
 
     public IList<MachineInstance> Machines => _machines;
 
-    public GameObject healthBarPrefab;
+    public HealthBar healthBarPrefab;
 
     public bool IsPlayerControlled;
 
     public bool hasAddedBuildings;
+
+    public bool hasAddedUnits;
 
     public bool AllBuildingsDestroyed => Buildings.Count == 0;
     public bool FinalWaveActivated { get; private set; }
@@ -54,6 +57,14 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
     private bool isRegistered;
+
+    void Update()
+    {
+        if (IsPlayerControlled && hasAddedBuildings && hasAddedUnits && Units.Count == 0 && NonStartingBuildings.Count == 0)
+        {
+            SceneManager.LoadScene("LoseScreen");
+        }
+    }
 
     public void SetTeamMaterial(Material TeamMaterial)
     {
@@ -102,8 +113,11 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
 
-        GameObject hb = Instantiate(healthBarPrefab);
-        hb.GetComponent<HealthBar>().Initialize(instance.transform, instance, mainCamera, new Vector3(0, 2, 0));
+        HealthBar hb = Instantiate(healthBarPrefab);
+        hb.Initialize(instance.transform, instance, mainCamera);
+        hb.SetHealthText(instance.CurrentHealth, instance.MaxHealth);
+        Debug.Log("Calling HealthTextDebugLog from ArmyData.");
+        hb.HealthTextDebugLog();
 
         // Convert position to grid coords
         Vector2Int gridPos = new Vector2Int(

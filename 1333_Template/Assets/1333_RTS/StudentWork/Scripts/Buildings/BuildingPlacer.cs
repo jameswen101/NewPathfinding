@@ -156,8 +156,7 @@ public class BuildingPlacer : MonoBehaviour
                 buildingIns.healthBar.Initialize(
                     buildingInstance.transform,
                     buildingIns, // assuming it implements IHasHealth
-                    mainCamera,
-                    new Vector3(0, 2, 0) // Offset for the health bar
+                    mainCamera
                 );
             }
             else

@@ -8,19 +8,17 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Transform targetTransform;
     [SerializeField] private Transform pivotTransform; // << reference to the pivot
     [SerializeField] private Slider slider;
-    [SerializeField] private Vector3 offset;
     public TextMeshProUGUI healthText; // for displaying health value
     private bool hasInitialized = false;
 
     private IHasHealth targetHealth;
 
-    public void Initialize(Transform target, IHasHealth healthSource, Camera camera, Vector3 offset)
+    public void Initialize(Transform target, IHasHealth healthSource, Camera camera)
     {
         hasInitialized = true;
         targetTransform = target;
         targetHealth = healthSource;
         mainCamera = camera; //something is wrong with setting mainCamera to be camera?
-        this.offset = offset;
 
         if (targetTransform == null)
         {
@@ -105,5 +103,10 @@ public class HealthBar : MonoBehaviour
         {
             Debug.LogWarning("HealthText is not assigned in HealthBar.");
         }
+    }
+
+    public void HealthTextDebugLog()
+    {
+        Debug.Log(healthText.text);
     }
 }

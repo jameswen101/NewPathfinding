@@ -222,10 +222,9 @@ public class EnemySpawner : MonoBehaviour
                     hb.Initialize(
                         enemyObj.transform,
                         unit,
-                        mainCamera,
-                        new Vector3(0, 2, 0) // Offset for the health bar
+                        mainCamera
                     );
-                Debug.Log($"HealthBar initialized for unit {unit.name} at position {enemyObj.transform.position} with offset (0, 2, 0).");
+                Debug.Log($"HealthBar initialized for unit {unit.name} at position {enemyObj.transform.position}.");
             }
             else
             {

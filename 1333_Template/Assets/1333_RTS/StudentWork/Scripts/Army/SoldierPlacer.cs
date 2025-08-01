@@ -115,25 +115,6 @@ public class SoldierPlacer : MonoBehaviour
                 unitType,
                 Vector2Int.zero, currentArmy, currentArmy.ArmyID
             );
-
-            // Create health bar
-            GameObject hbObj = Instantiate(healthBarPrefab);
-
-            // Get HealthBar component
-            HealthBar hb = hbObj.GetComponent<HealthBar>();
-            if (hb != null)
-            {
-                hb.Initialize(
-                    ghostSoldier.transform,     // Target transform to follow
-                    unitInstance,               // IHasHealth reference (make sure UnitInstance implements IHasHealth)
-                    mainCamera,                    // Camera to convert world to screen
-                    new Vector3(0, 2, 0) // Offset for the health bar
-                );
-            }
-            else
-            {
-                Debug.LogError("HealthBar prefab is missing HealthBar script!");
-            }
         }
         else
         {
@@ -169,7 +150,15 @@ public class SoldierPlacer : MonoBehaviour
         else if (currentArmy != null)
         {
             currentArmy.Units.Add(unitComponent); //adds unit to army
-            unitComponent.Army = currentArmy; // sets the army reference
+            //unitComponent.Army = currentArmy; // sets the army reference
+            // Initialize the UnitInstance
+            unitComponent.Initialize(
+                pathFinder,
+                currentArmy.TeamMaterial,
+                gridManager,
+                currentUnitType,
+                Vector2Int.zero, currentArmy, currentArmy.ArmyID
+            );
             Debug.Log($"{unitComponent.name}'s army = {(unitComponent.Army == null ? "NULL" : unitComponent.Army.name)}");
         }
         else
@@ -187,6 +176,7 @@ public class SoldierPlacer : MonoBehaviour
 
         audioManager.PlaySFX("Bike Bell"); // Play placement sound
         Destroy(ghostSoldier);
+        currentArmy.hasAddedUnits = true;
     }
 
 

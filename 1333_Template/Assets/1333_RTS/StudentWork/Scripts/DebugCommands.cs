@@ -107,7 +107,6 @@ public class DebugCommands : MonoBehaviour
                 unitObj.transform,
                 unit,
                 mainCamera
-                , new Vector3(0, 2, 0) // Offset for the health bar
             );
         }
 

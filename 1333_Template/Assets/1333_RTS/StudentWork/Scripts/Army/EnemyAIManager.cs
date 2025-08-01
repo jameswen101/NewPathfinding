@@ -49,6 +49,20 @@ public class EnemyAIManager : MonoBehaviour
                 Debug.LogError("Player Army Data Buildings list is null!");
                 return;
             }
+            else
+            {
+                if (playerArmyData.Buildings.Any(b => b != null && b.name == "CastlePrefab (1)"))
+                {
+                    Debug.Log("CastlePrefab (1) is in the player's building list.");
+                }
+                else
+                {
+                    Debug.LogWarning("CastlePrefab (1) is NOT in the player's building list.");
+                    var castleInst = GameObject.Find("CastlePrefab (1)")?.GetComponent<BuildingInstance>();
+                    playerArmyData.Buildings.Add(castleInst);
+                    Debug.Log("Player castle added to player army's building list.");
+                }
+            }
         }
 
         if (enemyArmyData == null)
@@ -79,93 +93,6 @@ public class EnemyAIManager : MonoBehaviour
             HandleDelayCountdown(alivePlayerUnits, numPlayerBuildings);
         }
     }
-
-
-
-    //private void UpdateEnemyAI()
-    //{
-    //    // Use the class-level fields—not new local vars!
-    //    playerUnits = playerArmyData.Units.ToList();
-    //    playerBuildings = playerArmyData.Buildings.ToList();
-
-    //    // Similarly for enemyUnits/playerBuildings
-    //    enemyUnits = enemyArmyData.Units.ToList();
-    //    enemyBuildings = enemyArmyData.Buildings.ToList();
-
-    //    // How many player buildings exist?
-    //    int numPlayerBuildings = playerBuildings.Count;
-
-    //    // Require castle + 3 other buildings
-    //    if (numPlayerBuildings < 4)
-    //    {
-    //        Debug.Log($"Player has only {numPlayerBuildings} buildings. Needs 4+ to trigger AI.");
-    //    }
-
-    //    // Check how many player units are alive
-    //    int alivePlayerUnits = 0;
-    //    foreach (var unit in playerArmyData.Units)
-    //    {
-    //        if (unit != null && !unit.IsDead)
-    //            alivePlayerUnits++;
-    //    }
-
-    //    // Start timer when the 5th unit spawns
-    //    if (alivePlayerUnits >= 5 && !delayTimerStarted && numPlayerBuildings >= 4)
-    //    {
-    //        //move everything timer-related to a new function
-    //        delayTimerStarted = true;
-    //        delayStartTime = Time.time;
-    //        Debug.Log("5 player units detected, starting 5-second delay...");
-    //    }
-
-    //    // If timer has started, but not yet reached 5 seconds, wait
-    //    if (delayTimerStarted && Time.time < delayStartTime + 5f)
-    //    {
-    //        Debug.Log("Waiting for 5-second delay before AI attacks...");
-    //        //show countdown using SelectionManager.statusText
-    //        selectionManager.statusText.text = $"Enemy will attack in: {Mathf.Ceil(delayStartTime + 5f - Time.time)} seconds";
-    //    }
-
-    //    // If fewer than 2 player units, do nothing
-    //    if (alivePlayerUnits < 5)
-    //    {
-    //        Debug.Log("Player doesn't have enough units to trigger AI attack.");
-    //    }
-
-    //    // All conditions met: attack
-    //    //how to decide which one first?
-    //    if (alivePlayerUnits >= 5 && delayTimerStarted && numPlayerBuildings >= 4 && Time.time > delayStartTime + 5f)
-    //    {
-    //        readyToAttack = true;
-    //        Debug.Log("Enemy AI is attacking player units now.");
-    //        selectionManager.statusText.text = "Watch out! Enemy AI will attack you!";
-    //        startedAttacking = true;
-    //        //int limiter = 0, maxTicks = 50;
-    //        if (playerUnits.Count > 0 || playerBuildings.Count > 0) //remove limiter ++ < maxTicks
-    //        {
-    //            if (cooldownTimer > 0f && attackCoolingDown)
-    //            {
-    //                cooldownTimer -= Time.deltaTime;
-    //                Debug.Log($"Cooldown timer: {cooldownTimer:F2} seconds remaining.");
-    //            }
-    //            if (cooldownTimer <= 0f)
-    //            {
-    //                attackCoolingDown = false;
-    //                if (!attackCoolingDown)
-    //                {
-    //                    Debug.Log("Enemy AI is ready to attack.");
-    //                    if (!isAttacking)
-    //                    {
-    //                        Debug.Log("Starting attack routine...");
-    //                        isAttacking = true;
-    //                        // Start the attack coroutine
-    //                        StartCoroutine(AttackRoutine());
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
 
     private void UpdateEnemyAI()
     {
@@ -318,10 +245,49 @@ public class EnemyAIManager : MonoBehaviour
                 Debug.LogWarning("No valid enemy found for attack.");
             if (selectedTarget == null)
                 Debug.LogWarning("No valid target found for attack.");
+
+            var castle = playerBuildings.FirstOrDefault(b => b.name.Contains("Castle"));
+            if (castle != null && playerUnits.Count == 0)
+            {
+                AttackClosestToCastle();
+            }
         }
     }
 
+    void AttackClosestToCastle()
+    {
+        if (playerBuildings.Count == 0 || enemyUnits.Count == 0)
+            return;
 
+        // Find the player's castle (assuming it's the only building remaining)
+        BuildingBase castle = playerBuildings[0];
+        Vector3 castlePos = castle.transform.position;
+
+        UnitInstance closestEnemy = null;
+        float minSqrDistance = float.MaxValue;
+
+        // Loop through all enemy units
+        foreach (UnitInstance enemy in enemyUnits)
+        {
+            if (enemy == null || enemy.IsDead)
+                continue;
+
+            float sqrDistance = (enemy.transform.position - castlePos).sqrMagnitude;
+            if (sqrDistance < minSqrDistance)
+            {
+                minSqrDistance = sqrDistance;
+                closestEnemy = enemy;
+            }
+        }
+
+        if (closestEnemy != null)
+        {
+            // Move that enemy toward the castle and attack it
+            closestEnemy.SetDestination(castlePos);
+            closestEnemy.AttackBuilding(castle as BuildingInstance);
+            selectionManager.statusText.text = $"Enemy AI: {closestEnemy.name} attacking castle";
+        }
+    }
 }
 
 
