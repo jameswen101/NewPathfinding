@@ -17,7 +17,7 @@ public class UnitPlacementManager : MonoBehaviour
     private UnitType pendingUnit;
     //private BuildingData matchingBuilding;
     private GameObject ghostObject;
-    private Renderer[] ghostRenderers;
+    private MeshRenderer[] ghostRenderers;
     private ArmyData playerArmy;
 
     private void Start()
@@ -36,7 +36,7 @@ public class UnitPlacementManager : MonoBehaviour
         ghostObject = Instantiate(pendingUnit.unitPrefab);
         ghostObject.SetActive(true);
 
-        ghostRenderers = ghostObject.GetComponentsInChildren<Renderer>();
+        ghostRenderers = ghostObject.GetComponentsInChildren<MeshRenderer>();
     }
 
 

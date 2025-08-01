@@ -50,6 +50,14 @@ public class SoldierPlacer : MonoBehaviour
         // Optional: Validity check for placement (eg. grid occupied)
         bool validPlacement = IsValidPlacement(targetNode);
         SetGhostColor(validPlacement ? Color.green : Color.red);
+        if (validPlacement)
+        {
+            Debug.Log("Placement is valid- color is green.");
+        }
+        else
+        {
+            Debug.Log("Placement is invalid- color is red.");
+        }
 
         // Confirm placement
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Return))
@@ -191,12 +199,13 @@ public class SoldierPlacer : MonoBehaviour
 
     private void SetGhostColor(Color color) //change that to material
     {
-        var renderer = ghostSoldier.GetComponentInChildren<Renderer>();
-        if (renderer != null)
+        var renderers = ghostSoldier.GetComponentsInChildren<MeshRenderer>();
+        foreach(Renderer renderer in renderers)
         {
-            var c = renderer.material.color;
-            c.a = 1f; // or 0.5f for transparency
-            renderer.material.color = c;
+            if (renderer != null)
+            {
+                renderer.material.color = color;
+            }
         }
     }
 
