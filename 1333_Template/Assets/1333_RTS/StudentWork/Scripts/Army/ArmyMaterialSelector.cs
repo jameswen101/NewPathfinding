@@ -131,7 +131,40 @@ public class ArmyMaterialSelector : MonoBehaviour
         TeamMaterialInfo enemyMaterial = availableMaterials[Random.Range(0, availableMaterials.Count)];
         // Assign materials to armies
         playerArmy.SetTeamMaterial(playerMaterial.material);
+        foreach (BuildingInstance building in playerArmy.Buildings)
+        {
+            Renderer[] renderers = building.GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                Material[] mats = renderer.materials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    mats[i] = playerMaterial.material;
+                }
+                renderer.materials = mats;
+
+            }
+            Debug.Log($"Player building {building.name} set to material {playerMaterial.name}.");
+            building.Initialize(building.Data, building.OriginPoint, playerArmy.GridManager, playerArmy.Pathfinder, playerArmy, playerMaterial.material);
+            Debug.Log($"Initialized {building.name} with Army {playerArmy.ArmyID} and material {playerMaterial.name}.");
+        }
         enemyArmy.SetTeamMaterial(enemyMaterial.material);
+        foreach (BuildingInstance building in enemyArmy.Buildings)
+        {
+            Renderer[] renderers = building.GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                Material[] mats = renderer.materials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    mats[i] = enemyMaterial.material;
+                }
+                renderer.materials = mats;
+            }
+            Debug.Log($"Enemy building {building.name} set to material {enemyMaterial.name}.");
+            building.Initialize(building.Data, building.OriginPoint, enemyArmy.GridManager, enemyArmy.Pathfinder, enemyArmy, enemyMaterial.material);
+            Debug.Log($"Initialized {building.name} with Army {enemyArmy.ArmyID} and material {enemyMaterial.name}.");
+        }
         // Hide UI
         selectionPanel.SetActive(false);
         Debug.Log($"Auto-selected: Player picked {playerMaterial.name}, Enemy picked {enemyMaterial.name}");

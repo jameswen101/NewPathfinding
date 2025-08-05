@@ -58,6 +58,11 @@ public class ArmyData : MonoBehaviour, IArmyData
 
     private bool isRegistered;
 
+    void Start()
+    {
+        
+    }
+
     void Update()
     {
         if (IsPlayerControlled && hasAddedBuildings && hasAddedUnits && Units.Count == 0 && NonStartingBuildings.Count == 0)

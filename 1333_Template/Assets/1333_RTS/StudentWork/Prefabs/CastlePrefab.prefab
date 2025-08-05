@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BuildingData: {fileID: 11400000, guid: f902477893df6d14dad7beee1cab6537, type: 2}
-  CurrentHp: 0
+  CurrentHp: 500
   Origin: {x: 0, y: 0}
   OwningArmy: {fileID: 0}
   healthBar: {fileID: 7613054777796895571}

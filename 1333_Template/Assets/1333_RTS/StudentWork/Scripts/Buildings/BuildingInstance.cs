@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class BuildingInstance : BuildingBase, IHasHealth
 {
-    public float CurrentHealth { get; private set; } //Same as parent class' current health, but with a different name to avoid confusion
-    public float MaxHealth { get; private set; }
+    public float CurrentHealth { get; set; } //Same as parent class' current health, but with a different name to avoid confusion
+    public float MaxHealth { get; set; }
 
     public HealthBar healthBar;
 
@@ -50,6 +50,21 @@ public class BuildingInstance : BuildingBase, IHasHealth
     {
         healthBar = GetComponentInChildren<HealthBar>(); //automatically finds the health bar child instance attached to the spawned prefab
         audioManager = FindObjectOfType<AudioManager>();
+        MaxHealth = (int)BuildingData.maxHealth;
+        CurrentHp = (int)MaxHealth;
+        CurrentHealth = (int)CurrentHp; // Initialize current health to max health
+        Debug.Log($"{name}'s starting health: {CurrentHealth}");
+        if (healthBar == null)
+        {
+            Debug.LogError("HealthBar component not found in BuildingInstance.");
+        }
+        else
+        {
+            healthBar.Initialize(this.transform, this, Camera.main); //if you initialize with this.transform, the healthbar will be invisible
+            healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
+            healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
+            Debug.Log($"{name} initialized with health: {CurrentHealth}/{MaxHealth}");
+        }
     }
 
     public override void Initialize(BuildingData buildingData, Vector2Int origin, GridManager gridManager, PathFinder pathFinder, ArmyData armyData, Material teamMaterial)

@@ -18,23 +18,15 @@ public class HealthBar : MonoBehaviour
         hasInitialized = true;
         targetTransform = target;
         targetHealth = healthSource;
-        mainCamera = camera; //something is wrong with setting mainCamera to be camera?
+        mainCamera = camera;
 
-        if (targetTransform == null)
+        if (targetHealth == null)
         {
-            Debug.LogError("Target Transform is not assigned in HealthBar.");
+            Debug.LogError("Target Health is not assigned in HealthBar.");
             return;
         }
-        else
-        {
-            Debug.Log($"Target assigned to health bar: {targetTransform.name} ");
-        }
 
-        if (targetTransform.parent != null)
-        {
-            targetTransform = targetTransform.parent;
-        }
-        transform.position = targetTransform.position + Vector3.up * 2f;
+        Debug.Log($"HealthBar initialized with target: {targetTransform.name}");
 
         if (targetHealth == null)
         {
@@ -61,6 +53,7 @@ public class HealthBar : MonoBehaviour
             }
         }
     }
+
 
     private void Start()
     {
