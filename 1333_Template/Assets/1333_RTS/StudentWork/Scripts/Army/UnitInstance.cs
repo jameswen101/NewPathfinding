@@ -116,6 +116,21 @@ public class UnitInstance : UnitBase, IHasHealth
         MaxHealth = unitType.MaxHp;
 
         // Debug logs
+
+        if (unitType == null)
+        {
+            Debug.LogError("[UnitInstance.Initialize] unitType is NULL!");
+            return;
+        }
+
+        if (teamMaterial == null)
+        {
+            Debug.LogError("[UnitInstance.Initialize] teamMaterial is NULL!");
+            return;
+        }
+
+        Debug.Log($"{unitType.name} initialized with MaxHealth: {MaxHealth}, CurrentHealth: {CurrentHealth}");
+
         Debug.Log($"{unitType.name}'s ArmyData is {(armyData == null ? "NULL" : "OK")}, ArmyID = {ArmyID}");
 
         // Early validation
@@ -437,13 +452,6 @@ public class UnitInstance : UnitBase, IHasHealth
         {
             Army.Units.Remove(this);
             Debug.Log($"{Army.name} has {Army.Units.Count} units remaining.");
-            if (!Army.IsPlayerControlled && Army.Units.Count == 0)
-            {
-                Debug.Log("Player Wins!");
-                // You can trigger a victory UI here:
-                SceneManager.LoadScene("WinScreen");
-            }
-
         }
         else
         {

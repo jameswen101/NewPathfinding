@@ -23,10 +23,13 @@ public class EnemyAIManager : MonoBehaviour
     private bool startedAttacking = false;
     private bool attackCoolingDown = false;
     private float cooldownTimer = 2f; // Timer for attack cooldown
-
+    private bool hasAttacked = false; // Flag to check if AI has attacked at least once
     private bool isAttacking = false;
     private float attackInterval = 2f; // attack every 2 seconds
     private int enemiesPerWave = 2;
+
+    [SerializeField] private EnemySpawner enemySpawner;
+    private int waveNumber = 0;
 
     private void Start()
     {
@@ -63,6 +66,7 @@ public class EnemyAIManager : MonoBehaviour
                     Debug.Log("Player castle added to player army's building list.");
                 }
             }
+            enemySpawner.SpawnWave(1); // or 2, or 3 depending on your logic
         }
 
         if (enemyArmyData == null)
@@ -88,10 +92,34 @@ public class EnemyAIManager : MonoBehaviour
     void Update()
     {
         UpdateEnemyAI();
+
         if (!startedAttacking)
         {
             HandleDelayCountdown(alivePlayerUnits, numPlayerBuildings);
         }
+
+        // Check for wave 2
+        if (enemyUnits.Count == 0 && hasAttacked && waveNumber == 1) //how to make sure they have already attacked before this round?
+        {
+            StartNextWave();
+            Debug.Log("All wave 1 enemies dead. Starting wave 2.");
+            selectionManager.statusText.text = "Wave 2 incoming!";
+        }
+
+        // Optionally wave 3 too
+        if (enemyUnits.Count == 0 && hasAttacked && enemyArmyData.NonStartingBuildings.Count == 0 && waveNumber == 2) //how to make sure they have already attacked before this round?
+        {
+            StartNextWave();
+            Debug.Log("All wave 2 enemies dead and all enemy walls collapsed. Starting wave 3.");
+            selectionManager.statusText.text = "Wave 3 incoming!";
+        }
+    }
+
+
+    private void StartNextWave()
+    {
+        waveNumber++;
+        enemySpawner.SpawnWave(waveNumber);
     }
 
     private void UpdateEnemyAI()
@@ -121,6 +149,7 @@ public class EnemyAIManager : MonoBehaviour
     {
         if (aliveUnits >= 5 && numBuildings >= 4)
         {
+            //start wave 1 here?
             if (!delayTimerStarted)
             {
                 delayTimerStarted = true;
@@ -137,6 +166,7 @@ public class EnemyAIManager : MonoBehaviour
             {
                 readyToAttack = true;
                 startedAttacking = true;
+                hasAttacked = true; // AI has attacked at least once
                 selectionManager.statusText.text = "Enemy is attacking!";
                 StartCoroutine(AttackRoutine());
             }

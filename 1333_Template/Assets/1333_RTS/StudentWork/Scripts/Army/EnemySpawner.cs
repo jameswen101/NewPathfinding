@@ -5,18 +5,29 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject enemyPrefabL1; // Reference to the level 1 enemy prefab
+    [SerializeField] private GameObject enemyPrefabL2; // Reference to the level 2 enemy prefab
+    [SerializeField] private GameObject enemyPrefabL3; // Reference to the level 3 enemy prefab
+    private GameObject currentEnemyPrefab; // Current enemy prefab to spawn
     [SerializeField] private GridManager gridManager;
-    [SerializeField] private Transform[] spawnPoints; // array of positions to pick from
+    [SerializeField] private Transform[] startingSpawnPoints; // array of positions to pick from
+    [SerializeField] private Transform[] wave2SpawnPoints; // array of positions to pick from
+    [SerializeField] private Transform[] wave3SpawnPoints; // array of positions to pick from
     [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject healthBarPrefab; //goal: pass camera to HealthBar component
-    [SerializeField] private UnitType unitType; // Reference to the UnitType asset
+    [SerializeField] private UnitType unitTypeL1; // Reference to the UnitType asset
+    [SerializeField] private UnitType unitTypeL2; // Reference to the UnitType asset
+    [SerializeField] private UnitType unitTypeL3; // Reference to the UnitType asset
+    private UnitType currentUnitType; // Current unit type to spawn
+    //you need 3 diff UnitTypes for 3 levels of enemies
     [SerializeField] private PathFinder pathFinder; // Reference to the PathFinder component
     [SerializeField] private ArmyMaterialSelector armyMaterialSelector; // Reference to the ArmyMaterialSelector component
 
     private int spawnCount = 0; // Track how many enemies spawned
-    [SerializeField] private int maxSpawnCount = 13;
+    private int waveCount = 0; // Track the current wave
+    [SerializeField] private List<Transform> currentSpawnPoints; // Current spawn points based on wave
+    [SerializeField] private int maxSpawnCount; //number will be bigger in later waves
     [SerializeField] private ArmyData finalWaveArmy;
 
     private IEnumerator StartSpawningWhenReady()
@@ -30,6 +41,13 @@ public class EnemySpawner : MonoBehaviour
 
     private void Start()
     {
+        currentUnitType = unitTypeL1; // Set the initial unit type to level 1
+        currentEnemyPrefab = enemyPrefabL1; // Set the initial enemy prefab to level 1
+        for (int i = 0; i < startingSpawnPoints.Length; i++)
+        {
+            currentSpawnPoints.Add(startingSpawnPoints[i]);
+            Debug.Log($"Added starting spawn point {startingSpawnPoints[i].position} to current spawn points.");
+        }
         if (armyMaterialSelector == null)
         {
             Debug.LogError("ArmyMaterialSelector reference not assigned in EnemySpawner!");
@@ -39,14 +57,14 @@ public class EnemySpawner : MonoBehaviour
             armyMaterialSelector.OnArmiesReady += SetupSpawning;
             Debug.Log("ArmyMaterialSelector is assigned.");
         }
-        if (finalWaveArmy == null)
-        {
-            Debug.LogError("FinalWaveArmy reference not assigned in EnemySpawner!");
-        }
-        else
-        {
-            finalWaveArmy.OnFinalWaveStart += StartFinalWave;
-        }          
+        //if (finalWaveArmy == null)
+        //{
+        //    Debug.LogError("FinalWaveArmy reference not assigned in EnemySpawner!");
+        //}
+        //else
+        //{
+        //    finalWaveArmy.OnFinalWaveStart += StartFinalWave;
+        //}          
         StartCoroutine(StartSpawningWhenReady());
         Debug.Log("EnemySpawner is waiting for materials to be selected.");
     }
@@ -57,105 +75,137 @@ public class EnemySpawner : MonoBehaviour
         Debug.Log("EnemySpawner: started spawning.");
     }
 
-    void StartFinalWave(ArmyData triggeringArmy)
-    {
-        StartCoroutine(SpawnFinalWaveForArmy(triggeringArmy));
-    }
+    //void StartFinalWave(ArmyData triggeringArmy)
+    //{
+    //    StartCoroutine(SpawnFinalWaveForArmy(triggeringArmy));
+    //}
 
-    IEnumerator SpawnFinalWaveForArmy(ArmyData army)
-    {
-        GameObject castleObj = army.Buildings
-            .FirstOrDefault(b => b.Data.buildingName == "Castle")?.gameObject;
+    //IEnumerator SpawnFinalWaveForArmy(ArmyData army)
+    //{
+    //    GameObject castleObj = army.Buildings
+    //        .FirstOrDefault(b => b.Data.buildingName == "Castle")?.gameObject;
 
-        if (castleObj == null)
+    //    if (castleObj == null)
+    //    {
+    //        Debug.LogWarning("Final wave: no castle found!");
+    //        yield break;
+    //    }
+
+    //    Transform castlePoint = castleObj.transform;
+    //    for (int i = 0; i < startingSpawnPoints.Length; i++)
+    //    {
+    //        GameObject unitObj = Instantiate(enemyPrefab, castlePoint.position, Quaternion.identity);
+    //        var unit = unitObj.GetComponent<UnitInstance>();
+    //        // Initialize unit (pathfinder, materials…)
+    //        // ...
+
+    //        Vector3 dest = startingSpawnPoints[i].position;
+    //        unit.SetDestination(dest);
+    //        army.Units.Add(unit);
+    //        yield return new WaitForSeconds(0.3f);
+    //    }
+
+    //    StartCoroutine(FinalWaveAI(army));
+    //}
+
+    //IEnumerator FinalWaveAI(ArmyData army)
+    //{
+    //    while (army.Units.Count > 0)
+    //    {
+    //        foreach (var unit in army.Units.ToList())
+    //        {
+    //            if (unit.IsDead) continue;
+
+    //            var enemyUnits = AllArmiesManager.Instance
+    //                                .AllArmies
+    //                                .Where(a => a != army)
+    //                                .SelectMany(a => a.Units)
+    //                                .Where(u => !u.IsDead);
+
+    //            UnitInstance target = enemyUnits
+    //                .OrderBy(u => Vector3.Distance(unit.transform.position, u.transform.position))
+    //                .ThenBy(u => u.CurrentHealth)
+    //                .FirstOrDefault();
+
+    //            if (target != null)
+    //                unit.Attack(target);
+    //        }
+    //        yield return new WaitForSeconds(1f);
+    //    }
+    //}
+
+    public void SpawnWave(int waveNumber)
+    {
+        Debug.Log($"Spawning wave {waveNumber}");
+        waveCount = waveNumber;
+        spawnCount = 0;
+
+        switch (waveNumber)
         {
-            Debug.LogWarning("Final wave: no castle found!");
-            yield break;
+            case 1:
+                maxSpawnCount = currentSpawnPoints.Count;
+                break;
+            case 2:
+                for (int i = 0; i < wave2SpawnPoints.Length; i++)
+                {
+                    currentSpawnPoints.Add(wave2SpawnPoints[i]);
+                    Debug.Log($"Added starting spawn point {wave2SpawnPoints[i].position} to current spawn points.");
+                }
+                currentUnitType = unitTypeL2; // Change to level 2 unit type
+                currentEnemyPrefab = enemyPrefabL2; // Change to level 2 enemy prefab
+                maxSpawnCount = currentSpawnPoints.Count;
+                break;
+            case 3:
+                for (int i = 0; i < wave3SpawnPoints.Length; i++)
+                {
+                    currentSpawnPoints.Add(wave3SpawnPoints[i]);
+                    Debug.Log($"Added starting spawn point {wave3SpawnPoints[i].position} to current spawn points.");
+                }
+                currentUnitType = unitTypeL3; // Change to level 3 unit type
+                currentEnemyPrefab = enemyPrefabL3; // Change to level 3 enemy prefab
+                maxSpawnCount = currentSpawnPoints.Count;
+                break;
+            default:
+                Debug.LogWarning("No setup for this wave!");
+                break;
         }
 
-        Transform castlePoint = castleObj.transform;
-        for (int i = 0; i < spawnPoints.Length; i++)
-        {
-            GameObject unitObj = Instantiate(enemyPrefab, castlePoint.position, Quaternion.identity);
-            var unit = unitObj.GetComponent<UnitInstance>();
-            // Initialize unit (pathfinder, materials…)
-            // ...
-
-            Vector3 dest = spawnPoints[i].position;
-            unit.SetDestination(dest);
-            army.Units.Add(unit);
-            yield return new WaitForSeconds(0.3f);
-        }
-
-        StartCoroutine(FinalWaveAI(army));
+        StartCoroutine(SpawnLoop());
     }
-
-    IEnumerator FinalWaveAI(ArmyData army)
-    {
-        while (army.Units.Count > 0)
-        {
-            foreach (var unit in army.Units.ToList())
-            {
-                if (unit.IsDead) continue;
-
-                var enemyUnits = AllArmiesManager.Instance
-                                    .AllArmies
-                                    .Where(a => a != army)
-                                    .SelectMany(a => a.Units)
-                                    .Where(u => !u.IsDead);
-
-                UnitInstance target = enemyUnits
-                    .OrderBy(u => Vector3.Distance(unit.transform.position, u.transform.position))
-                    .ThenBy(u => u.CurrentHealth)
-                    .FirstOrDefault();
-
-                if (target != null)
-                    unit.Attack(target);
-            }
-            yield return new WaitForSeconds(1f);
-        }
-    }
-
 
     private IEnumerator SpawnLoop()
     {
-        while (spawnCount < maxSpawnCount)
+        foreach (Transform spawnPoint in currentSpawnPoints)
         {
-            SpawnEnemy();
+            SpawnEnemy(spawnPoint);
             spawnCount++;
             yield return new WaitForSeconds(spawnInterval);
         }
 
-        Debug.Log("Reached max spawn count. Stopping spawner.");
+        Debug.Log("All enemies in this wave spawned.");
     }
 
-    private void SpawnEnemy()
+    private void SpawnEnemy(Transform spawnPoint)
     {
-        Debug.Log($"SpawnPoints array is {(spawnPoints == null ? "NULL" : spawnPoints.Length.ToString())}");
-        if (spawnPoints == null || spawnPoints.Length == 0)
+        Debug.Log($"SpawnPoints array is {(startingSpawnPoints == null ? "NULL" : startingSpawnPoints.Length.ToString())}");
+        if (startingSpawnPoints == null || startingSpawnPoints.Length == 0)
         {
             Debug.LogError("No spawn points assigned — aborting spawn.");
             return;
         }
 
+        //foreach loop starts here
+
         // Pick a random spawn point
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         Vector2Int spawnPoint2 = new Vector2Int ((int)spawnPoint.position.x, (int)spawnPoint.position.z);
 
         // Instantiate the enemy prefab
-        GameObject enemyObj = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+        GameObject enemyObj = Instantiate(currentEnemyPrefab, spawnPoint.position, Quaternion.identity); //which enemyPrefab?
 
         // Initialize UnitInstance (or your own component)
         UnitInstance unit = enemyObj.GetComponent<UnitInstance>();
         if (unit != null)
         {
-            //// Always assign ArmyID 1
-            //unit.ArmyID = 1;
-
-            //// Try to find the ArmyData with ID 1
-            //ArmyData armyData = FindObjectsOfType<ArmyData>()
-            //    .FirstOrDefault(a => a.ArmyID == 1);
-
             GameObject armyGO = GameObject.Find("AM (1)");
             if (armyGO == null)
             {
@@ -182,11 +232,12 @@ public class EnemySpawner : MonoBehaviour
                 Debug.LogError("Could not find ArmyData with ArmyID 1!");
             }
 
-            unit.Initialize(pathFinder, armyData.TeamMaterial, gridManager, unitType, spawnPoint2, armyData, 1);
-            unit.MaxHealth = unitType.MaxHp;
-            unit.CurrentHealth = unitType.MaxHp;
+            unit.Initialize(pathFinder, armyData.TeamMaterial, gridManager, currentUnitType, spawnPoint2, armyData, 1);
+            unit.MaxHealth = currentUnitType.MaxHp;
+            unit.CurrentHealth = currentUnitType.MaxHp;
 
             // Calculate path
+            // too early to calculate path at start
             GridNode startNode = gridManager.GetNodeFromWorldPosition(spawnPoint.position);
             GridNode endNode = gridManager.EndNode;
 
@@ -198,42 +249,6 @@ public class EnemySpawner : MonoBehaviour
         else
         {
             Debug.LogError("Spawned enemy prefab is missing UnitInstance component.");
-        }
-
-        // Optionally create and attach a health bar
-        if (healthBarPrefab != null)
-        {
-            GameObject hbObj = Instantiate(healthBarPrefab);
-            Debug.Log($"Instantiated HealthBar for unit {spawnCount}- {unit.name}");
-            HealthBar hb = hbObj.GetComponent<HealthBar>();
-            if (hb != null)
-            {
-                if (mainCamera == null)
-                {
-                    // Fallback: Try to find camera by tag
-                    mainCamera = Camera.main;
-                    Debug.LogWarning("Main camera was null, passing Camera.main to HealthBar instead.");
-                }
-                else
-                {
-                    Debug.Log($"Using assigned main camera: {mainCamera.name} for health bar.");
-                }
-
-                    hb.Initialize(
-                        enemyObj.transform,
-                        unit,
-                        mainCamera
-                    );
-                Debug.Log($"HealthBar initialized for unit {unit.name} at position {enemyObj.transform.position}.");
-            }
-            else
-            {
-                Debug.LogError("Spawned health bar prefab has no HealthBar component!");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Health bar prefab was null, skipping health bar.");
         }
     }
 
