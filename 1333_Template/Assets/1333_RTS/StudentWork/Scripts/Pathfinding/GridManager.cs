@@ -19,6 +19,8 @@ public class GridManager : MonoBehaviour
     private readonly Dictionary<Vector2Int, UnitInstance> _unitOccupancy = new(); /// Tracks units that occupy grid nodes.
     private readonly Dictionary<Vector2Int, MachineInstance> _machineOccupancy = new(); /// Tracks units that occupy grid nodes.
     private List<Vector3> _currentDebugPath;
+    public Transform visualParent;
+    public GameObject grassPrefab, rockPrefab, dangerPrefab;
 
 
     public bool IsInitialized { get; private set; } = false;
@@ -48,6 +50,25 @@ public class GridManager : MonoBehaviour
             _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
             Debug.Log("Debug path recalculated.");
         }
+    }
+
+    private void InstantiateTerrainVisual(GridNode node)
+    {
+        GameObject prefab = null;
+
+        if (node.TerrainType == terrainTypes[1])
+            prefab = grassPrefab;
+        else if (node.TerrainType == terrainTypes[2])
+            prefab = rockPrefab;
+        else if (node.TerrainType == terrainTypes[0])
+            prefab = dangerPrefab;
+        else
+        {
+            Debug.LogWarning($"Unknown terrain type: {node.TerrainType}");
+            return;
+        }
+
+        Instantiate(prefab, node.WorldPosition, Quaternion.identity);
     }
 
     public void InitializeGrid()
@@ -80,6 +101,7 @@ public class GridManager : MonoBehaviour
                     TerrainType = terrain,
                     GizmoColor = terrain.gizmoColor
                 };
+                InstantiateTerrainVisual(gridNodes[x, y]);
             }
         }
 
