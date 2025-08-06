@@ -29,7 +29,9 @@ public class EnemyAIManager : MonoBehaviour
     private int enemiesPerWave = 2;
 
     [SerializeField] private EnemySpawner enemySpawner;
-    private int waveNumber = 0;
+    [SerializeField] private AvailableTeamUnits availableTeamUnits;
+    [SerializeField] private UnitType mageType;
+    public int waveNumber = 0;
 
     private void Start()
     {
@@ -99,16 +101,53 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         // Check for wave 2
-        if (enemyUnits.Count == 0 && hasAttacked && waveNumber == 1) //how to make sure they have already attacked before this round?
+        if (playerArmyData.unitKillCount == 12 && hasAttacked && waveNumber == 1) //how to make sure they have already attacked before this round?
         {
+            //check if any dead enemy units are still in the game- if there are, remove them
+            enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
+            foreach (var unit in enemyUnits)
+            {
+                if (unit.IsDead)
+                {
+                    enemyArmyData.Units.Remove(unit);
+                    Destroy(unit); // Destroy the dead unit
+                    enemyUnits.Remove(unit); // Remove from the local list
+                    Debug.Log($"Removed dead enemy unit: {unit.name}");
+                }
+            }
             StartNextWave();
+            availableTeamUnits.AvailableUnits.Add(mageType); // Add Mage to available units after wave 1 is cleared
             Debug.Log("All wave 1 enemies dead. Starting wave 2.");
             selectionManager.statusText.text = "Wave 2 incoming!";
         }
 
         // Optionally wave 3 too
-        if (enemyUnits.Count == 0 && hasAttacked && enemyArmyData.NonStartingBuildings.Count == 0 && waveNumber == 2) //how to make sure they have already attacked before this round?
+        if (playerArmyData.unitKillCount == 30 && hasAttacked && playerArmyData.buildingKillCount == 19 && waveNumber == 2) //how to make sure they have already attacked before this round?
         {
+            //check if any dead enemy units are still in the game- if there are, remove them
+            enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
+            foreach (var unit in enemyUnits)
+            {
+                if (unit.IsDead)
+                {
+                    enemyArmyData.Units.Remove(unit);
+                    Destroy(unit); // Destroy the dead unit
+                    enemyUnits.Remove(unit); // Remove from the local list
+                    Debug.Log($"Removed dead enemy unit: {unit.name}");
+                }
+            }
+            //check if any dead enemy walls are still in the game- if there are, remove them
+            enemyBuildings = enemyArmyData.Buildings.Where(b => b != null && !b.IsDead).ToList();
+            foreach (var building in enemyBuildings)
+            {
+                if (building.IsDead)
+                {
+                    enemyArmyData.Buildings.Remove(building);
+                    Destroy(building); // Destroy the dead wall
+                    enemyBuildings.Remove(building); // Remove from the local list
+                    Debug.Log($"Removed dead enemy wall: {building.name}");
+                }
+            }
             StartNextWave();
             Debug.Log("All wave 2 enemies dead and all enemy walls collapsed. Starting wave 3.");
             selectionManager.statusText.text = "Wave 3 incoming!";
@@ -147,7 +186,7 @@ public class EnemyAIManager : MonoBehaviour
 
     void HandleDelayCountdown(int aliveUnits, int numBuildings)
     {
-        if (aliveUnits >= 5 && numBuildings >= 4)
+        if (aliveUnits >= 10 && numBuildings >= 4)
         {
             //start wave 1 here?
             if (!delayTimerStarted)

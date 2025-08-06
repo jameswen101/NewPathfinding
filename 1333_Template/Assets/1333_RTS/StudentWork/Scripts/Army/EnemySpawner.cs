@@ -30,15 +30,6 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private int maxSpawnCount; //number will be bigger in later waves
     [SerializeField] private ArmyData finalWaveArmy;
 
-    private IEnumerator StartSpawningWhenReady()
-    {
-        // Wait until both player and enemy are set
-        yield return new WaitUntil(() => armyMaterialSelector.materialsSelected);
-        // now safe to spawn
-        StartCoroutine(SpawnLoop());
-        Debug.Log("Enemy spawner started spawning enemies.");
-    }
-
     private void Start()
     {
         currentUnitType = unitTypeL1; // Set the initial unit type to level 1
@@ -54,85 +45,18 @@ public class EnemySpawner : MonoBehaviour
         }
         else
         {
-            armyMaterialSelector.OnArmiesReady += SetupSpawning;
+            armyMaterialSelector.OnArmiesReady += SetupSpawning; //calls spawn the 3rd time
             Debug.Log("ArmyMaterialSelector is assigned.");
         }
-        //if (finalWaveArmy == null)
-        //{
-        //    Debug.LogError("FinalWaveArmy reference not assigned in EnemySpawner!");
-        //}
-        //else
-        //{
-        //    finalWaveArmy.OnFinalWaveStart += StartFinalWave;
-        //}          
-        StartCoroutine(StartSpawningWhenReady());
+       
         Debug.Log("EnemySpawner is waiting for materials to be selected.");
     }
 
     private void SetupSpawning()
     {
-        StartCoroutine(SpawnLoop());
+        SpawnWave(1); // Start with wave 1
         Debug.Log("EnemySpawner: started spawning.");
     }
-
-    //void StartFinalWave(ArmyData triggeringArmy)
-    //{
-    //    StartCoroutine(SpawnFinalWaveForArmy(triggeringArmy));
-    //}
-
-    //IEnumerator SpawnFinalWaveForArmy(ArmyData army)
-    //{
-    //    GameObject castleObj = army.Buildings
-    //        .FirstOrDefault(b => b.Data.buildingName == "Castle")?.gameObject;
-
-    //    if (castleObj == null)
-    //    {
-    //        Debug.LogWarning("Final wave: no castle found!");
-    //        yield break;
-    //    }
-
-    //    Transform castlePoint = castleObj.transform;
-    //    for (int i = 0; i < startingSpawnPoints.Length; i++)
-    //    {
-    //        GameObject unitObj = Instantiate(enemyPrefab, castlePoint.position, Quaternion.identity);
-    //        var unit = unitObj.GetComponent<UnitInstance>();
-    //        // Initialize unit (pathfinder, materials…)
-    //        // ...
-
-    //        Vector3 dest = startingSpawnPoints[i].position;
-    //        unit.SetDestination(dest);
-    //        army.Units.Add(unit);
-    //        yield return new WaitForSeconds(0.3f);
-    //    }
-
-    //    StartCoroutine(FinalWaveAI(army));
-    //}
-
-    //IEnumerator FinalWaveAI(ArmyData army)
-    //{
-    //    while (army.Units.Count > 0)
-    //    {
-    //        foreach (var unit in army.Units.ToList())
-    //        {
-    //            if (unit.IsDead) continue;
-
-    //            var enemyUnits = AllArmiesManager.Instance
-    //                                .AllArmies
-    //                                .Where(a => a != army)
-    //                                .SelectMany(a => a.Units)
-    //                                .Where(u => !u.IsDead);
-
-    //            UnitInstance target = enemyUnits
-    //                .OrderBy(u => Vector3.Distance(unit.transform.position, u.transform.position))
-    //                .ThenBy(u => u.CurrentHealth)
-    //                .FirstOrDefault();
-
-    //            if (target != null)
-    //                unit.Attack(target);
-    //        }
-    //        yield return new WaitForSeconds(1f);
-    //    }
-    //}
 
     public void SpawnWave(int waveNumber)
     {
@@ -170,19 +94,98 @@ public class EnemySpawner : MonoBehaviour
                 break;
         }
 
-        StartCoroutine(SpawnLoop());
+        StartCoroutine(SpawnLoop()); //calls spawn the 4th time
     }
 
     private IEnumerator SpawnLoop()
     {
+        Debug.Log($"Starting spawn loop for wave {waveCount} with max spawn count {maxSpawnCount}.");
         foreach (Transform spawnPoint in currentSpawnPoints)
         {
             SpawnEnemy(spawnPoint);
             spawnCount++;
+            for (int i = 0; i < currentSpawnPoints.Count; i++)
+            {
+                Debug.Log($"Spawn Point {i}: {currentSpawnPoints[i].position}");
+            }
             yield return new WaitForSeconds(spawnInterval);
         }
 
         Debug.Log("All enemies in this wave spawned.");
+
+        if (waveCount == 1)
+        {
+                //remove every 2nd soldier
+                GameObject armyGO = GameObject.Find("AM (1)");
+                if (armyGO == null)
+                {
+                    Debug.LogError("Army GameObject 'AM (1)' not found!");
+                }
+
+                ArmyData armyData = armyGO.GetComponent<ArmyData>();
+                if (armyData == null)
+                {
+                    Debug.LogError("'AM (1)' does not have an ArmyData component!");
+                }
+
+                if (armyData != null)
+            {
+                    List<UnitInstance> reordered = new();
+                //add the 12 units we wish to keep
+                    for (int i = 0; i < armyData.Units.Count-1; i+=2)
+                {
+                        var unit = armyData.Units[i];
+                        if (unit != null)
+                    {
+                        reordered.Add(unit);
+                        Debug.Log($"Unit[{i}] now in reordered[{reordered.Count-1}]. These units will be kept.");
+                    }
+                }
+
+                //add the 12 units we wish to remove
+                for (int i = armyData.Units.Count - 1; i >= 1; i -= 2)
+                {
+                    var unit = armyData.Units[i];
+                    if (unit != null)
+                    {
+                        reordered.Add(unit);
+                        Debug.Log($"Unit[{i}] now in reordered[{reordered.Count - 1}]. These units will be removed.");
+                    }
+                }
+                for (int i = reordered.Count - 1; i >= 12; i--)
+                {
+                    var unit = reordered[i];
+                    if (unit != null)
+                    {
+                        armyData.Units.Remove(unit);
+                        Debug.Log($"Removed unit {unit.name} from the reordered list.");
+                    }
+                }
+                // Destroy GameObjects not in reordered[0-11]
+                for (int i = 12; i < reordered.Count; i++)
+                {
+                    var unit = reordered[i];
+                    if (unit != null)
+                    {
+                        Destroy(unit.gameObject);
+                    }
+                }
+
+                // Then trim the Units list by clearing and adding only the first 12
+                armyData.Units.Clear();
+                for (int i = 0; i < 12 && i < reordered.Count; i++)
+                {
+                    armyData.Units.Add(reordered[i]);
+                }
+
+                Debug.Log("Cleaned up ArmyData.Units to keep only the first 12.");
+            }
+                else
+                {
+                    Debug.LogError("Could not find ArmyData with ArmyID 1!");
+                }
+
+        }
     }
 
     private void SpawnEnemy(Transform spawnPoint)

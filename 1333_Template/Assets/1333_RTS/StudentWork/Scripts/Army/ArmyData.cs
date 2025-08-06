@@ -48,7 +48,7 @@ public class ArmyData : MonoBehaviour, IArmyData
 
     public event Action<ArmyData> OnFinalWaveStart;
 
-
+    public int unitKillCount, buildingKillCount;
     private void Awake()
     {
         Debug.Log($"ArmyData Awake with ArmyID={ArmyID}");

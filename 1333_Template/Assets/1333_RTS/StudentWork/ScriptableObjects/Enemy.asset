@@ -16,7 +16,7 @@ MonoBehaviour:
   height: 1
   maxHp: 100
   moveSpeed: 1
-  damage: 10
+  damage: 5
   defence: 1
   attackType: 2
   range: 1
@@ -26,3 +26,5 @@ MonoBehaviour:
   placementOffset: {x: 0, y: 2, z: 0}
   CanAttackUnits: 1
   CanAttackBuildings: 1
+  CanHeal: 0
+  HealingAmount: 50

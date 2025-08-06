@@ -50,12 +50,6 @@ public class UnitInstance : UnitBase, IHasHealth
     [SerializeField] private GameObject buildingDestroyedFXPrefab;
 
 
-    //public void UpdateHealthText()
-    //{
-    //    healthText.text = $"{CurrentHealth} / {MaxHealth}";
-    //}
-
-
     protected override void Awake()
     {
         base.Awake();
@@ -83,14 +77,6 @@ public class UnitInstance : UnitBase, IHasHealth
         {
             Debug.LogWarning($"Unit {name} has no HealthBar assigned at Awake.");
         }
-        //if (healthText == null)
-        //{
-        //    healthText = GetComponentInChildren<TextMeshPro>();
-        //    if (healthText == null)
-        //    {
-        //        Debug.LogWarning($"Unit {name} has no HealthText assigned at Awake.");
-        //    }
-        //}
     }
 
 
@@ -125,7 +111,7 @@ public class UnitInstance : UnitBase, IHasHealth
 
         if (teamMaterial == null)
         {
-            Debug.LogError("[UnitInstance.Initialize] teamMaterial is NULL!");
+            Debug.LogWarning("[UnitInstance.Initialize] teamMaterial is NULL!");
             return;
         }
 
@@ -439,25 +425,91 @@ public class UnitInstance : UnitBase, IHasHealth
         }
     }
 
+    public void Heal(UnitInstance target)
+    {
+        if (target == null || target.IsDead)
+            return;
+        // Check if UnitType is null
+        if (UnitType == null)
+        {
+            Debug.LogError("UnitType undefined");
+            return;
+        }
+        // Check if target is same team
+        if (Army != null && target.Army != null)
+        {
+            if (Army.TeamMaterial != target.Army.TeamMaterial)
+            {
+                Debug.Log("Cannot heal unit on another team.");
+                return;
+            }
+        }
+        // Check if healing amount is valid
+        if (UnitType.HealingAmount <= 0)
+        {
+            Debug.LogWarning($"{UnitType.unitTypeName} has no healing ability.");
+            return;
+        }
+        // Play healing SFX
+        audioManager.PlaySFX("Healing");
+        // Heal the target
+        target.CurrentHealth += UnitType.HealingAmount;
+        target.CurrentHealth = Mathf.Min(target.CurrentHealth, target.MaxHealth); // Ensure it doesn't exceed max health
+        // Update health bar and text
+        target.healthBar.UpdateHealthBar(target.CurrentHealth, target.MaxHealth);
+        target.healthBar.SetHealthText(target.CurrentHealth, target.MaxHealth);
+        Debug.Log($"{UnitType.unitTypeName} healed {target.UnitType.unitTypeName} for {UnitType.HealingAmount} health.");
+    }
+
     public void Die()
     {
         IsDead = true;
-        //animator.SetTrigger("Die");
-        // Play explosion SFX
+
         audioManager.PlaySFX("Explosion");
-        // play particle FX
-        // Disable the unit after a short delay
         Destroy(gameObject, 2f);
+
         if (Army != null)
         {
             Army.Units.Remove(this);
             Debug.Log($"{Army.name} has {Army.Units.Count} units remaining.");
+
+            if (Army.ArmyID == 1) // Enemy died -> increment Player's kill count
+            {
+                var playerArmyGO = GameObject.Find("AM");
+                var playerArmy = playerArmyGO?.GetComponent<ArmyData>();
+
+                if (playerArmy != null)
+                {
+                    playerArmy.unitKillCount++;
+                    Debug.Log($"Player kill count: {playerArmy.unitKillCount}");
+                }
+                else
+                {
+                    Debug.LogWarning("Player army not found.");
+                }
+            }
+            else if (Army.ArmyID == 0) // Player died -> increment Enemy's kill count
+            {
+                var enemyArmyGO = GameObject.Find("AM(1)");
+                var enemyArmy = enemyArmyGO?.GetComponent<ArmyData>();
+
+                if (enemyArmy != null)
+                {
+                    enemyArmy.unitKillCount++;
+                    Debug.Log($"Enemy kill count: {enemyArmy.unitKillCount}");
+                }
+                else
+                {
+                    Debug.LogWarning("Enemy army not found.");
+                }
+            }
         }
         else
         {
             Debug.LogWarning($"Army is null, cannot remove {name}.");
         }
     }
+
 
     public void SetPath(List<Vector3> path)
     {

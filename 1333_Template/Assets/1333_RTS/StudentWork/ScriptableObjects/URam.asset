@@ -23,6 +23,8 @@ MonoBehaviour:
   unitTypeName: Ram
   unitPrefab: {fileID: 4186638767369967124, guid: 7355ce1a67fd131419d96ccabf93bc9b, type: 3}
   unitIcon: {fileID: 21300000, guid: c4efd40ac46d768419955f9ddb89a1da, type: 3}
-  placementOffset: {x: 0, y: 2, z: 0}
+  placementOffset: {x: 0, y: 5, z: 0}
   CanAttackUnits: 0
   CanAttackBuildings: 1
+  CanHeal: 0
+  HealingAmount: 50

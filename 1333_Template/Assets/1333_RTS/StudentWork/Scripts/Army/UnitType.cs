@@ -21,6 +21,8 @@ public class UnitType : ScriptableObject
     [Header("Attack Permissions")]
     public bool CanAttackUnits;
     public bool CanAttackBuildings;
+    public bool CanHeal;
+    public int HealingAmount = 50;
 
     //public TeamArmies army;
 

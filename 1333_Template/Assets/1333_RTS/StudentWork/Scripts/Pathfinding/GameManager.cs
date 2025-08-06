@@ -12,12 +12,15 @@ public class GameManager : MonoBehaviour
     private bool selectingStart = true;
     [SerializeField] private ArmyPathfindingTester armyPathfindingTester;
     [SerializeField] private AudioManager audioManager;
+    [SerializeField] private EnemyAIManager enemyAIManager;
+    private ArmyData playerArmy;
+    private ArmyData enemyArmy;
+
     // Start is called before the first frame update
 
     private void Awake()
     {
         gridManager.InitializeGrid();
-        //unitManager.SpawnDummyUnit();
     }
 
     void Start()
@@ -92,21 +95,49 @@ public class GameManager : MonoBehaviour
         {
             var armyData = gameObject.AddComponent<ArmyData>();
 
-            armyData.Initialize(gridManager, pathFinder, i, armyPathfindingTester.armyMaterials[i]); //setting up the army
-            //change to TeamMaterialsCollection
+            armyData.Initialize(gridManager, pathFinder, i, armyPathfindingTester.armyMaterials[i]);
 
-            // Example spawn for now: one unit in each army
+            if (i == 0)
+            {
+                playerArmy = armyData;
+            }
+            else if (i == 1)
+            {
+                enemyArmy = armyData;
+            }
+
             foreach (var unitComp in armyComposition.entries)
             {
                 var startX = Random.Range(0, gridSizeX);
                 var startY = Random.Range(0, gridSizeY);
-
                 var position = new Vector3(startX * nodeSize, 0, startY * nodeSize);
-                //var unitData = new UnitData
-                //{ UnitType = unitComp.UnitConfig, Position = position, Health = unitComp.UnitConfig.MaxHp, ArmyId = i };
-
-                //armyData.SpawnUnit(unitData);
+                // Presumably you instantiate and place units here later
             }
         }
+
     }
+
+    public void LoadGame()
+    {
+        SaveData data = SaveSystem.LoadGame();
+        if (data != null)
+        {
+            SceneManager.LoadScene(data.sceneName);
+            // pass data to relevant systems after scene load
+        }
+    }
+
+    public void SaveAll()
+    {
+        SaveData data = new SaveData();
+        data.sceneName = SceneManager.GetActiveScene().name;
+        data.waveNumber = enemyAIManager.waveNumber;
+
+        data.playerUnits = UnitSaveUtility.SaveUnits(playerArmy._units);
+        data.enemyUnits = UnitSaveUtility.SaveUnits(enemyArmy._units);
+
+        SaveSystem.SaveGame(data);
+    }
+
+
 }

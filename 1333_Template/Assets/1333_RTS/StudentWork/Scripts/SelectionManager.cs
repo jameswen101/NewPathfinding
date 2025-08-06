@@ -150,6 +150,7 @@ public class SelectionManager : MonoBehaviour
                     }
                 }
                 //choose target unit
+                //if source can heal, allow the player to choose a player unit as target
                 else if (sourceUnit != null && sourceUnit.Army != null && sourceUnit.Army.IsPlayerControlled) //if player has selected a source unit
                 {
                     targetObject = clicked.transform;
@@ -162,9 +163,18 @@ public class SelectionManager : MonoBehaviour
                     // Check if the target unit is from the same army
                     if (targetUnit.Army != null && targetUnit.Army.IsPlayerControlled)
                     {
-                        Debug.Log("Cannot select player units as target.");
-                        statusText.text = "Cannot select player units as target.";
-                        return;
+                        if (sourceUnit.UnitType.CanHeal)
+                        {
+                            Debug.Log($"Target unit selected: {targetUnit.name}");
+                            statusText.text = $"Target unit selected: {targetUnit.name}";
+                            ConfirmSelection();
+                        }
+                        else
+                        {
+                            Debug.Log("Cannot select player units as target for attack.");
+                            statusText.text = "Cannot select player units as target for attack.";
+                            return;
+                        }
                     }
                     else
                     {
@@ -240,19 +250,32 @@ public class SelectionManager : MonoBehaviour
             // Check if they are enemies
             if (sourceUnit.Army != null && targetUnit.Army != null)
             {
-                if (sourceUnit.Army.TeamMaterial == targetUnit.Army.TeamMaterial) //change to Army ID
+                if (sourceUnit.Army.TeamMaterial == targetUnit.Army.TeamMaterial) //if they are from the same team
                 {
-                    Debug.Log("Cannot attack unit on the same team.");
-                }
-                else
-                {
-                    // They are on different teams, ATTACK!
-                    if (sourceUnit == null || targetUnit == null)
-                    {
-                        Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
-                        return;
-                    }
 
+                    if (sourceUnit.UnitType.CanHeal)
+                    {
+                        // If the source unit is a Mage, allow healing
+                        sourceUnit.Heal(targetUnit);
+                        Debug.Log($"Issued heal command: {sourceUnit.name} heals {targetUnit.name}");
+                        Debug.Log($"Target health after healing: {targetUnit.CurrentHealth}");
+                        statusText.text = $"Target health after healing: {targetUnit.CurrentHealth}";
+                        //don't reset sourceUnit, as player may want to heal multiple units in a row
+                        //if player wishes to change units, they can press backspace/delete
+                        targetUnit = null; // Reset target unit after healing
+                        targetObject = null; // Reset target object after healing
+                    }
+                    else
+                    {
+                        Debug.Log($"{sourceUnit.UnitType} cannot heal other units.");
+                        statusText.text = $"{sourceUnit.UnitType} cannot heal other units.";
+                        //don't reset sourceUnit, as they may want to attack multiple units in a row or pressed on a player unit by mistake
+                        targetUnit = null; // Deselect target unit as well
+                        targetObject = null; // Deselect target object as well
+                    }
+                }
+                else //if they are from different teams
+                {
                     // Determine what type of target this is
                     bool isTargetBuilding = targetObject != null && targetObject.CompareTag("Building");
 
@@ -263,35 +286,16 @@ public class SelectionManager : MonoBehaviour
                     {
                         //compare unit types; if source unit is NOT an enemy unit type + if enemy unit IS an enemy unit type, then attack
 
-                        if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy" || sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy") 
-                            //if unit types are from different sides
+                        if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy" || sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy")
+                        //if unit types are from different sides
                         {
                             sourceUnit.Attack(targetUnit);
                             Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
                             Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
                             statusText.text = $"Target health remaining: {targetUnit.CurrentHealth}";
-                            if (targetUnit.CurrentHealth <= 0)
-                            {
-                                statusText.text = $"{targetUnit.name} has died.";
-                            }
                             sourceUnit = null; // Reset source unit after attack
                             targetUnit = null; // Reset target unit after attack
                             targetObject = null; // Reset target object after attack
-                        }
-                        else
-                        {
-                            if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy")
-                            {
-                                Debug.Log("Enemy units cannot attack each other.");
-                                statusText.text = "Enemy units cannot attack each other.";
-                                sourceUnit = null; targetUnit = null;
-                            }
-                            if (sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy")
-                            {
-                                Debug.Log("Player units cannot attack each other.");
-                                statusText.text = "Player units cannot attack each other.";
-                                targetUnit = null;
-                            }
                         }
                     }
                     else
@@ -310,9 +314,6 @@ public class SelectionManager : MonoBehaviour
                     Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
                     return;
                 }
-                //sourceUnit.Attack(targetUnit);
-                //Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
-                //Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
             }
         }
         else if (sourceUnit != null && targetBuilding != null)
@@ -324,6 +325,12 @@ public class SelectionManager : MonoBehaviour
                 sourceUnit.AttackBuilding(targetBuilding);
                 Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetBuilding.name}");
                 Debug.Log($"Target health remaining: {targetBuilding.CurrentHealth}");
+                statusText.text = $"{targetBuilding.name} health remaining: {targetBuilding.CurrentHealth}";
+                // Reset selection
+                sourceUnit = null;
+                targetUnit = null;
+                targetBuilding = null;
+
                 if (targetBuilding.name == "Castle" && targetBuilding.CurrentHealth <= 0)
                 {
                     Debug.Log("Castle destroyed! Game over.");
@@ -347,11 +354,6 @@ public class SelectionManager : MonoBehaviour
         {
             Debug.LogWarning("Cannot issue attack: missing source or target unit.");
         }
-
-        // Reset selection
-        sourceUnit = null;
-        targetUnit = null;
-        targetBuilding = null;
     }
 
 }
