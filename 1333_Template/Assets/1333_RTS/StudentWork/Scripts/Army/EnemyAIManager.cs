@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyAIManager : MonoBehaviour
 {
     [SerializeField] private ArmyData playerArmyData;
     [SerializeField] private ArmyData enemyArmyData;
     [SerializeField] private SelectionManager selectionManager;
+    [SerializeField] private AudioManager audioManager; // Prefab for enemy units
     private List<UnitInstance> playerUnits;
     private List<UnitInstance> enemyUnits;
     private List <BuildingBase> playerBuildings;
@@ -30,8 +32,14 @@ public class EnemyAIManager : MonoBehaviour
 
     [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private AvailableTeamUnits availableTeamUnits;
+    [SerializeField] private BuildingTypes buildingTypes;
     [SerializeField] private UnitType mageType;
+    [SerializeField] private UnitType policeType;
+    [SerializeField] private BuildingData houseData;
     public int waveNumber = 0;
+    public bool isUnlockedScreenOpen = false;
+    private bool wave2Started = false;
+    private bool wave3Started = false;
 
     private void Start()
     {
@@ -115,10 +123,17 @@ public class EnemyAIManager : MonoBehaviour
                     Debug.Log($"Removed dead enemy unit: {unit.name}");
                 }
             }
-            StartNextWave();
-            availableTeamUnits.AvailableUnits.Add(mageType); // Add Mage to available units after wave 1 is cleared
-            Debug.Log("All wave 1 enemies dead. Starting wave 2.");
-            selectionManager.statusText.text = "Wave 2 incoming!";
+            availableTeamUnits.AddUnit(mageType); // Add Mage to available units after wave 1 is cleared
+            audioManager.PlaySFX("Level Up Short"); // Play level up sound
+            SceneManager.LoadScene("MageUnlockScreen", LoadSceneMode.Additive); // Load mage unlock screen on top of existing scene
+            isUnlockedScreenOpen = true;
+            if (!isUnlockedScreenOpen && !wave2Started)
+            {
+                StartNextWave();
+                wave2Started = true;
+                Debug.Log("Wave 2 starting now!");
+            }
+
         }
 
         // Optionally wave 3 too
@@ -148,9 +163,21 @@ public class EnemyAIManager : MonoBehaviour
                     Debug.Log($"Removed dead enemy wall: {building.name}");
                 }
             }
-            StartNextWave();
-            Debug.Log("All wave 2 enemies dead and all enemy walls collapsed. Starting wave 3.");
-            selectionManager.statusText.text = "Wave 3 incoming!";
+
+            availableTeamUnits.AddUnit(policeType); // Add Police to available units after wave 1 is cleared
+            audioManager.PlaySFX("Level Up Short"); // Play level up sound
+            SceneManager.LoadScene("PoliceUnlockScreen", LoadSceneMode.Additive); // Load mage unlock screen on top of existing scene
+            isUnlockedScreenOpen = true;
+            buildingTypes.AddBuilding(houseData); // Add House to available buildings after wave 2 is cleared
+            audioManager.PlaySFX("Level Up Short"); // Play level up sound
+            SceneManager.LoadScene("HouseUnlockScreen", LoadSceneMode.Additive); // Load house unlock screen on top of existing scene
+            isUnlockedScreenOpen = true;
+            if (!isUnlockedScreenOpen && !wave3Started)
+            {
+                StartNextWave();
+                Debug.Log("All wave 2 enemies dead and all enemy walls collapsed. Starting wave 3.");
+                selectionManager.statusText.text = "Wave 3 incoming!";
+            }
         }
     }
 

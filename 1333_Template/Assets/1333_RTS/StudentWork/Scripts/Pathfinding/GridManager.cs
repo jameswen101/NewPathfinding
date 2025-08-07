@@ -241,19 +241,6 @@ public class GridManager : MonoBehaviour
         _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
     }
 
-
-
-    private void DoSomethingOnEachNode(System.Action thingToDo)
-    {
-        for (int x = 0; x < gridSettings.GridSizeX; x++)
-        {
-            for(int y = 0;y < gridSettings.GridSizeY;y++)
-            {
-                thingToDo?.Invoke();
-            }
-        }
-    }
-
     public bool CanPlaceBuilding(BuildingTypes type, Vector2Int origin)
     {
         for (int dx = 0; dx < type.Buildings[dx].width; dx++)

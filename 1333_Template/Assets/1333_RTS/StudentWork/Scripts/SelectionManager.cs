@@ -289,7 +289,7 @@ public class SelectionManager : MonoBehaviour
                         if (sourceUnit.UnitType.unitTypeName == "Enemy" && targetUnit.UnitType.unitTypeName != "Enemy" || sourceUnit.UnitType.unitTypeName != "Enemy" && targetUnit.UnitType.unitTypeName == "Enemy")
                         //if unit types are from different sides
                         {
-                            sourceUnit.Attack(targetUnit);
+                            sourceUnit.Attack(targetUnit); //make the attack automated
                             Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetUnit.name}");
                             Debug.Log($"Target health remaining: {targetUnit.CurrentHealth}");
                             statusText.text = $"Target health remaining: {targetUnit.CurrentHealth}";
@@ -322,7 +322,7 @@ public class SelectionManager : MonoBehaviour
             AttackType attackType = sourceUnit.UnitType.attackType;
             if (sourceUnit.UnitType.CanAttackBuildings)
             {
-                sourceUnit.AttackBuilding(targetBuilding);
+                sourceUnit.AttackBuilding(targetBuilding); //make the attack automated
                 Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetBuilding.name}");
                 Debug.Log($"Target health remaining: {targetBuilding.CurrentHealth}");
                 statusText.text = $"{targetBuilding.name} health remaining: {targetBuilding.CurrentHealth}";

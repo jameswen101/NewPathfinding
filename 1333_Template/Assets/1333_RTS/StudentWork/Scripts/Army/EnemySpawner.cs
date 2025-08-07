@@ -29,6 +29,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<Transform> currentSpawnPoints; // Current spawn points based on wave
     [SerializeField] private int maxSpawnCount; //number will be bigger in later waves
     [SerializeField] private ArmyData finalWaveArmy;
+    private bool cleanupDone = false;
 
     private void Start()
     {
@@ -70,6 +71,12 @@ public class EnemySpawner : MonoBehaviour
                 maxSpawnCount = currentSpawnPoints.Count;
                 break;
             case 2:
+                if (wave2SpawnPoints == null || wave2SpawnPoints.Length == 0)
+                {
+                    Debug.LogError("Wave 2 spawn points are not assigned or empty!");
+                    return;
+                }
+                cleanupDone = false; // Reset cleanupDone for the new wave
                 for (int i = 0; i < wave2SpawnPoints.Length; i++)
                 {
                     currentSpawnPoints.Add(wave2SpawnPoints[i]);
@@ -80,6 +87,12 @@ public class EnemySpawner : MonoBehaviour
                 maxSpawnCount = currentSpawnPoints.Count;
                 break;
             case 3:
+                if (wave3SpawnPoints == null || wave3SpawnPoints.Length == 0)
+                {
+                    Debug.LogError("Wave 3 spawn points are not assigned or empty!");
+                    return;
+                }
+                cleanupDone = false; // Reset cleanupDone for the new wave
                 for (int i = 0; i < wave3SpawnPoints.Length; i++)
                 {
                     currentSpawnPoints.Add(wave3SpawnPoints[i]);
@@ -128,19 +141,21 @@ public class EnemySpawner : MonoBehaviour
                     Debug.LogError("'AM (1)' does not have an ArmyData component!");
                 }
 
-                if (armyData != null)
+                if (armyData != null && !cleanupDone)
             {
                     List<UnitInstance> reordered = new();
                 //add the 12 units we wish to keep
-                    for (int i = 0; i < armyData.Units.Count-1; i+=2)
+                // Keep every 2nd unit from 0 to 22 -> stops at index 22
+                for (int i = 0; i <= armyData.Units.Count - 2; i += 2)
                 {
-                        var unit = armyData.Units[i];
-                        if (unit != null)
+                    var unit = armyData.Units[i];
+                    if (unit != null)
                     {
                         reordered.Add(unit);
-                        Debug.Log($"Unit[{i}] now in reordered[{reordered.Count-1}]. These units will be kept.");
+                        Debug.Log($"Keeping Units[{i}] -> reordered[{reordered.Count - 1}]");
                     }
                 }
+
 
                 //add the 12 units we wish to remove
                 for (int i = armyData.Units.Count - 1; i >= 1; i -= 2)
@@ -178,6 +193,7 @@ public class EnemySpawner : MonoBehaviour
                     armyData.Units.Add(reordered[i]);
                 }
 
+                cleanupDone = true; // Set cleanupDone to true after cleanup
                 Debug.Log("Cleaned up ArmyData.Units to keep only the first 12.");
             }
                 else

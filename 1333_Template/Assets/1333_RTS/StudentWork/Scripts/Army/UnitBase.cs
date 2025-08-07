@@ -17,7 +17,7 @@ public abstract class UnitBase : MonoBehaviour
 
     [SerializeField] protected HealthBar healthBar;
 
-    public void TakeDamage(int incomingDamage)
+    public void TakeDamage(int incomingDamage, UnitInstance attacker)
     {
         int mitigated = Mathf.Max(incomingDamage - Defence, 1); //no need to say UnitType.Defence
         CurrentHealth -= mitigated;

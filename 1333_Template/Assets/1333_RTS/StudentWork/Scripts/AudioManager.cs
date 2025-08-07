@@ -15,6 +15,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource hoverButtonSource; // SFX for when a button is hovered
     [SerializeField] private AudioSource incorrectPlacementSource; // SFX for when a unit/building is placed incorrectly
     [SerializeField] private AudioSource beepSource; // SFX for when a button is clicked
+    [SerializeField] private AudioSource levelUpSource; // SFX for when player unlocks new units/buildings + healing sound
 
     [Header("Audio Clips")]
     [SerializeField] private List<AudioClip> musicClips;
@@ -23,11 +24,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private Dictionary<string, AudioClip> musicDict;
     [SerializeField] private Dictionary<string, AudioClip> sfxDict;
 
-    // Mixer groups (optional, can leave commented if not using)
-    //[SerializeField] private AudioMixerGroup placementGroup;
-    //[SerializeField] private AudioMixerGroup footstepGroup;
-    //[SerializeField] private AudioMixerGroup attackGroup;
-    //[SerializeField] private AudioMixerGroup spawnGroup;
 
     private void Awake()
     {

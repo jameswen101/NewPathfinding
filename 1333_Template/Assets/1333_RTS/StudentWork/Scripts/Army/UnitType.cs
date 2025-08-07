@@ -23,6 +23,9 @@ public class UnitType : ScriptableObject
     public bool CanAttackBuildings;
     public bool CanHeal;
     public int HealingAmount = 50;
+    public bool CanEscort;
+    public bool RetaliateOnAttack = true;
+    public int RetaliatoryDamage = 40;
 
     //public TeamArmies army;
 

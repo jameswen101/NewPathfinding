@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8315651436439870365}
   - component: {fileID: 7355688103799416606}
   - component: {fileID: 3022120702278259479}
+  - component: {fileID: 7422182464049018423}
   m_Layer: 0
   m_Name: HousePrefab
   m_TagString: Untagged
@@ -78,6 +79,25 @@ MonoBehaviour:
   audioManager: {fileID: 0}
   gridManager: {fileID: 0}
   pathFinder: {fileID: 0}
+--- !u!114 &7422182464049018423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8685846073606839510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e1445a635bde042a6d191eaf4ccf50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  peasantPrefab: {fileID: 107215439079981954, guid: a9da6c01b708f8746bfc4813e5c17e8b, type: 3}
+  house: {fileID: 3022120702278259479}
+  spawnCooldown: 5
+  gridManager: {fileID: 0}
+  pathFinder: {fileID: 0}
+  armyData: {fileID: 0}
+  peasantUnitType: {fileID: 11400000, guid: 4441dbb573bf37a4c8b84564fd39bae4, type: 2}
 --- !u!1001 &263025187962539175
 PrefabInstance:
   m_ObjectHideFlags: 0

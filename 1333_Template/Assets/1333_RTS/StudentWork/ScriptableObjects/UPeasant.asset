@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe38355d8b2ea6649b316fa0a283bf00, type: 3}
+  m_Name: UPeasant
+  m_EditorClassIdentifier: 
+  width: 1
+  height: 1
+  maxHp: 50
+  moveSpeed: 1
+  damage: 2
+  defence: 1
+  attackType: 0
+  range: 1
+  unitTypeName: Peasant
+  unitPrefab: {fileID: 107215439079981954, guid: a9da6c01b708f8746bfc4813e5c17e8b, type: 3}
+  unitIcon: {fileID: 21300000, guid: 37722fd88398fd142a9ba3488a6c5a3f, type: 3}
+  placementOffset: {x: 0, y: 2, z: 0}
+  CanAttackUnits: 0
+  CanAttackBuildings: 1
+  CanHeal: 0
+  HealingAmount: 50
+  CanEscort: 0
+  RetaliateOnAttack: 1
+  RetaliatoryDamage: 40

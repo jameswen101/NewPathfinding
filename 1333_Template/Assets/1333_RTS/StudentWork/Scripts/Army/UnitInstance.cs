@@ -161,18 +161,7 @@ public class UnitInstance : UnitBase, IHasHealth
             }
             renderer.materials = mats;
         }
-        //// Instantiate as child of the unit
-        //GameObject healthBarObj = Instantiate(
-        //    healthBarPrefab,
-        //    transform // parent transform
-        //);
 
-        //// Optional: set local offset
-        
-
-        //// Get HealthBar component
-        //HealthBar healthBar = healthBarObj.GetComponent<HealthBar>();
-        //healthBar.transform.localPosition = new Vector3(0, 2f, 2f);
         // Initialize it
         healthBar.Initialize(this.transform, this, Camera.main);
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
@@ -343,7 +332,7 @@ public class UnitInstance : UnitBase, IHasHealth
             Destroy(bloodFX, 2.0f);
         }
 
-        target.TakeDamage(UnitType.Damage);
+        target.TakeDamage(UnitType.Damage, this);
 
         Debug.Log($"{UnitType.unitTypeName} attacked {target.UnitType.unitTypeName} for {UnitType.Damage} damage.");
 
@@ -352,9 +341,15 @@ public class UnitInstance : UnitBase, IHasHealth
             target.Die();
             Debug.Log($"{target.UnitType.unitTypeName} has died.");
         }
+
+        if (target.UnitType.CanEscort)
+        {
+            TakeDamage(target.UnitType.RetaliatoryDamage, target);
+            Debug.Log($"{name} took {target.UnitType.RetaliatoryDamage} for attacking a police unit.");
+        }
     }
 
-    public void AttackBuilding(BuildingInstance target)
+    public virtual void AttackBuilding(BuildingInstance target)
     {
         if (target == null || target.IsDead)
             return;
@@ -420,7 +415,7 @@ public class UnitInstance : UnitBase, IHasHealth
 
         if (target.Data.IsDefensiveStructure)
         {
-            TakeDamage(target.Data.retaliationDamage);
+            TakeDamage(target.Data.retaliationDamage, this);
             Debug.Log($"{name} took {target.Data.retaliationDamage} for attacking tower.");
         }
     }
@@ -451,7 +446,7 @@ public class UnitInstance : UnitBase, IHasHealth
             return;
         }
         // Play healing SFX
-        audioManager.PlaySFX("Healing");
+        audioManager.PlaySFX("Level Up Short");
         // Heal the target
         target.CurrentHealth += UnitType.HealingAmount;
         target.CurrentHealth = Mathf.Min(target.CurrentHealth, target.MaxHealth); // Ensure it doesn't exceed max health

@@ -38,7 +38,7 @@ public class UnitPlacementUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (enemyAIManager.waveNumber == 2)
+        if (availableTeamUnits.HasNewUnits)
         {
             // refresh available team units
             if (buttonCount != availableTeamUnits.AvailableUnits.Count)
@@ -55,6 +55,7 @@ public class UnitPlacementUI : MonoBehaviour
                     buttonCount++;
                 }
             }
+            availableTeamUnits.HasNewUnits = false;
         }
     }
 }
