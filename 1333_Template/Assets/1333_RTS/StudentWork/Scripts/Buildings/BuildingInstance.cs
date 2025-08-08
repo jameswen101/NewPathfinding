@@ -16,7 +16,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
 
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private GridManager gridManager;
-    [SerializeField] private PathFinder pathFinder;
+    public PathFinder pathFinder;
 
     public int XStart { get; private set; }
     public int ZStart { get; private set; }
@@ -187,7 +187,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
         {
             OwningArmy.Buildings.Remove(this);
             OwningArmy.CheckFinalWave();
-            Debug.Log($"{OwningArmy.name} has {OwningArmy.Buildings.Count} units remaining.");
+            Debug.Log($"{OwningArmy.name} has {OwningArmy.Buildings.Count} buildings remaining.");
             if (!OwningArmy.IsPlayerControlled && (!OwningArmy.Buildings.Any(b => b.name.Contains("Castle"))))
             {
                 Debug.Log("Castle destroyed");

@@ -6,10 +6,10 @@ public class BuildingPlacer : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private ArmyData armyData;
+    public ArmyData armyData;
     [SerializeField] private GameObject healthBarPrefab;
     [SerializeField] private AudioManager audioManager;
-    [SerializeField] private PathFinder pathFinder;
+    public PathFinder pathFinder;
 
     private BuildingData selectedBuilding;
     private GameObject previewObject;

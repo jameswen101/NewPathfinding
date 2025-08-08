@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be73208b08816f24db989da76d4379a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitType: {fileID: 0}
+  unitType: {fileID: 11400000, guid: 4441dbb573bf37a4c8b84564fd39bae4, type: 2}
   healthBar: {fileID: 1987198875040192547}
   animator: {fileID: 2972311236178184674}
   skinRoot: {fileID: 107215439079981954}
@@ -65,6 +65,7 @@ MonoBehaviour:
   buildingDestroyedFXPrefab: {fileID: 160018, guid: 43cc1a347ac43cd498e91db9fb766337, type: 3}
   attackInterval: 1.5
   attackRange: 1.5
+  castleTarget: {fileID: 0}
   linkedBuilding: {fileID: 0}
 --- !u!120 &2881218987365131457
 LineRenderer:

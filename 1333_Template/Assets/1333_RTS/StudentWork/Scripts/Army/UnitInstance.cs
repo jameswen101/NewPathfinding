@@ -478,6 +478,7 @@ public class UnitInstance : UnitBase, IHasHealth
                 {
                     playerArmy.unitKillCount++;
                     Debug.Log($"Player kill count: {playerArmy.unitKillCount}");
+                    playerArmy.SetKillCountText(playerArmy.unitKillCount);
                 }
                 else
                 {
@@ -493,6 +494,7 @@ public class UnitInstance : UnitBase, IHasHealth
                 {
                     enemyArmy.unitKillCount++;
                     Debug.Log($"Enemy kill count: {enemyArmy.unitKillCount}");
+                    enemyArmy.SetKillCountText(enemyArmy.unitKillCount);
                 }
                 else
                 {

@@ -16,7 +16,7 @@ MonoBehaviour:
   height: 1
   maxHp: 100
   moveSpeed: 1
-  damage: 10
+  damage: 5
   defence: 1
   attackType: 1
   range: 3

@@ -20,17 +20,17 @@ public class PeasantSpawner : MonoBehaviour
     {
         spawnPoint = this.transform;
         spawnGridPosition = new Vector2Int(Mathf.RoundToInt(spawnPoint.position.x), Mathf.RoundToInt(spawnPoint.position.z));
-        gridManager = GameObject.Find("GridM").GetComponent<GridManager>();
+        gridManager = GameObject.Find("GridM").GetComponent<GridManager>(); //go to the house prefab -> get GridManager component
         if (gridManager == null)
         {
             Debug.LogError("GridManager not found on PeasantSpawner.");
         }
-        pathFinder = GameObject.Find("PathFinder").GetComponent<PathFinder>();
+        pathFinder = house.GetComponent<BuildingInstance>().pathFinder; //get PathFinder from the house instance
         if (pathFinder == null)
         {
             Debug.LogError("PathFinder not found on PeasantSpawner.");
         }
-        armyData = GameObject.Find("AM").GetComponent<ArmyData>();
+        armyData = house.GetComponent<BuildingInstance>().Army; //get ArmyData from the house instance
         if (armyData == null)
         {
             Debug.LogError("ArmyData not found on PeasantSpawner.");
@@ -41,11 +41,13 @@ public class PeasantSpawner : MonoBehaviour
     {
         if (Time.time >= lastSpawnTime + spawnCooldown)
         {
-            Instantiate(peasantPrefab, spawnPoint.position, Quaternion.identity);
-            PeasantUnit peasantUnit = peasantPrefab.GetComponent<PeasantUnit>();
-            peasantUnit.Initialize(pathFinder, armyData.TeamMaterial, gridManager, peasantUnitType, spawnGridPosition, armyData, armyData.ArmyID);
-            lastSpawnTime = Time.time;
-            peasantUnit.linkedBuilding = house;
+            var go = Instantiate(peasantPrefab, spawnPoint.position, Quaternion.identity);
+            var peasantUnit = go.GetComponent<PeasantUnit>(); // the instance
+            peasantUnit.Initialize(pathFinder, armyData.TeamMaterial, gridManager,
+                                   peasantUnitType, spawnGridPosition, armyData, armyData.ArmyID);
+            peasantUnit.SetHouse(house); // Set the house reference for the peasant unit
+            Debug.Log($"Spawner set {peasantUnit.name}'s house to {house?.name}");
+
         }
     }
 

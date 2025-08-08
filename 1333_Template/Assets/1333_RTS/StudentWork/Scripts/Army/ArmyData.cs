@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -49,6 +50,8 @@ public class ArmyData : MonoBehaviour, IArmyData
     public event Action<ArmyData> OnFinalWaveStart;
 
     public int unitKillCount, buildingKillCount;
+
+    public TextMeshProUGUI unitKillCountText;
     private void Awake()
     {
         Debug.Log($"ArmyData Awake with ArmyID={ArmyID}");
@@ -57,6 +60,19 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
     private bool isRegistered;
+
+    public void SetKillCountText(int killCount)
+    {
+        if (unitKillCountText != null)
+        {
+            unitKillCountText.text = $"Kill count: {killCount}";
+            Debug.Log($"Set unitKillCountText to: {killCount}");
+        }
+        else
+        {
+            Debug.LogError("unitKillCountText is not assigned in ArmyData.");
+        }
+    }
 
     void Start()
     {

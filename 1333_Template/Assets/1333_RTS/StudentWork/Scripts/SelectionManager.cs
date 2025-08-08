@@ -16,15 +16,33 @@ public class SelectionManager : MonoBehaviour
     [SerializeField] private ArmyData playerArmy;
     [SerializeField] private ArmyData enemyArmy;
     [SerializeField] private SoldierMovementManager soldierMovementManager;
+    [SerializeField] private EnemyAIManager enemyAIManager;
     public TextMeshProUGUI statusText;
     private bool sourceWasMoving = false;
     private bool canAutoAttackBuildings = false;
+    private int attackDelay = 4; // Delay in seconds before the next attack can be issued
+    private Dictionary<UnitInstance, float> lastBuildingAttackTime = new Dictionary<UnitInstance, float>();
+
+    private bool CanAttackBuilding(UnitInstance unit)
+    {
+        if (!lastBuildingAttackTime.ContainsKey(unit))
+            return true; // Never attacked before
+
+        return Time.time - lastBuildingAttackTime[unit] >= attackDelay;
+    }
+
+    private void RegisterBuildingAttack(UnitInstance unit)
+    {
+        lastBuildingAttackTime[unit] = Time.time;
+    }
+
 
     void Update()
     {
-        if (playerArmy.Units.Count >= 7 && playerArmy.Buildings.Count >= 4)
+        if (playerArmy.Units.Count >= 7 && playerArmy.Buildings.Count >= 4 && enemyAIManager.delayStartTime <= 0f && enemyAIManager.startedAttacking)
         {
             canAutoAttackBuildings = true;
+            IssueAutomatedCommand(); // Automatically assign units to attack enemy buildings
         }
         if (canAutoAttackBuildings) 
         {
@@ -336,13 +354,22 @@ public class SelectionManager : MonoBehaviour
             AttackType attackType = sourceUnit.UnitType.attackType;
             if (sourceUnit.UnitType.CanAttackBuildings)
             {
-                sourceUnit.AttackBuilding(targetBuilding); //make the attack automated
-                Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetBuilding.name}");
-                Debug.Log($"Target health remaining: {targetBuilding.CurrentHealth}");
-                statusText.text = $"{targetBuilding.name} health remaining: {targetBuilding.CurrentHealth}";
-                // Reset selection
-                sourceUnit = null;
-                targetUnit = null;
+                if (CanAttackBuilding(sourceUnit))
+                {
+                    sourceUnit.AttackBuilding(targetBuilding);
+                    RegisterBuildingAttack(sourceUnit);
+                    Debug.Log($"Issued attack command: {sourceUnit.name} attacks {targetBuilding.name}");
+                    Debug.Log($"Target health remaining: {targetBuilding.CurrentHealth}");
+                    statusText.text = $"{targetBuilding.name} health remaining: {targetBuilding.CurrentHealth}";
+                    sourceUnit = null;
+                    targetUnit = null;
+                    // rest of your castle check...
+                }
+                else
+                {
+                    Debug.Log($"{sourceUnit.name} is on cooldown for building attacks.");
+                    statusText.text = $"{sourceUnit.name} is reloading before next attack.";
+                }
 
                 if (targetBuilding.name == "Castle" && targetBuilding.CurrentHealth <= 0)
                 {
@@ -379,32 +406,28 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
-    public void IssueAutomatedCommand(UnitInstance sourceUnit = null, BuildingInstance sourceBuilding = null, UnitInstance target = null)
+    public void IssueAutomatedCommand() 
+        //right now you only need it for enemy units
     {
-        this.sourceUnit = sourceUnit;
-        targetUnit = target;
-        sourceObject = (sourceUnit != null) ? sourceUnit.transform : (sourceBuilding != null) ? sourceBuilding.transform : null;
-        if (sourceBuilding != null && sourceUnit == null)
-        {
-            sourceUnit = playerArmy.Units[0]; // Default to the first unit in the player's army if no source unit is specified
-            //look for closest unit -> go to building where enemy will attack
-            for (int i = 1; i < enemyArmy.Units.Count; i++)
+            //decide who to attack
+            for (int i = 0; i < enemyArmy.Units.Count; i++)
             {
-                UnitInstance unit = enemyArmy.Units[i];
-                if (unit == null || unit.IsDead || !unit.UnitType.CanAttackUnits) //skip over all units that can't attack enemy units
-                    continue;
-                // Check if this unit is closer than the current targetUnit
-                if (Vector3.Distance(sourceBuilding.transform.position, unit.transform.position) < Vector3.Distance(sourceBuilding.transform.position, sourceUnit.transform.position))
-                {
-                    sourceUnit = unit; // Assign the closest unit to sourceUnit
-                }
+            targetUnit = enemyArmy.Units[i];
+            if (playerArmy.Units[i] == null || playerArmy.Units[i].IsDead || !playerArmy.Units[i].UnitType.CanAttackUnits) //skip over all units that can't attack enemy units
+                continue;
+            else
+            {
+                sourceUnit = playerArmy.Units[i]; // Default to the first unit in the player's army if no source unit is specified
+                break;
             }
-            sourceUnit.SetDestination(sourceBuilding.transform.position);
-            Debug.Log($"Assigned closest unit {sourceUnit.name} to attack enemy unit {target.name} trying to attack building {sourceBuilding.name}");
-        }
-        if (sourceUnit == null && sourceBuilding == null)
+                            
+            }
+            sourceUnit.SetDestination(targetUnit.transform.position);
+            Debug.Log($"Assigned unit {sourceUnit.name} to attack enemy unit {targetUnit.name}.");
+
+        if (sourceUnit == null)
         {
-            Debug.LogError("No target unit or building specified for automated command.");
+            Debug.LogError("No target unit specified for automated command.");
             return;
         }
 
@@ -514,6 +537,4 @@ public class SelectionManager : MonoBehaviour
             }
         }
     }
-
-
 }

@@ -8,8 +8,9 @@ public class PeasantUnit : UnitInstance
     [SerializeField] private float attackRange = 1.5f;
     private float lastAttackTime;
 
-    private BuildingInstance castleTarget;
+    [SerializeField] private BuildingInstance castleTarget;
     public BuildingInstance linkedBuilding; //how to assign house in scene to prefab object?
+    private bool hasSetHouse = false;
 
     private void Start()
     {
@@ -31,9 +32,10 @@ public class PeasantUnit : UnitInstance
             AttackBuilding(castleTarget);
             lastAttackTime = Time.time;
         }
-        if (linkedBuilding == null || linkedBuilding.IsDead)
+        // Good: only read IsDead if linkedBuilding is not null
+        if (hasSetHouse && (linkedBuilding == null || linkedBuilding.IsDead))
         {
-            Die(); // Or Destroy(gameObject)
+            Die();
             return;
         }
     }
@@ -43,6 +45,13 @@ public class PeasantUnit : UnitInstance
         if (target == null) return;
         target.TakeDamage(1); // peasants do 1 damage
         Debug.Log($"{name} peasant hit {target.name}");
+    }
+
+    public void SetHouse(BuildingInstance house)
+    {
+        linkedBuilding = house;
+        Debug.Log($"{name} linked to house {linkedBuilding?.name}");
+        hasSetHouse = true;
     }
 
 }

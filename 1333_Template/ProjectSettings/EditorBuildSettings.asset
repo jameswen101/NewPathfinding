@@ -29,6 +29,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/1333_RTS/StudentWork/Scenes/MageUnlockScreen.unity
     guid: 41be8369f9fbe3f498bce183fa15e825
+  - enabled: 1
+    path: Assets/1333_RTS/StudentWork/Scenes/PoliceUnlockScreen.unity
+    guid: 5ad9b0aa7b3b55b4b8ee9cdba4bd75a3
+  - enabled: 1
+    path: Assets/1333_RTS/StudentWork/Scenes/HouseUnlockScreen.unity
+    guid: eaf5e4778663b0c42abd777d9ac55fb1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

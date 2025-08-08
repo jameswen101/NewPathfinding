@@ -18,17 +18,17 @@ public class EnemyAIManager : MonoBehaviour
     private int numPlayerBuildings;
 
     private bool delayTimerStarted = false;
-    private float delayStartTime;
+    public float delayStartTime;
     [SerializeField] private float attackDelayDuration = 5f; // 5 seconds delay before AI attacks
     private bool readyToAttack = false;
     private float aiTimer = 0f;
-    private bool startedAttacking = false;
+    public bool startedAttacking = false;
     private bool attackCoolingDown = false;
     private float cooldownTimer = 2f; // Timer for attack cooldown
     private bool hasAttacked = false; // Flag to check if AI has attacked at least once
     private bool isAttacking = false;
     private float attackInterval = 2f; // attack every 2 seconds
-    private int enemiesPerWave = 2;
+    private int enemiesPerWave = 4;
 
     [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private AvailableTeamUnits availableTeamUnits;
@@ -389,12 +389,10 @@ public class EnemyAIManager : MonoBehaviour
             if (selectedTarget is UnitInstance uiT)
             {
                 selectedEnemy.Attack(uiT);
-                selectionManager.IssueAutomatedCommand(uiT, null, selectedEnemy);
             }
             else
             {
                 selectedEnemy.AttackBuilding(selectedTarget as BuildingInstance);
-                selectionManager.IssueAutomatedCommand(null, selectedTarget as BuildingInstance, selectedEnemy); //Selection manager decides who is the source unit
             }
 
             if (selectedTarget is MonoBehaviour mb) // all components inherit from MonoBehaviour

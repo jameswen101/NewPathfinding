@@ -16,7 +16,7 @@ MonoBehaviour:
   height: 1
   maxHp: 100
   moveSpeed: 1
-  damage: 5
+  damage: 10
   defence: 1
   attackType: 2
   range: 1
@@ -28,3 +28,6 @@ MonoBehaviour:
   CanAttackBuildings: 1
   CanHeal: 0
   HealingAmount: 50
+  CanEscort: 0
+  RetaliateOnAttack: 1
+  RetaliatoryDamage: 40
