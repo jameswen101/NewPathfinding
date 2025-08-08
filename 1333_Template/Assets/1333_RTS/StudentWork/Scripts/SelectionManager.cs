@@ -42,7 +42,10 @@ public class SelectionManager : MonoBehaviour
         if (playerArmy.Units.Count >= 7 && playerArmy.Buildings.Count >= 4 && enemyAIManager.delayStartTime <= 0f && enemyAIManager.startedAttacking)
         {
             canAutoAttackBuildings = true;
-            IssueAutomatedCommand(); // Automatically assign units to attack enemy buildings
+            if (enemyArmy.Units.Count > 0)
+            {
+                IssueAutomatedCommand(); // Automatically assign units to attack enemy buildings
+            }
         }
         if (canAutoAttackBuildings) 
         {
@@ -409,20 +412,47 @@ public class SelectionManager : MonoBehaviour
     public void IssueAutomatedCommand() 
         //right now you only need it for enemy units
     {
-            //decide who to attack
-            for (int i = 0; i < enemyArmy.Units.Count; i++)
-            {
-            targetUnit = enemyArmy.Units[i];
-            if (playerArmy.Units[i] == null || playerArmy.Units[i].IsDead || !playerArmy.Units[i].UnitType.CanAttackUnits) //skip over all units that can't attack enemy units
+        //decide who to attack
+        for (int i = 0; i < enemyArmy.Units.Count; i++)
+        {
+            var enemy = enemyArmy.Units[i];
+
+            // Skip destroyed/null enemies
+            if (enemy == null || enemy.IsDead)
                 continue;
-            else
-            {
-                sourceUnit = playerArmy.Units[i]; // Default to the first unit in the player's army if no source unit is specified
-                break;
-            }
-                            
-            }
-            sourceUnit.SetDestination(targetUnit.transform.position);
+
+            // Assign targetUnit to the first valid enemy and break
+            targetUnit = enemy;
+            break;
+        }
+
+        if (targetUnit == null)
+        {
+            Debug.LogError("No target unit found for automated command.");
+            return;
+        }
+
+        // Now pick a valid source unit from player's army
+        for (int i = 0; i < playerArmy.Units.Count; i++)
+        {
+            var playerUnit = playerArmy.Units[i];
+
+            if (playerUnit == null || playerUnit.IsDead || !playerUnit.UnitType.CanAttackUnits)
+                continue;
+
+            sourceUnit = playerUnit;
+            break;
+        }
+
+        if (sourceUnit == null)
+        {
+            Debug.LogError("No source unit available for automated command.");
+            return;
+        }
+
+        // Now issue your attack order here
+
+        sourceUnit.SetDestination(targetUnit.transform.position);
             Debug.Log($"Assigned unit {sourceUnit.name} to attack enemy unit {targetUnit.name}.");
 
         if (sourceUnit == null)
