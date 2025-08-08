@@ -6,7 +6,12 @@ using UnityEngine;
 
 public class BuildingSaveData 
 {
-    public string unitType;
+    public string buildingName;
+    public BuildingData buildingData
+    {
+        get { return Resources.Load<BuildingData>(buildingName); }
+        set { buildingName = value.name; }
+    }
     public Vector3 position;
     public int currentHP;
 }

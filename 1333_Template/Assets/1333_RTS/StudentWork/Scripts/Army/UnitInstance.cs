@@ -163,6 +163,7 @@ public class UnitInstance : UnitBase, IHasHealth
         }
 
         // Initialize it
+        healthBar.GetComponent<ClickProxy>().linkedObject = this.gameObject;
         healthBar.Initialize(this.transform, this, Camera.main);
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI

@@ -252,6 +252,10 @@ PrefabInstance:
       propertyPath: m_PresetInfoIsWorld
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4536633602300384127, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: linkedObject
+      value: 
+      objectReference: {fileID: 8685846073606839510}
     - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: targetTransform
       value: 

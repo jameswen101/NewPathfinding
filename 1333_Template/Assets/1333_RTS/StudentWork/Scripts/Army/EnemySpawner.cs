@@ -28,7 +28,7 @@ public class EnemySpawner : MonoBehaviour
     private int waveCount = 0; // Track the current wave
     [SerializeField] private List<Transform> currentSpawnPoints; // Current spawn points based on wave
     [SerializeField] private int maxSpawnCount; //number will be bigger in later waves
-    [SerializeField] private ArmyData finalWaveArmy;
+    [SerializeField] private ArmyData enemyArmy;
     private bool cleanupDone = false;
 
     private void Start()
@@ -129,26 +129,14 @@ public class EnemySpawner : MonoBehaviour
         if (waveCount == 1)
         {
                 //remove every 2nd soldier
-                GameObject armyGO = GameObject.Find("AM (1)");
-                if (armyGO == null)
-                {
-                    Debug.LogError("Army GameObject 'AM (1)' not found!");
-                }
-
-                ArmyData armyData = armyGO.GetComponent<ArmyData>();
-                if (armyData == null)
-                {
-                    Debug.LogError("'AM (1)' does not have an ArmyData component!");
-                }
-
-                if (armyData != null && !cleanupDone)
+                if (enemyArmy != null && !cleanupDone)
             {
                     List<UnitInstance> reordered = new();
                 //add the 12 units we wish to keep
                 // Keep every 2nd unit from 0 to 22 -> stops at index 22
-                for (int i = 0; i <= armyData.Units.Count - 2; i += 2)
+                for (int i = 0; i <= enemyArmy.Units.Count - 2; i += 2)
                 {
-                    var unit = armyData.Units[i];
+                    var unit = enemyArmy.Units[i];
                     if (unit != null)
                     {
                         reordered.Add(unit);
@@ -158,9 +146,9 @@ public class EnemySpawner : MonoBehaviour
 
 
                 //add the 12 units we wish to remove
-                for (int i = armyData.Units.Count - 1; i >= 1; i -= 2)
+                for (int i = enemyArmy.Units.Count - 1; i >= 1; i -= 2)
                 {
-                    var unit = armyData.Units[i];
+                    var unit = enemyArmy.Units[i];
                     if (unit != null)
                     {
                         reordered.Add(unit);
@@ -172,7 +160,7 @@ public class EnemySpawner : MonoBehaviour
                     var unit = reordered[i];
                     if (unit != null)
                     {
-                        armyData.Units.Remove(unit);
+                        enemyArmy.Units.Remove(unit);
                         Debug.Log($"Removed unit {unit.name} from the reordered list.");
                     }
                 }
@@ -187,19 +175,15 @@ public class EnemySpawner : MonoBehaviour
                 }
 
                 // Then trim the Units list by clearing and adding only the first 12
-                armyData.Units.Clear();
+                enemyArmy.Units.Clear();
                 for (int i = 0; i < 12 && i < reordered.Count; i++)
                 {
-                    armyData.Units.Add(reordered[i]);
+                    enemyArmy.Units.Add(reordered[i]);
                 }
 
                 cleanupDone = true; // Set cleanupDone to true after cleanup
                 Debug.Log("Cleaned up ArmyData.Units to keep only the first 12.");
             }
-                else
-                {
-                    Debug.LogError("Could not find ArmyData with ArmyID 1!");
-                }
 
         }
     }
@@ -225,33 +209,25 @@ public class EnemySpawner : MonoBehaviour
         UnitInstance unit = enemyObj.GetComponent<UnitInstance>();
         if (unit != null)
         {
-            GameObject armyGO = GameObject.Find("AM (1)");
-            if (armyGO == null)
-            {
-                Debug.LogError("Army GameObject 'AM (1)' not found!");
-                return;
-            }
-
-            ArmyData armyData = armyGO.GetComponent<ArmyData>();
-            if (armyData == null)
+            if (enemyArmy == null)
             {
                 Debug.LogError("'AM (1)' does not have an ArmyData component!");
                 return;
             }
 
-            if (armyData != null)
+            if (enemyArmy != null)
             {
-                unit.Army = armyData; // if you want the reference
-                armyData.Units.Add(unit);
+                unit.Army = enemyArmy; // if you want the reference
+                enemyArmy.Units.Add(unit);
                 Debug.Log($"Added unit {unit.name} to ArmyID 1.");
-                Debug.Log($"Units count now: {armyData.Units.Count}");
+                Debug.Log($"Units count now: {enemyArmy.Units.Count}");
             }
             else
             {
                 Debug.LogError("Could not find ArmyData with ArmyID 1!");
             }
 
-            unit.Initialize(pathFinder, armyData.TeamMaterial, gridManager, currentUnitType, spawnPoint2, armyData, 1);
+            unit.Initialize(pathFinder, enemyArmy.TeamMaterial, gridManager, currentUnitType, spawnPoint2, enemyArmy, 1);
             unit.MaxHealth = currentUnitType.MaxHp;
             unit.CurrentHealth = currentUnitType.MaxHp;
 

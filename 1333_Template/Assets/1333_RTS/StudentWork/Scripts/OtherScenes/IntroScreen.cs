@@ -8,14 +8,17 @@ using UnityEngine.EventSystems;
 public class IntroScreen : MonoBehaviour
 {
     public Button playButton;
+    public Button loadButton;
     public Button howToPlayButton;
     public Button quitButton;
+    public GameStartIntent gameStartIntent;
     [SerializeField] private IntroAudioManager introAudioManager;
 
     void Start()
     {
         Debug.Log($"IntroScreen.Start: introAudioManager = {(introAudioManager == null ? "NULL" : introAudioManager.name)}, playButton={(playButton == null ? "NULL" : "OK")}");
         playButton.onClick.AddListener(StartGame);
+        loadButton.onClick.AddListener(LoadGame); 
         howToPlayButton.onClick.AddListener(HowToPlay);
         quitButton.onClick.AddListener(QuitGame);
         if (introAudioManager == null)
@@ -25,8 +28,20 @@ public class IntroScreen : MonoBehaviour
         introAudioManager.PlayMusic("Gamela", true);
     }
 
+
     public void StartGame()
     {
+        gameStartIntent.mode = GameStartIntent.StartMode.NewGame;
+        Debug.Log($"New game pressed. Intent mode = {gameStartIntent.mode}");
+        introAudioManager.StopMusic(); // stop music
+        introAudioManager.PlaySFX("Beep Short");
+        SceneManager.LoadScene("PathfindingTest");
+    }
+
+    public void LoadGame()
+    {
+        gameStartIntent.mode = GameStartIntent.StartMode.LoadGame;
+        Debug.Log($"Load game pressed. Intent mode = {gameStartIntent.mode}");
         introAudioManager.StopMusic(); // stop music
         introAudioManager.PlaySFX("Beep Short");
         SceneManager.LoadScene("PathfindingTest");

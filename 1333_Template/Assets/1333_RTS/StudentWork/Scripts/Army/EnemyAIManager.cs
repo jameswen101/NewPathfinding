@@ -12,8 +12,8 @@ public class EnemyAIManager : MonoBehaviour
     [SerializeField] private AudioManager audioManager; // Prefab for enemy units
     private List<UnitInstance> playerUnits;
     private List<UnitInstance> enemyUnits;
-    private List <BuildingBase> playerBuildings;
-    private List<BuildingBase> enemyBuildings;
+    private List <BuildingInstance> playerBuildings;
+    private List<BuildingInstance> enemyBuildings;
     private int alivePlayerUnits;
     private int numPlayerBuildings;
 
@@ -40,6 +40,8 @@ public class EnemyAIManager : MonoBehaviour
     public bool isUnlockedScreenOpen = false;
     private bool wave2Started = false;
     private bool wave3Started = false;
+    public GameObject upcomingTarget;
+    public UnitInstance selectedSource; // The unit that is currently attacking
 
     private void Start()
     {
@@ -77,6 +79,7 @@ public class EnemyAIManager : MonoBehaviour
                 }
             }
             enemySpawner.SpawnWave(1); // or 2, or 3 depending on your logic
+            UpdateEnemyAI();
         }
 
         if (enemyArmyData == null)
@@ -194,6 +197,9 @@ public class EnemyAIManager : MonoBehaviour
     enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
     playerBuildings = playerArmyData.Buildings.Where(b => b != null && !b.IsDead).ToList();
     enemyBuildings = enemyArmyData.Buildings.Where(b => b != null && !b.IsDead).ToList();
+        Debug.Log($"[AI] Player buildings: {playerBuildings.Count}, Player units: {playerUnits.Count}");
+        Debug.Log($"[AI] Enemy units: {enemyUnits.Count}, Enemy buildings: {enemyBuildings.Count}");
+
 
         int numPlayerBuildings = playerBuildings.Count;
         if (numPlayerBuildings < 4)
@@ -213,8 +219,9 @@ public class EnemyAIManager : MonoBehaviour
 
     void HandleDelayCountdown(int aliveUnits, int numBuildings)
     {
-        if (aliveUnits >= 10 && numBuildings >= 4)
+        if (aliveUnits >= 7 && numBuildings >= 4)
         {
+            if (!ValidateForAttack()) return;
             //start wave 1 here?
             if (!delayTimerStarted)
             {
@@ -239,23 +246,80 @@ public class EnemyAIManager : MonoBehaviour
         }
     }
 
-    private IEnumerator AttackRoutine()
+    private bool ValidateForAttack()
     {
-        while (playerUnits.Count > 0 || playerBuildings.Count > 0)
-        {
-            for (int i = 0; i < enemiesPerWave; i++)
-            {
-                if (enemyUnits.Count == 0)
-                    break;
+        if (!playerArmyData) { Debug.LogError("playerArmyData is NULL"); return false; }
+        if (!enemyArmyData) { Debug.LogError("enemyArmyData is NULL"); return false; }
+        if (playerArmyData.Units == null) { Debug.LogError("playerArmyData.Units is NULL"); return false; }
+        if (enemyArmyData.Units == null) { Debug.LogError("enemyArmyData.Units is NULL"); return false; }
+        if (playerArmyData.Buildings == null) { Debug.LogError("playerArmyData.Buildings is NULL"); return false; }
+        if (enemyArmyData.Buildings == null) { Debug.LogError("enemyArmyData.Buildings is NULL"); return false; }
+        if (!selectionManager) { Debug.LogWarning("selectionManager is NULL (will skip player auto)"); }
+        return true;
+    }
 
-                Debug.Log($"Enemy attacker {i + 1} is attacking...");
-                AttackBestTarget(); // Implement logic to choose target and attacker
+    private IEnumerator AttackRoutine() //currently has a null reference
+    {
+        Debug.Log("[AttackRoutine] start");
+        if (!ValidateForAttack()) yield break;
+
+        if (playerArmyData == null || enemyArmyData == null)
+        {
+            Debug.LogError("Player or enemy army data is not assigned!");
+            yield break; // Exit if army data is not set
+        }
+        // Safe list materialization (never null)
+        playerUnits = (playerArmyData.Units ?? new List<UnitInstance>()).Where(u => u && !u.IsDead).ToList();
+        enemyUnits = (enemyArmyData.Units ?? new List<UnitInstance>()).Where(u => u && !u.IsDead).ToList();
+        playerBuildings = (playerArmyData.Buildings ?? new List<BuildingInstance>()).Where(b => b && !b.IsDead).ToList();
+
+        if (playerUnits == null)
+        {
+            Debug.LogError("Player units list is null!");
+            yield break; // Exit if player units are not set
+        }
+        if (enemyUnits == null)
+        {
+            Debug.LogError("Enemy units list is null!");
+            yield break; // Exit if enemy units are not set
+        }
+        if (playerBuildings == null)
+        {
+            Debug.LogError("Player buildings list is null!");
+            yield break; // Exit if player buildings are not set
+        }
+        while (enemyUnits.Count > 0 && playerUnits.Count > 0 || playerBuildings.Count > 0)
+        {
+            // Confirm how many healthy enemy buildings are left
+            var healthyEnemyBuildings = (enemyArmyData.Buildings ?? new List<BuildingInstance>())
+                                    .Where(b => b && !b.IsDead).ToList();
+            Debug.Log($"[AttackRoutine] enemy={enemyUnits.Count} players={playerUnits.Count} pBlds={playerBuildings.Count} eBlds={healthyEnemyBuildings.Count}");
+
+            if (enemyUnits.Count > 0)
+            {
+                for (int i = 0; i < enemiesPerWave; i++)
+                {
+                    if (enemyUnits.Count == 0) break;
+
+                    Debug.Log($"Enemy attacker {i + 1} is attacking...");
+                    Debug.Log($"[AttackRoutine] enemyUnits={enemyUnits.Count} playerUnits={playerUnits.Count} playerBuildings={playerBuildings.Count}");
+
+                    if (playerUnits.Count == 0 && playerBuildings.Count == 0)
+                    {
+                        Debug.Log("All player units and buildings destroyed. Ending attack routine.");
+                        yield break;
+                    }
+
+                    AttackBestTarget();
+                }
             }
+
 
             yield return new WaitForSeconds(attackInterval);
         }
 
         isAttacking = false;
+        Debug.Log("[AttackRoutine] end");
     }
 
 
@@ -280,7 +344,7 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         UnitInstance selectedEnemy = null;
-        object selectedTarget = null;  // can be UnitInstance or BuildingBase
+        object selectedTarget = null;  // can be UnitInstance or BuildingInstance
         float bestScore = Mathf.Infinity;
 
         // Combine units & buildings
@@ -295,12 +359,12 @@ public class EnemyAIManager : MonoBehaviour
             foreach (var target in players)
             {
                 Vector3 targetPos = (target is UnitInstance u) ? u.transform.position
-                                      : (target as BuildingBase).transform.position;
+                                      : (target as BuildingInstance).transform.position;
                 float distance = Vector3.Distance(enemy.transform.position, targetPos);
-                float hp = (target is UnitInstance ui) ? ui.CurrentHealth : (target as BuildingBase).Hp;
+                float hp = (target is UnitInstance ui) ? ui.CurrentHealth : (target as BuildingInstance).Hp;
                 float maxHp = (target is UnitInstance u1) ? u1.MaxHealth : (target as BuildingInstance).MaxHealth;
 
-                float healthRatio = hp / maxHp;
+                float healthRatio = maxHp > 0 ? hp / maxHp : 1f;
                 float weight = 30f; // tweak until behavior feels right
                 float score = distance + healthRatio * weight;
 
@@ -315,18 +379,31 @@ public class EnemyAIManager : MonoBehaviour
 
         if (selectedEnemy != null && selectedTarget != null)
         {
+            Debug.Log($"[AttackBestTarget] attacker={selectedEnemy.name} target={(selectedTarget as Object)?.name}");
             Vector3 dest = (selectedTarget is UnitInstance uT)
                 ? uT.transform.position
-                : (selectedTarget as BuildingBase).transform.position;
+                : (selectedTarget as BuildingInstance).transform.position;
+            selectedSource = selectedEnemy;
 
             selectedEnemy.SetDestination(dest);
             if (selectedTarget is UnitInstance uiT)
             {
                 selectedEnemy.Attack(uiT);
+                selectionManager.IssueAutomatedCommand(uiT, null, selectedEnemy);
             }
             else
             {
                 selectedEnemy.AttackBuilding(selectedTarget as BuildingInstance);
+                selectionManager.IssueAutomatedCommand(null, selectedTarget as BuildingInstance, selectedEnemy); //Selection manager decides who is the source unit
+            }
+
+            if (selectedTarget is MonoBehaviour mb) // all components inherit from MonoBehaviour
+            {
+                upcomingTarget = mb.gameObject;
+            }
+            else
+            {
+                Debug.LogWarning("Unable to cast target to GameObject.");
             }
 
             Debug.Log($"AI: {selectedEnemy.name} → attacking target {selectedTarget} (score: {bestScore})");
@@ -337,6 +414,7 @@ public class EnemyAIManager : MonoBehaviour
         }
         else
         {
+            Debug.LogWarning($"[AttackBestTarget] attacker={(selectedEnemy ? selectedEnemy.name : "NULL")} target={(selectedTarget == null ? "NULL" : selectedTarget.ToString())}");
             if (selectedEnemy == null)
                 Debug.LogWarning("No valid enemy found for attack.");
             if (selectedTarget == null)
@@ -356,7 +434,7 @@ public class EnemyAIManager : MonoBehaviour
             return;
 
         // Find the player's castle (assuming it's the only building remaining)
-        BuildingBase castle = playerBuildings[0];
+        BuildingInstance castle = playerBuildings[0];
         Vector3 castlePos = castle.transform.position;
 
         UnitInstance closestEnemy = null;
@@ -385,9 +463,3 @@ public class EnemyAIManager : MonoBehaviour
         }
     }
 }
-
-
-
-
-
-

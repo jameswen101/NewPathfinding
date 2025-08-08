@@ -105,6 +105,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
                 renderer.material = teamMaterial;
             }
         }
+        healthBar.GetComponent<ClickProxy>().linkedObject = this.gameObject;
         healthBar.Initialize(this.transform, this, Camera.main);
         healthBar.SetHealthText(CurrentHealth, MaxHealth); // Set initial health text
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth); // Update health bar UI
@@ -217,6 +218,12 @@ public class BuildingInstance : BuildingBase, IHasHealth
     {
         Debug.Log("Player Loses!");
         SceneManager.LoadScene("LoseScreen");
+    }
+
+    public virtual void OnDestroy()
+    {
+        if (ParentArmy != null)
+            ParentArmy.RemoveBuilding(this);
     }
 }
 

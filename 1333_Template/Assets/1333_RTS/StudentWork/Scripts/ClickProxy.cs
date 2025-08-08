@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class ClickProxy : MonoBehaviour
 {
-    public SoldierUnit linkedUnit;
+    public GameObject linkedObject;
 }
 

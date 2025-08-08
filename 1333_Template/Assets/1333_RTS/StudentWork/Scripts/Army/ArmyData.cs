@@ -22,12 +22,12 @@ public class ArmyData : MonoBehaviour, IArmyData
 
     public List<UnitInstance> _units = new();
 
-    public List<BuildingBase> _buildings = new();
+    public List<BuildingInstance> _buildings = new();
 
     public IList<UnitInstance> Units => _units;
-    public IList<BuildingBase> Buildings => _buildings;
+    public IList<BuildingInstance> Buildings => _buildings;
 
-    public List<BuildingBase> NonStartingBuildings = new(); //holds all buildings that are not starting buildings, e.g. factories, barracks, etc.
+    public List<BuildingInstance> NonStartingBuildings = new(); //holds all buildings that are not starting buildings, e.g. factories, barracks, etc.
 
     public Material TeamMaterial { get; set; }
 
@@ -205,7 +205,7 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
 
-    public void AddBuilding(BuildingBase building)
+    public void AddBuilding(BuildingInstance building)
     {
         if (!Buildings.Contains(building))
         {
@@ -215,7 +215,7 @@ public class ArmyData : MonoBehaviour, IArmyData
         }
     }
 
-    public void RemoveBuilding(BuildingBase building)
+    public void RemoveBuilding(BuildingInstance building)
     {
         if (Buildings.Contains(building))
         {

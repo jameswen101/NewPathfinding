@@ -10,13 +10,9 @@ public class HowToPlayUI : MonoBehaviour
 
     public Button playButton;
     [SerializeField] private IntroAudioManager introAudioManager;
-    //public TimerUI timer;
-    private Text buttonText;
 
     void Start()
     {
-        buttonText = GetComponentInChildren<Text>();
-        Debug.Log($"Button label: {buttonText.text}");
         Debug.Log($"[WinScreenUI] Start called. introAudioManager = {(introAudioManager == null ? "NULL" : introAudioManager.name)}");
         Debug.Log($"[WinScreenUI] playButton = {(playButton == null ? "NULL" : playButton.name)}");
 

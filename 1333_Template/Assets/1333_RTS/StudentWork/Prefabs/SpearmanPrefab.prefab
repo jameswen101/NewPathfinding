@@ -314,6 +314,10 @@ PrefabInstance:
       propertyPath: linkedUnit
       value: 
       objectReference: {fileID: 5055989960033338190}
+    - target: {fileID: 4536633602300384127, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: linkedObject
+      value: 
+      objectReference: {fileID: 4655823230317744030}
     - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: target
       value: 

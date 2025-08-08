@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
-    [SerializeField] private UnitManager unitManager;
     [SerializeField] private PathFinder pathFinder;
     [SerializeField] private ArmyComposition armyComposition;
     private bool selectingStart = true;
@@ -25,7 +24,29 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        StartNewGame(2); //starting a new game with 2 players
+
+        GameStartIntent intent = FindObjectOfType<GameStartIntent>();
+
+        if (intent != null)
+        {
+                if (intent.mode == GameStartIntent.StartMode.NewGame)
+                {
+                    StartNewGame(2);
+                }
+                else if (intent.mode == GameStartIntent.StartMode.LoadGame)
+                {
+                    LoadGame();
+                }
+
+                // Clear intent after use
+                intent.mode = GameStartIntent.StartMode.None;
+        }
+        else
+        {
+            Debug.LogWarning("GameStartIntent not found! Starting a new game by default.");
+            // If no intent is found, start a new game by default
+            StartNewGame(2); //starting a new game with 2 players
+        }
         //call BGM
         if (audioManager == null)
         {
@@ -72,6 +93,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             audioManager.StopMusic(); // stop music
+            SaveAll(); // save game state in case player chooses to quit
             SceneManager.LoadScene("PauseMenu", LoadSceneMode.Additive);
         }
     }
@@ -129,14 +151,17 @@ public class GameManager : MonoBehaviour
 
     public void SaveAll()
     {
-        SaveData data = new SaveData();
+        SaveData data = new();
         data.sceneName = SceneManager.GetActiveScene().name;
         data.waveNumber = enemyAIManager.waveNumber;
 
         data.playerUnits = UnitSaveUtility.SaveUnits(playerArmy._units);
         data.enemyUnits = UnitSaveUtility.SaveUnits(enemyArmy._units);
+        data.playerBuildings = BuildingSaveUtility.SaveBuildings(playerArmy._buildings);
+        data.enemyBuildings = BuildingSaveUtility.SaveBuildings(enemyArmy._buildings);
 
         SaveSystem.SaveGame(data);
+        Debug.Log("Game state saved.");
     }
 
 

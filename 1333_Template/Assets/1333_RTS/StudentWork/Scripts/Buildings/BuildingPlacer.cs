@@ -115,8 +115,7 @@ public class BuildingPlacer : MonoBehaviour
             currentBuildingData.buildingPrefab.transform.rotation
         );
 
-        // 2. Try to get the BuildingInstance (or BuildingBase)
-        BuildingBase buildingComponent = buildingInstance.GetComponent<BuildingBase>();
+        // 2. Try to get the BuildingInstance 
         BuildingInstance buildingIns = buildingInstance.GetComponent<BuildingInstance>();
         buildingIns.Initialize(
             currentBuildingData,
@@ -128,14 +127,14 @@ public class BuildingPlacer : MonoBehaviour
         );
         IHasHealth healthComponent = buildingIns.GetComponent<IHasHealth>();
 
-        if (buildingComponent == null)
+        if (buildingIns == null)
         {
-            Debug.LogError("Placed building does not have a BuildingBase component.");
+            Debug.LogError("Placed building does not have a BuildingInstance component.");
         }
         else if (currentArmy != null)
         {
-            currentArmy.Buildings.Add(buildingComponent);
-            currentArmy.NonStartingBuildings.Add(buildingComponent);
+            currentArmy.Buildings.Add(buildingIns);
+            currentArmy.NonStartingBuildings.Add(buildingIns);
             buildingIns.FindBounds(); // Find bounds for the building
 
             if (currentArmy.hasAddedBuildings == false)

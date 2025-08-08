@@ -42,7 +42,7 @@ public class SoldierMovementManager : MonoBehaviour
                 else
                 {
                     // Move to target
-                    MoveTo(clicked.transform.position);
+                    MoveTo(selectedSoldier, clicked.transform.position);
                     //if (selectedSoldier == null) 
                     //{
                     //    Debug.LogError("Selected soldier is null when trying to move.");
@@ -63,7 +63,7 @@ public class SoldierMovementManager : MonoBehaviour
             {
                 if (selectedSoldier != null)
                 {
-                    MoveTo(clicked.transform.position);
+                    MoveTo(selectedSoldier, clicked.transform.position);
                     Debug.Log($"Moving {selectedSoldier.name} to building at position {clicked.transform.position}");
                 }
             }
@@ -72,7 +72,7 @@ public class SoldierMovementManager : MonoBehaviour
             { 
                 if (selectedSoldier != null)
                 {
-                    MoveTo(clicked.transform.position);
+                    MoveTo(selectedSoldier, clicked.transform.position);
                 }
             }
             else
@@ -80,14 +80,15 @@ public class SoldierMovementManager : MonoBehaviour
                 // Clicking ground, just move
                 if (selectedSoldier != null) //make sure system knows what soldier is called
                 {
-                    MoveTo(hit.point);
+                    MoveTo(selectedSoldier, hit.point);
                 }
             }
         }
     }
 
-    void MoveTo(Vector3 destination, int stopBeforeLast = 3)
+    public void MoveTo(SoldierUnit selectedSoldier, Vector3 destination, int stopBeforeLast = 3)
     {
+        this.selectedSoldier = selectedSoldier;
         Debug.Log($"Calculating path with stopBeforeLast = {stopBeforeLast}");
 
         Vector3 start = selectedSoldier.transform.position;
@@ -115,8 +116,6 @@ public class SoldierMovementManager : MonoBehaviour
 
         lineRenderer.positionCount = truncated.Count;
         lineRenderer.SetPositions(truncated.ToArray());
-
-        selectedSoldier = null;
     }
 
 

@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using static UnitType;
@@ -11,11 +13,23 @@ public class SelectionManager : MonoBehaviour
     private UnitInstance targetUnit;
     private BuildingInstance targetBuilding;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private ArmyData playerArmy;
+    [SerializeField] private ArmyData enemyArmy;
+    [SerializeField] private SoldierMovementManager soldierMovementManager;
     public TextMeshProUGUI statusText;
     private bool sourceWasMoving = false;
+    private bool canAutoAttackBuildings = false;
 
     void Update()
     {
+        if (playerArmy.Units.Count >= 7 && playerArmy.Buildings.Count >= 4)
+        {
+            canAutoAttackBuildings = true;
+        }
+        if (canAutoAttackBuildings) 
+        {
+            AutoAttackEnemyBuildings();
+        }
         if (sourceUnit != null)
         {
             if (!sourceUnit.IsDead)
@@ -94,10 +108,10 @@ public class SelectionManager : MonoBehaviour
             GameObject clicked = hit.collider.gameObject;
 
             ClickProxy clickProxy = hit.collider.GetComponent<ClickProxy>();
-            if (clickProxy != null)
+            if (clickProxy != null && clickProxy.linkedObject != null)
             {
                 Debug.Log("Clicked on a ClickProxy attached to a health bar or child object.");
-                clicked = clickProxy.linkedUnit.gameObject; // Redirect the selection to the unit
+                clicked = clickProxy.linkedObject; // Now can be a Unit or Building GameObject
             }
 
             if (clicked.CompareTag("Unit"))
@@ -241,14 +255,15 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
-    void ConfirmSelection() //try to expand this to allow buildings
+    void ConfirmSelection() //try to expand this to allow player to go to player buildings
     {
         Debug.Log($"Ready to issue order: {sourceUnit.name} -> {targetUnit?.name ?? "no target"}"); //how to expand this to allow buildings?
 
-        if (sourceUnit != null && targetUnit != null)
+
+        if (sourceUnit != null && targetUnit != null) //player chooses to attack a unit
         {
             // Check if they are enemies
-            if (sourceUnit.Army != null && targetUnit.Army != null)
+            if (sourceUnit.Army != null && targetUnit.Army != null) //else = sourceUnit or targetUnit has no army assigned
             {
                 if (sourceUnit.Army.TeamMaterial == targetUnit.Army.TeamMaterial) //if they are from the same team
                 {
@@ -269,7 +284,7 @@ public class SelectionManager : MonoBehaviour
                     {
                         Debug.Log($"{sourceUnit.UnitType} cannot heal other units.");
                         statusText.text = $"{sourceUnit.UnitType} cannot heal other units.";
-                        //don't reset sourceUnit, as they may want to attack multiple units in a row or pressed on a player unit by mistake
+                        //don't reset sourceUnit, as they may want to attack multiple units in a row or clicked on a player unit by mistake
                         targetUnit = null; // Deselect target unit as well
                         targetObject = null; // Deselect target object as well
                     }
@@ -308,15 +323,14 @@ public class SelectionManager : MonoBehaviour
             }
             else
             {
-                // If you don’t care about teams, always attack:
-                if (sourceUnit == null || targetUnit == null)
+                if (sourceUnit.Army == null || targetUnit.Army == null)
                 {
-                    Debug.LogError("Cannot attack, sourceUnit or targetUnit is null!");
+                    Debug.LogError("Cannot attack, sourceUnit or targetUnit's army is unknown!");
                     return;
                 }
             }
         }
-        else if (sourceUnit != null && targetBuilding != null)
+        else if (sourceUnit != null && targetBuilding != null) //player chooses to attack a building
         {
             // If the target is a building, check if the source can attack buildings
             AttackType attackType = sourceUnit.UnitType.attackType;
@@ -329,7 +343,6 @@ public class SelectionManager : MonoBehaviour
                 // Reset selection
                 sourceUnit = null;
                 targetUnit = null;
-                targetBuilding = null;
 
                 if (targetBuilding.name == "Castle" && targetBuilding.CurrentHealth <= 0)
                 {
@@ -344,16 +357,163 @@ public class SelectionManager : MonoBehaviour
                     statusText.text = "Castle is still standing.";
                 }
             }
-            else
+            else 
             {
+                // Handle moving to friendly buildings
+                if (targetBuilding.Army != null && targetBuilding.Army.IsPlayerControlled)
+                {
+                    sourceUnit.SetDestination(targetBuilding.transform.position);
+                    Debug.Log($"{sourceUnit.name} is moving to defend building {targetBuilding.name}");
+                    statusText.text = $"{sourceUnit.name} is now guarding {targetBuilding.name}";
+                    sourceUnit = null;
+                    targetBuilding = null;
+                    return;
+                }
                 Debug.Log($"{sourceUnit.UnitType.unitTypeName} with attack type {attackType} cannot attack buildings.");
                 statusText.text = $"{sourceUnit.UnitType.unitTypeName} cannot attack buildings.";
             }
         }
-        else
+        else //if either sourceUnit or targetUnit and targetBuilding are both null
         {
             Debug.LogWarning("Cannot issue attack: missing source or target unit.");
         }
     }
+
+    public void IssueAutomatedCommand(UnitInstance sourceUnit = null, BuildingInstance sourceBuilding = null, UnitInstance target = null)
+    {
+        this.sourceUnit = sourceUnit;
+        targetUnit = target;
+        sourceObject = (sourceUnit != null) ? sourceUnit.transform : (sourceBuilding != null) ? sourceBuilding.transform : null;
+        if (sourceBuilding != null && sourceUnit == null)
+        {
+            sourceUnit = playerArmy.Units[0]; // Default to the first unit in the player's army if no source unit is specified
+            //look for closest unit -> go to building where enemy will attack
+            for (int i = 1; i < enemyArmy.Units.Count; i++)
+            {
+                UnitInstance unit = enemyArmy.Units[i];
+                if (unit == null || unit.IsDead || !unit.UnitType.CanAttackUnits) //skip over all units that can't attack enemy units
+                    continue;
+                // Check if this unit is closer than the current targetUnit
+                if (Vector3.Distance(sourceBuilding.transform.position, unit.transform.position) < Vector3.Distance(sourceBuilding.transform.position, sourceUnit.transform.position))
+                {
+                    sourceUnit = unit; // Assign the closest unit to sourceUnit
+                }
+            }
+            sourceUnit.SetDestination(sourceBuilding.transform.position);
+            Debug.Log($"Assigned closest unit {sourceUnit.name} to attack enemy unit {target.name} trying to attack building {sourceBuilding.name}");
+        }
+        if (sourceUnit == null && sourceBuilding == null)
+        {
+            Debug.LogError("No target unit or building specified for automated command.");
+            return;
+        }
+
+        if (sourceUnit != null && targetUnit != null)
+        {
+            ConfirmSelection();
+        }
+        else
+        {
+            if (sourceUnit == null)
+            {
+                Debug.LogError("Source unit is null in IssueAutomatedCommand.");
+            }
+            else if (targetUnit == null)
+            {
+                Debug.LogError("Target unit is null in IssueAutomatedCommand.");
+            }
+        }
+    }
+
+    public void AutoAttackEnemyBuildings()
+    {
+        Debug.Log("[AutoAttackEnemyBuildings] Called");
+
+        // 1. Filter player units that can attack buildings and are alive
+        List<UnitInstance> attackingUnits = playerArmy._units.FindAll(
+            u => u != null && !u.IsDead && u.UnitType.CanAttackBuildings
+        );
+
+        // 2. Filter enemy buildings that are alive and not the castle yet
+        List<BuildingInstance> enemyWalls = enemyArmy._buildings.FindAll(
+            b => b != null && !b.IsDead && b.name.Contains("Wall")
+        );
+
+        // 3. Try to find the enemy castle
+        BuildingInstance enemyCastle = enemyArmy._buildings.Find(
+            b => b != null && b.name == "CastlePrefab"
+        );
+
+        Debug.Log($"[AutoAttackEnemyBuildings] Player units: {attackingUnits.Count}");
+        Debug.Log($"[AutoAttackEnemyBuildings] Enemy buildings: {enemyWalls.Count + 1}");
+
+        if (attackingUnits.Count == 0)
+        {
+            Debug.LogWarning("No player units available that can attack buildings.");
+            return;
+        }
+
+        if ((enemyWalls == null || enemyWalls.Count == 0) && enemyCastle == null)
+        {
+            Debug.LogWarning("No enemy walls or castle found.");
+            return;
+        }
+
+        // 4. Loop through all eligible attacking units
+        foreach (UnitInstance unit in attackingUnits)
+        {
+            BuildingInstance target = null;
+
+            // Prioritize walls first
+            if (enemyWalls != null && enemyWalls.Count > 0)
+            {
+                // Find the closest wall to this unit
+                target = enemyWalls
+                    .OrderBy(w => Vector3.Distance(unit.transform.position, w.transform.position))
+                    .FirstOrDefault();
+            }
+            else if (enemyCastle != null && !enemyCastle.IsDead)
+            {
+                target = (BuildingInstance)enemyCastle;
+            }
+
+            if (target != null)
+            {
+                Debug.Log($"Auto-assigning {unit.name} to attack {target.name}");
+                targetBuilding = (BuildingInstance)target;
+                sourceUnit = unit; // Set the source unit for the command
+                // If the target is a building, set the destination
+                if (targetBuilding != null)
+                {
+                    sourceUnit.SetDestination(targetBuilding.transform.position);
+                    Debug.Log($"{sourceUnit.name} is moving to attack {targetBuilding.name}");
+                    statusText.text = $"{sourceUnit.name} is now attacking {targetBuilding.name}";
+                }
+                else
+                {
+                    Debug.LogWarning("Target building is null after auto-attack assignment.");
+                }
+                if (sourceUnit != null && targetBuilding != null)
+                {
+                    Debug.Log($"Issued automated attack command: {sourceUnit.name} attacks {targetBuilding.name}");
+                    statusText.text = $"{sourceUnit.name} is attacking {targetBuilding.name}";
+                    // Confirm the selection and issue the attack command
+                    ConfirmSelection();
+                }
+                else
+                {
+                    if (sourceUnit == null)
+                    {
+                        Debug.LogError("Source unit is null after auto-attack assignment.");
+                    }
+                    if (targetBuilding == null)
+                    {
+                        Debug.LogError("Target building is null after auto-attack assignment.");
+                    }
+                }
+            }
+        }
+    }
+
 
 }

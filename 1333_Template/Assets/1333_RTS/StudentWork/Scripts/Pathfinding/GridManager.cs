@@ -275,7 +275,7 @@ public class GridManager : MonoBehaviour
 
     }
 
-    public void RemoveBuilding(BuildingBase instance)
+    public void RemoveBuilding(BuildingInstance instance)
     {
         Vector2Int origin = instance.OriginPoint;
         BuildingData data = instance.Data;

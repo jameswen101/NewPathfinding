@@ -28,11 +28,7 @@ using UnityEngine.SceneManagement;
             OwningArmy = army;
         }
 
-    public virtual void OnDestroy()
-    {
-        if (ParentArmy != null)
-            ParentArmy.RemoveBuilding(this);
-    }
+    
 
     
 }

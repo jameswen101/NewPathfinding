@@ -321,7 +321,7 @@ MonoBehaviour:
   armyMaterialSelector: {fileID: 916891929}
   currentSpawnPoints: []
   maxSpawnCount: 12
-  finalWaveArmy: {fileID: 578459199}
+  enemyArmy: {fileID: 578459199}
 --- !u!4 &29016404
 Transform:
   m_ObjectHideFlags: 0
@@ -2041,9 +2041,11 @@ MonoBehaviour:
   buildingTypes: {fileID: 0}
   mageType: {fileID: 11400000, guid: 6c9ec269f06ea9947b5d863f435b732d, type: 2}
   policeType: {fileID: 11400000, guid: cd2f36815721d1d438ab21d8edb6cfbf, type: 2}
-  houseData: {fileID: 0}
+  houseData: {fileID: 11400000, guid: ed0043a68f13dc44295eb96127c21cba, type: 2}
   waveNumber: 0
   isUnlockedScreenOpen: 0
+  upcomingTarget: {fileID: 0}
+  selectedSource: {fileID: 0}
 --- !u!4 &410287880
 Transform:
   m_ObjectHideFlags: 0
@@ -3579,6 +3581,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 830550825}
+  playerArmy: {fileID: 847158489}
+  enemyArmy: {fileID: 578459199}
+  soldierMovementManager: {fileID: 1412591574}
   statusText: {fileID: 962433059}
 --- !u!4 &691228440
 Transform:
@@ -5555,7 +5560,7 @@ MonoBehaviour:
   armyComposition: {fileID: 11400000, guid: ac887c98b59318d4dbc13055bdee4d9f, type: 2}
   armyPathfindingTester: {fileID: 1299132435}
   audioManager: {fileID: 1516349752}
-  enemyAIManager: {fileID: 0}
+  enemyAIManager: {fileID: 410287879}
 --- !u!4 &1165946700
 Transform:
   m_ObjectHideFlags: 0

@@ -23,8 +23,11 @@ MonoBehaviour:
   unitTypeName: Mage
   unitPrefab: {fileID: 6652412337310721861, guid: ffa215fbbe43af84c9f629520ca23d30, type: 3}
   unitIcon: {fileID: 21300000, guid: ee76f70b60491394c97d55b80e49d857, type: 3}
-  placementOffset: {x: 0, y: 5, z: 0}
+  placementOffset: {x: 0, y: 2, z: 0}
   CanAttackUnits: 0
   CanAttackBuildings: 0
   CanHeal: 1
   HealingAmount: 50
+  CanEscort: 0
+  RetaliateOnAttack: 1
+  RetaliatoryDamage: 40
