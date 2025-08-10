@@ -14,7 +14,7 @@ public class GameStartIntent : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        // Ensure this GameObject persists across scene loads
+
         DontDestroyOnLoad(gameObject); // persists across scenes
     }
 }

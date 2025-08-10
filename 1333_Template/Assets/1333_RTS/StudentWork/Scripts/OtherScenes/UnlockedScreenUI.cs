@@ -37,7 +37,7 @@ public class UnlockedScreenUI : MonoBehaviour
         }
         SceneManager.UnloadSceneAsync(currentScene);
         // Access the EnemyAIManager in the main scene and update the flag
-        EnemyAIManager enemyAI = FindObjectOfType<EnemyAIManager>();
+        EnemyAIManager enemyAI = FindAnyObjectByType<EnemyAIManager>();
         if (enemyAI != null)
         {
             enemyAI.isUnlockedScreenOpen = false;

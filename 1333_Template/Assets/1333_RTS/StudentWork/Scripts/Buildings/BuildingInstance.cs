@@ -38,7 +38,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
         //}
         if (audioManager == null)
         {
-            audioManager = FindObjectOfType<AudioManager>();
+            audioManager = FindAnyObjectByType<AudioManager>();
             if (audioManager == null)
             {
                 Debug.LogError("AudioManager not found in the scene!");
@@ -49,7 +49,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
     void Start()
     {
         healthBar = GetComponentInChildren<HealthBar>(); //automatically finds the health bar child instance attached to the spawned prefab
-        audioManager = FindObjectOfType<AudioManager>();
+        audioManager = FindAnyObjectByType<AudioManager>();
         MaxHealth = (int)BuildingData.maxHealth;
         CurrentHp = (int)MaxHealth;
         CurrentHealth = (int)CurrentHp; // Initialize current health to max health

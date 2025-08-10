@@ -20,7 +20,7 @@ public class UnitPlacementUI : MonoBehaviour
         //soldierPlacer.SetArmyData(armyData);
         if (enemyAIManager == null)
         {
-            enemyAIManager = FindObjectOfType<EnemyAIManager>();
+            enemyAIManager = FindAnyObjectByType<EnemyAIManager>();
             if (enemyAIManager == null)
             {
                 Debug.LogError("EnemyAIManager not found in the scene!");

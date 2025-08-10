@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
 
-        GameStartIntent intent = FindObjectOfType<GameStartIntent>();
+        GameStartIntent intent = FindAnyObjectByType<GameStartIntent>();
 
         if (intent != null)
         {

@@ -40,6 +40,8 @@ public class EnemyAIManager : MonoBehaviour
     public bool isUnlockedScreenOpen = false;
     private bool wave2Started = false;
     private bool wave3Started = false;
+    private bool wave1Ended = false;
+    private bool wave2Ended = false;
     public GameObject upcomingTarget;
     public UnitInstance selectedSource; // The unit that is currently attacking
 
@@ -113,8 +115,9 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         // Check for wave 2
-        if (playerArmyData.unitKillCount >= 12 && enemyArmyData.Units.Count == 0 && hasAttacked && waveNumber == 1) //how to make sure they have already attacked before this round?
+        if (playerArmyData.unitKillCount >= 12 && enemyArmyData.Units.Count == 0 && hasAttacked && waveNumber == 1 && !wave2Started && !wave1Ended) //how to make sure they have already attacked before this round?
         {
+            wave1Ended = true; // Mark wave 1 as ended
             //check if any dead enemy units are still in the game- if there are, remove them
             enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
             foreach (var unit in enemyUnits)
@@ -131,6 +134,7 @@ public class EnemyAIManager : MonoBehaviour
             audioManager.PlaySFX("Level Up Short"); // Play level up sound
             SceneManager.LoadScene("MageUnlockScreen", LoadSceneMode.Additive); // Load mage unlock screen on top of existing scene
             isUnlockedScreenOpen = true;
+            StartCoroutine(CloseUnlockScreenAfterDelay("MageUnlockScreen", 7f)); // 7 seconds
             if (!isUnlockedScreenOpen && !wave2Started)
             {
                 StartNextWave();
@@ -141,8 +145,9 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         // Optionally wave 3 too
-        if (playerArmyData.unitKillCount == 30 && hasAttacked && playerArmyData.buildingKillCount == 19 && waveNumber == 2) //how to make sure they have already attacked before this round?
+        if (playerArmyData.unitKillCount >= 30 && enemyArmyData.Units.Count == 0 && hasAttacked && playerArmyData.buildingKillCount == 19 && waveNumber == 2 && !wave3Started && !wave2Ended) //how to make sure they have already attacked before this round?
         {
+            wave2Ended = true; // Mark wave 2 as ended
             //check if any dead enemy units are still in the game- if there are, remove them
             enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
             foreach (var unit in enemyUnits)
@@ -172,16 +177,30 @@ public class EnemyAIManager : MonoBehaviour
             audioManager.PlaySFX("Level Up Short"); // Play level up sound
             SceneManager.LoadScene("PoliceUnlockScreen", LoadSceneMode.Additive); // Load mage unlock screen on top of existing scene
             isUnlockedScreenOpen = true;
+            StartCoroutine(CloseUnlockScreenAfterDelay("PoliceUnlockScreen", 7f)); // 7 seconds
             buildingTypes.AddBuilding(houseData); // Add House to available buildings after wave 2 is cleared
             audioManager.PlaySFX("Level Up Short"); // Play level up sound
             SceneManager.LoadScene("HouseUnlockScreen", LoadSceneMode.Additive); // Load house unlock screen on top of existing scene
             isUnlockedScreenOpen = true;
+            StartCoroutine(CloseUnlockScreenAfterDelay("HouseUnlockScreen", 7f)); // 7 seconds
             if (!isUnlockedScreenOpen && !wave3Started)
             {
                 StartNextWave();
+                wave3Started = true;
                 Debug.Log("All wave 2 enemies dead and all enemy walls collapsed. Starting wave 3.");
                 selectionManager.statusText.text = "Wave 3 incoming!";
             }
+        }
+    }
+
+    IEnumerator CloseUnlockScreenAfterDelay(string sceneName, float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay); // works even if timescale = 0
+        if (SceneManager.GetSceneByName(sceneName).isLoaded)
+        {
+            SceneManager.UnloadSceneAsync(sceneName);
+            isUnlockedScreenOpen = false;
+            Debug.Log($"Closed {sceneName} after {delay} seconds.");
         }
     }
 

@@ -50,7 +50,7 @@ public class UnitInstance : UnitBase, IHasHealth
         base.Awake();
         if (audioManager == null)
         {
-            audioManager = FindObjectOfType<AudioManager>();
+            audioManager = FindAnyObjectByType<AudioManager>();
             if (audioManager == null)
             {
                 Debug.LogError("AudioManager not found in the scene!");
@@ -58,7 +58,7 @@ public class UnitInstance : UnitBase, IHasHealth
         }
         if (gridM == null)
         {
-            gridM = FindObjectOfType<GridManager>();
+            gridM = FindAnyObjectByType<GridManager>();
             if (gridM == null)
             {
                 Debug.LogError("GridManager not found in the scene!");
@@ -458,12 +458,12 @@ public class UnitInstance : UnitBase, IHasHealth
         IsDead = true;
 
         audioManager.PlaySFX("Explosion");
-        Destroy(gameObject, 2f);
 
         if (Army != null)
         {
             Army.Units.Remove(this);
             Debug.Log($"{Army.name} has {Army.Units.Count} units remaining.");
+            Destroy(gameObject, 2f);
 
             if (Army.ArmyID == 1) // Enemy died -> increment Player's kill count
             {
