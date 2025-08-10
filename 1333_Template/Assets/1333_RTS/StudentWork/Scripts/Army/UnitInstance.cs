@@ -29,11 +29,6 @@ public class UnitInstance : UnitBase, IHasHealth
     //[SerializeField] private ArmyData army;
 
     public ArmyData Army;
-    //{
-    //    get => army;
-    //    set => army = value;
-    //}
-
 
     [SerializeField] public int ArmyID { get; set; }
 
@@ -459,6 +454,7 @@ public class UnitInstance : UnitBase, IHasHealth
 
     public void Die()
     {
+        if (IsDead) return;
         IsDead = true;
 
         audioManager.PlaySFX("Explosion");

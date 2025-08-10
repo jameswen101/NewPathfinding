@@ -19,6 +19,8 @@ public class BuildingPlacer : MonoBehaviour
     private GameObject ghostObject;
     private ArmyData currentArmy;
 
+    private bool isHouse = false;
+
     public void SetArmyData(ArmyData army)
     {
         currentArmy = army;
@@ -32,6 +34,12 @@ public class BuildingPlacer : MonoBehaviour
         // Instantiate ghost prefab (make sure your BuildingData has this reference)
         ghostObject = Instantiate(buildingData.buildingPrefab); //add a separate GhostPrefab in BuildingData?
         audioManager.PlaySFX("Right Answer"); // Play placement sound
+
+        //if BuildingData is a house
+        if (buildingData.buildingName == "House")
+        {
+            isHouse = true;
+        }
     }
 
     private Vector2Int gridOffset = Vector2Int.zero;
@@ -135,6 +143,12 @@ public class BuildingPlacer : MonoBehaviour
         {
             currentArmy.Buildings.Add(buildingIns);
             currentArmy.NonStartingBuildings.Add(buildingIns);
+            if (isHouse)
+            {
+                currentArmy.Houses.Add(buildingIns); // Add to Houses list if it's a house
+                Debug.Log($"Added {buildingIns.name} to Houses list of Army {currentArmy.ArmyID}.");
+                isHouse = false; // Reset the flag after adding
+            }
             buildingIns.FindBounds(); // Find bounds for the building
 
             if (currentArmy.hasAddedBuildings == false)

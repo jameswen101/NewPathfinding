@@ -428,7 +428,7 @@ public class SelectionManager : MonoBehaviour
 
         if (targetUnit == null)
         {
-            Debug.LogError("No target unit found for automated command.");
+            Debug.LogWarning("No target unit found for automated command.");
             return;
         }
 

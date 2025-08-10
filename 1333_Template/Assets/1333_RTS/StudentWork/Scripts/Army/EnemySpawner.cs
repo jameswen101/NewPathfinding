@@ -85,6 +85,8 @@ public class EnemySpawner : MonoBehaviour
                 currentUnitType = unitTypeL2; // Change to level 2 unit type
                 currentEnemyPrefab = enemyPrefabL2; // Change to level 2 enemy prefab
                 maxSpawnCount = currentSpawnPoints.Count;
+                //call spawning
+
                 break;
             case 3:
                 if (wave3SpawnPoints == null || wave3SpawnPoints.Length == 0)
@@ -236,7 +238,7 @@ public class EnemySpawner : MonoBehaviour
             GridNode startNode = gridManager.GetNodeFromWorldPosition(spawnPoint.position);
             GridNode endNode = gridManager.EndNode;
 
-            List<Vector3> path = gridManager.pathFinder.CalculatePath(startNode, endNode);
+            List<Vector3> path = pathFinder.CalculatePath(startNode, endNode);
             unit.SetPath(path);
 
             Debug.Log($"Spawned enemy with ArmyID 1 and path from {startNode.Name} to {endNode.Name}");

@@ -78,7 +78,8 @@ public class EnemyAIManager : MonoBehaviour
                     Debug.Log("Player castle added to player army's building list.");
                 }
             }
-            enemySpawner.SpawnWave(1); // or 2, or 3 depending on your logic
+            waveNumber = 1;
+            enemySpawner.SpawnWave(waveNumber); // or 2, or 3 depending on your logic
             UpdateEnemyAI();
         }
 
@@ -105,14 +106,14 @@ public class EnemyAIManager : MonoBehaviour
     void Update()
     {
         UpdateEnemyAI();
-
-        if (!startedAttacking)
+         
+        if (!startedAttacking) //if startedAttacking is still true when it shouldn't, then this will be skipped
         {
             HandleDelayCountdown(alivePlayerUnits, numPlayerBuildings);
         }
 
         // Check for wave 2
-        if (playerArmyData.unitKillCount == 12 && hasAttacked && waveNumber == 1) //how to make sure they have already attacked before this round?
+        if (playerArmyData.unitKillCount >= 12 && enemyArmyData.Units.Count == 0 && hasAttacked && waveNumber == 1) //how to make sure they have already attacked before this round?
         {
             //check if any dead enemy units are still in the game- if there are, remove them
             enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
@@ -241,6 +242,7 @@ public class EnemyAIManager : MonoBehaviour
                 startedAttacking = true;
                 hasAttacked = true; // AI has attacked at least once
                 selectionManager.statusText.text = "Enemy is attacking!";
+                Debug.Log("Enemy AI is ready to attack!");
                 StartCoroutine(AttackRoutine());
             }
         }

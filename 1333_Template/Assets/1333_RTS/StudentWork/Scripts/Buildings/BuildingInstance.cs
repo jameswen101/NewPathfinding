@@ -15,7 +15,7 @@ public class BuildingInstance : BuildingBase, IHasHealth
     [SerializeField] public int ArmyID { get; set; }
 
     [SerializeField] private AudioManager audioManager;
-    [SerializeField] private GridManager gridManager;
+    public GridManager gridManager;
     public PathFinder pathFinder;
 
     public int XStart { get; private set; }

@@ -52,6 +52,8 @@ public class ArmyData : MonoBehaviour, IArmyData
     public int unitKillCount, buildingKillCount;
 
     public TextMeshProUGUI unitKillCountText;
+
+    public List<BuildingInstance> Houses = new();
     private void Awake()
     {
         Debug.Log($"ArmyData Awake with ArmyID={ArmyID}");

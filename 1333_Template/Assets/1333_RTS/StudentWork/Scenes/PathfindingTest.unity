@@ -2040,7 +2040,7 @@ MonoBehaviour:
   startedAttacking: 0
   enemySpawner: {fileID: 29016403}
   availableTeamUnits: {fileID: 11400000, guid: b295660e7aba31b4e988973c98c5a4db, type: 2}
-  buildingTypes: {fileID: 0}
+  buildingTypes: {fileID: 11400000, guid: 67514d25933b81844a513519e78e3dd7, type: 2}
   mageType: {fileID: 11400000, guid: 6c9ec269f06ea9947b5d863f435b732d, type: 2}
   policeType: {fileID: 11400000, guid: cd2f36815721d1d438ab21d8edb6cfbf, type: 2}
   houseData: {fileID: 11400000, guid: ed0043a68f13dc44295eb96127c21cba, type: 2}
