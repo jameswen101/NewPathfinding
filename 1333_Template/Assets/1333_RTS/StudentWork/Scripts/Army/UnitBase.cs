@@ -27,7 +27,8 @@ public abstract class UnitBase : MonoBehaviour
 
         if (CurrentHealth <= 0)
         {
-            IsDead = true;
+            // DON'T set IsDead here
+            (this as UnitInstance)?.Die(); // or route to correct type
         }
     }
 
