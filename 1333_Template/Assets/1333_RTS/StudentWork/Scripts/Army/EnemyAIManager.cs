@@ -131,6 +131,7 @@ public class EnemyAIManager : MonoBehaviour
             isUnlockedScreenOpen = false;
             Debug.Log($"Closed {"MageUnlockScreen"} after {7f} seconds.");
         }
+        StartCoroutine(ReactivateEventSystemAfterDelay(1f));
         EnsureEventSystem(); // Ensure EventSystem exists for UI interaction
         if (!wave2Started) //not gonna work since wave 1 already ended
         {
@@ -164,6 +165,7 @@ public class EnemyAIManager : MonoBehaviour
             isUnlockedScreenOpen = false;
             Debug.Log($"Closed {"PoliceUnlockScreen"} after {7f} seconds.");
         }
+        StartCoroutine(ReactivateEventSystemAfterDelay(1f));
         EnsureEventSystem(); // Ensure EventSystem exists for UI interaction
         buildingTypes.AddBuilding(houseData); // Add House to available buildings after wave 2 is cleared
         audioManager.PlaySFX("Level Up Short"); // Play level up sound
@@ -176,6 +178,7 @@ public class EnemyAIManager : MonoBehaviour
             isUnlockedScreenOpen = false;
             Debug.Log($"Closed {"HouseUnlockScreen"} after {7f} seconds.");
         }
+        StartCoroutine(ReactivateEventSystemAfterDelay(1f));
         EnsureEventSystem(); // Ensure EventSystem exists for UI interaction
         if (!wave3Started) //not gonna work since wave 2 already ended
         {
@@ -277,6 +280,44 @@ public class EnemyAIManager : MonoBehaviour
         var im2 = es.GetComponent<InputSystemUIInputModule>() ?? es.gameObject.AddComponent<InputSystemUIInputModule>();
         if (im2.actionsAsset == null && uiActions != null) im2.actionsAsset = uiActions;
 #endif
+    }
+
+    IEnumerator ReactivateEventSystemAfterDelay(float delay)
+    {
+        // Use realtime so it works even if timeScale == 0
+        yield return new WaitForSecondsRealtime(delay);
+
+        // Try current first
+        var es = EventSystem.current;
+
+#if UNITY_2022_2_OR_NEWER
+        if (es == null)
+            es = FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
+#else
+    if (es == null)
+        es = FindObjectOfType<EventSystem>(true);        // include inactive
+#endif
+
+        if (es != null)
+        {
+            es.gameObject.SetActive(true);
+            Debug.Log("[ES] Reactivated existing EventSystem.");
+            yield break;
+        }
+
+        // None found → create one
+        var go = new GameObject("EventSystem");
+        es = go.AddComponent<EventSystem>();
+
+#if ENABLE_INPUT_SYSTEM
+        var ui = go.AddComponent<InputSystemUIInputModule>();
+        if (uiActions != null) ui.actionsAsset = uiActions;  // important on new Input System
+#else
+    go.AddComponent<StandaloneInputModule>();
+#endif
+
+        DontDestroyOnLoad(go);
+        Debug.Log("[ES] Created new EventSystem (InputSystem module attached).");
     }
 
 

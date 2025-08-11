@@ -25,5 +25,6 @@ public static class GlobalEventSystemBootstrap
         go.AddComponent<StandaloneInputModule>(); // legacy
 #endif
         Object.DontDestroyOnLoad(go);
+        Debug.Log("[GESB] Created Global EventSystem (DontDestroyOnLoad).");
     }
 }
