@@ -2031,6 +2031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd85b4a669b44f7409e5d978a0f68422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   playerArmyData: {fileID: 847158489}
   enemyArmyData: {fileID: 578459199}
   selectionManager: {fileID: 691228439}
@@ -2048,6 +2049,8 @@ MonoBehaviour:
   houseData: {fileID: 11400000, guid: ed0043a68f13dc44295eb96127c21cba, type: 2}
   waveNumber: 0
   isUnlockedScreenOpen: 0
+  wave2Started: 0
+  wave3Started: 0
   upcomingTarget: {fileID: 0}
   selectedSource: {fileID: 0}
 --- !u!4 &410287880

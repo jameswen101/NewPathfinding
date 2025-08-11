@@ -2,10 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
+#endif
 using UnityEngine.SceneManagement;
 
 public class EnemyAIManager : MonoBehaviour
 {
+#if ENABLE_INPUT_SYSTEM
+    [SerializeField] private InputActionAsset uiActions;   // drag your DefaultInputActions here
+#endif
+
     [SerializeField] private ArmyData playerArmyData;
     [SerializeField] private ArmyData enemyArmyData;
     [SerializeField] private SelectionManager selectionManager;
@@ -122,6 +131,7 @@ public class EnemyAIManager : MonoBehaviour
             isUnlockedScreenOpen = false;
             Debug.Log($"Closed {"MageUnlockScreen"} after {7f} seconds.");
         }
+        EnsureEventSystem(); // Ensure EventSystem exists for UI interaction
         if (!wave2Started) //not gonna work since wave 1 already ended
         {
             Debug.Log("Mage unlocked screen closed. Wave 1 is coming to an end.");
@@ -154,6 +164,7 @@ public class EnemyAIManager : MonoBehaviour
             isUnlockedScreenOpen = false;
             Debug.Log($"Closed {"PoliceUnlockScreen"} after {7f} seconds.");
         }
+        EnsureEventSystem(); // Ensure EventSystem exists for UI interaction
         buildingTypes.AddBuilding(houseData); // Add House to available buildings after wave 2 is cleared
         audioManager.PlaySFX("Level Up Short"); // Play level up sound
         SceneManager.LoadScene("HouseUnlockScreen", LoadSceneMode.Additive); // Load house unlock screen on top of existing scene
@@ -165,6 +176,7 @@ public class EnemyAIManager : MonoBehaviour
             isUnlockedScreenOpen = false;
             Debug.Log($"Closed {"HouseUnlockScreen"} after {7f} seconds.");
         }
+        EnsureEventSystem(); // Ensure EventSystem exists for UI interaction
         if (!wave3Started) //not gonna work since wave 2 already ended
         {
             Debug.Log("Police unlocked screen closed. Wave 2 is coming to an end.");
@@ -235,6 +247,39 @@ public class EnemyAIManager : MonoBehaviour
             }
         }
     }
+
+
+
+    void EnsureEventSystem()
+    {
+        var es = FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
+        if (es == null)
+        {
+            var go = new GameObject("EventSystem");
+            es = go.AddComponent<EventSystem>();
+#if ENABLE_INPUT_SYSTEM
+            var im = go.AddComponent<InputSystemUIInputModule>();
+            im.actionsAsset = uiActions;  // <- this is crucial
+#else
+        go.AddComponent<StandaloneInputModule>();
+#endif
+            DontDestroyOnLoad(go);
+            return;
+        }
+
+        es.gameObject.SetActive(true);
+
+        // Make sure we’re using the new input system module and it has actions
+        var legacy = es.GetComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+        if (legacy) Destroy(legacy);
+
+#if ENABLE_INPUT_SYSTEM
+        var im2 = es.GetComponent<InputSystemUIInputModule>() ?? es.gameObject.AddComponent<InputSystemUIInputModule>();
+        if (im2.actionsAsset == null && uiActions != null) im2.actionsAsset = uiActions;
+#endif
+    }
+
+
 
     private void StartNextWave()
     {
