@@ -26,16 +26,6 @@ public class BuildingInstance : BuildingBase, IHasHealth
 
     void Awake()
     {
-        //MaxHealth = BuildingData.maxHealth;
-        //CurrentHealth = BuildingData.currentHealth;
-        //IsDead = false;
-        //// Assign the building to the owning army
-        //if (OwningArmy != null)
-        //{
-        //    OwningArmy.Buildings.Add(this);
-        //    ArmyID = OwningArmy.ArmyID;
-        //    Debug.Log($"{OwningArmy.name} has {OwningArmy.Buildings.Count} buildings.");
-        //}
         if (audioManager == null)
         {
             audioManager = FindAnyObjectByType<AudioManager>();
@@ -180,12 +170,20 @@ public class BuildingInstance : BuildingBase, IHasHealth
         audioManager.PlaySFX("Explosion");
         // play particle FX
         // Disable the unit after a short delay
-        Destroy(gameObject, 2f);
         pathFinder.UpdateNodeWalkability(XStart, ZStart, XEnd, ZEnd, true);
         Debug.Log($"Gridnodes from ({XStart}, {ZStart}) to ({XEnd}, {ZEnd}) are now walkable.");
         if (OwningArmy != null)
         {
             OwningArmy.Buildings.Remove(this);
+            if (Data.buildingName != "Castle")
+            {
+                OwningArmy.NonStartingBuildings.Remove(this);
+            }
+            if (Data.buildingName == "House")
+            {
+                OwningArmy.Houses.Remove(this); // Remove from Houses list if it's a house
+            }
+            Destroy(gameObject, 2f);
             OwningArmy.CheckFinalWave();
             Debug.Log($"{OwningArmy.name} has {OwningArmy.Buildings.Count} buildings remaining.");
             if (!OwningArmy.IsPlayerControlled && (!OwningArmy.Buildings.Any(b => b.name.Contains("Castle"))))

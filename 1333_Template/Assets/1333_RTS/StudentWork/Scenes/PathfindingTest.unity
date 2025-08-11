@@ -2038,6 +2038,8 @@ MonoBehaviour:
   delayStartTime: 0
   attackDelayDuration: 5
   startedAttacking: 0
+  minPlayerUnitsThisWave: 7
+  minPlayerBuildingsThisWave: 4
   enemySpawner: {fileID: 29016403}
   availableTeamUnits: {fileID: 11400000, guid: b295660e7aba31b4e988973c98c5a4db, type: 2}
   buildingTypes: {fileID: 11400000, guid: 67514d25933b81844a513519e78e3dd7, type: 2}
@@ -2750,6 +2752,7 @@ MonoBehaviour:
   unitKillCount: 0
   buildingKillCount: 0
   unitKillCountText: {fileID: 895408428}
+  Houses: []
 --- !u!4 &578459200
 Transform:
   m_ObjectHideFlags: 0
@@ -4522,6 +4525,42 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400022, guid: 8c8abb7879133384f9051e5c360bd68d, type: 3}
   m_PrefabInstance: {fileID: 880789458}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &882032479 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4544475921304490860, guid: f2866aee9d8287d478e5b9a496a5bb79, type: 3}
+  m_PrefabInstance: {fileID: 1205563777}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &882032484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882032479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &895408426
 GameObject:
   m_ObjectHideFlags: 0
@@ -5838,6 +5877,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4544475921304490860, guid: f2866aee9d8287d478e5b9a496a5bb79, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5312265604296889686, guid: f2866aee9d8287d478e5b9a496a5bb79, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5994,10 +6037,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3782152561476006978, guid: f2866aee9d8287d478e5b9a496a5bb79, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4544475921304490860, guid: f2866aee9d8287d478e5b9a496a5bb79, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 882032484}
   m_SourcePrefab: {fileID: 100100000, guid: f2866aee9d8287d478e5b9a496a5bb79, type: 3}
 --- !u!1001 &1221891708
 PrefabInstance:

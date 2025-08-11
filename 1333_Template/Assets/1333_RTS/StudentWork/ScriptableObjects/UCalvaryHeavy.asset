@@ -28,6 +28,6 @@ MonoBehaviour:
   CanAttackBuildings: 0
   CanHeal: 0
   HealingAmount: 50
-  CanEscort: 0
+  CanEscort: 1
   RetaliateOnAttack: 1
   RetaliatoryDamage: 40

@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class AvailableTeamUnits : ScriptableObject
 {
-    public List<UnitType> AvailableUnits = new List<UnitType>();
+    public List<UnitType> AvailableUnits = new();
+    public List<UnitType> DefaultUnits = new();
     //a bool variable to check if there are any new units that need to be added to UI
     public bool HasNewUnits = false;
     // Start is called before the first frame update
@@ -21,7 +22,7 @@ public class AvailableTeamUnits : ScriptableObject
 
     void Start()
     {
-
+        AvailableUnits = DefaultUnits;
     }
 
     // Update is called once per frame

@@ -29,6 +29,8 @@ public class EnemyAIManager : MonoBehaviour
     private bool isAttacking = false;
     private float attackInterval = 2f; // attack every 2 seconds
     private int enemiesPerWave = 4;
+    public int minPlayerUnitsThisWave = 7; // Minimum player units required to trigger AI attack
+    public int minPlayerBuildingsThisWave = 4; // Minimum player buildings required to trigger AI attack
 
     [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private AvailableTeamUnits availableTeamUnits;
@@ -38,10 +40,12 @@ public class EnemyAIManager : MonoBehaviour
     [SerializeField] private BuildingData houseData;
     public int waveNumber = 0;
     public bool isUnlockedScreenOpen = false;
-    private bool wave2Started = false;
-    private bool wave3Started = false;
+    [SerializeField] private bool wave2Started = false;
+    [SerializeField] private bool wave3Started = false;
     private bool wave1Ended = false;
     private bool wave2Ended = false;
+    private bool wave1To2Started = false;
+    private bool wave2To3Started = false;
     public GameObject upcomingTarget;
     public UnitInstance selectedSource; // The unit that is currently attacking
 
@@ -105,6 +109,108 @@ public class EnemyAIManager : MonoBehaviour
         }
     }
 
+    private IEnumerator TransitionWave1To2()
+    {
+        availableTeamUnits.AddUnit(mageType); // Add Mage to available units after wave 1 is cleared
+        audioManager.PlaySFX("Level Up Short"); // Play level up sound
+        SceneManager.LoadScene("MageUnlockScreen", LoadSceneMode.Additive); // Load mage unlock screen on top of existing scene
+        isUnlockedScreenOpen = true;
+        yield return new WaitForSecondsRealtime(7f); // works even if timescale = 0
+        if (SceneManager.GetSceneByName("MageUnlockScreen").isLoaded)
+        {
+            SceneManager.UnloadSceneAsync("MageUnlockScreen");
+            isUnlockedScreenOpen = false;
+            Debug.Log($"Closed {"MageUnlockScreen"} after {7f} seconds.");
+        }
+        if (!wave2Started) //not gonna work since wave 1 already ended
+        {
+            Debug.Log("Mage unlocked screen closed. Wave 1 is coming to an end.");
+            minPlayerUnitsThisWave = 9; // Increase minimum player units for wave 2
+            minPlayerBuildingsThisWave = 5; // Increase minimum player buildings for wave 2
+            Debug.Log($"Minimum player units for wave 2: {minPlayerUnitsThisWave}, minimum player buildings for wave 2: {minPlayerBuildingsThisWave}");
+
+        }
+        else
+        {
+            Debug.Log("Mage unlock screen is still open. Wave 2 will start after the screen is closed.");
+        }
+        StartNextWave();
+        Debug.Log("Wave 2 starting now!");
+        enemySpawner.SpawnWave(2); // Start wave 2, breaks the loop
+        wave1Ended = true; // Mark wave 1 as ended, breaks the loop
+        wave2Started = true; //breaks the loop
+    }
+
+    private IEnumerator TransitionWave2To3()
+    {
+        availableTeamUnits.AddUnit(policeType); // Add Police to available units after wave 2 is cleared
+        audioManager.PlaySFX("Level Up Short"); // Play level up sound
+        SceneManager.LoadScene("PoliceUnlockScreen", LoadSceneMode.Additive); // Load police unlock screen on top of existing scene
+        isUnlockedScreenOpen = true;
+        yield return new WaitForSecondsRealtime(7f); // works even if timescale = 0
+        if (SceneManager.GetSceneByName("PoliceUnlockScreen").isLoaded)
+        {
+            SceneManager.UnloadSceneAsync("PoliceUnlockScreen");
+            isUnlockedScreenOpen = false;
+            Debug.Log($"Closed {"PoliceUnlockScreen"} after {7f} seconds.");
+        }
+        buildingTypes.AddBuilding(houseData); // Add House to available buildings after wave 2 is cleared
+        audioManager.PlaySFX("Level Up Short"); // Play level up sound
+        SceneManager.LoadScene("HouseUnlockScreen", LoadSceneMode.Additive); // Load house unlock screen on top of existing scene
+        isUnlockedScreenOpen = true;
+        yield return new WaitForSecondsRealtime(7f); // works even if timescale = 0
+        if (SceneManager.GetSceneByName("HouseUnlockScreen").isLoaded)
+        {
+            SceneManager.UnloadSceneAsync("HouseUnlockScreen");
+            isUnlockedScreenOpen = false;
+            Debug.Log($"Closed {"HouseUnlockScreen"} after {7f} seconds.");
+        }
+        if (!wave3Started) //not gonna work since wave 2 already ended
+        {
+            Debug.Log("Police unlocked screen closed. Wave 2 is coming to an end.");
+            minPlayerUnitsThisWave = 11; // Increase minimum player units for wave 3
+            minPlayerBuildingsThisWave = 6; // Increase minimum player buildings for wave 3
+            Debug.Log($"Minimum player units for wave 3: {minPlayerUnitsThisWave}, minimum player buildings for wave 3: {minPlayerBuildingsThisWave}");
+        }
+        else
+        {
+            Debug.Log("Police unlock screen is still open. Wave 3 will start after the screen is closed.");
+        }
+        StartNextWave();
+        Debug.Log("Wave 3 starting now!");
+        enemySpawner.SpawnWave(3); // Start wave 3, breaks the loop
+        wave2Ended = true; // Mark wave 2 as ended, breaks the loop
+        wave3Started = true; //breaks the loop
+    }
+
+    private bool CanTransitionWave2()
+    {
+        if (waveNumber != 1) return false;
+        if (wave1To2Started || wave2Started || wave1Ended) return false;
+        if (!hasAttacked) return false;
+        if (!playerArmyData || !enemyArmyData) return false;
+
+        // defensive: treat null/missing entries as dead, and prune if you want
+        var enemyAlive = (enemyArmyData.Units ?? new List<UnitInstance>())
+            .Any(u => u != null && !u.IsDead);
+
+        return playerArmyData.unitKillCount >= 12 && !enemyAlive;
+    }
+
+    private bool CanTransitionWave3()
+    {
+        if (waveNumber != 2) return false;
+        if (wave2To3Started || wave3Started || wave2Ended) return false;
+        if (!hasAttacked) return false;
+        if (!playerArmyData || !enemyArmyData) return false;
+        // defensive: treat null/missing entries as dead, and prune if you want
+        var enemyAlive = (enemyArmyData.Units ?? new List<UnitInstance>())
+            .Any(u => u != null && !u.IsDead);
+        var buildingsAlive = (enemyArmyData.Buildings ?? new List<BuildingInstance>())
+            .Any(b => b != null && !b.IsDead);
+        return playerArmyData.unitKillCount >= 30 && !enemyAlive && !buildingsAlive;
+    }
+
     void Update()
     {
         UpdateEnemyAI();
@@ -114,96 +220,21 @@ public class EnemyAIManager : MonoBehaviour
             HandleDelayCountdown(alivePlayerUnits, numPlayerBuildings);
         }
 
-        // Check for wave 2
-        if (playerArmyData.unitKillCount >= 12 && enemyArmyData.Units.Count == 0 && hasAttacked && waveNumber == 1 && !wave2Started && !wave1Ended) //how to make sure they have already attacked before this round?
+        if (!wave1To2Started && CanTransitionWave2())
         {
-            wave1Ended = true; // Mark wave 1 as ended
-            //check if any dead enemy units are still in the game- if there are, remove them
-            enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
-            foreach (var unit in enemyUnits)
-            {
-                if (unit.IsDead)
-                {
-                    enemyArmyData.Units.Remove(unit);
-                    Destroy(unit); // Destroy the dead unit
-                    enemyUnits.Remove(unit); // Remove from the local list
-                    Debug.Log($"Removed dead enemy unit: {unit.name}");
-                }
-            }
-            availableTeamUnits.AddUnit(mageType); // Add Mage to available units after wave 1 is cleared
-            audioManager.PlaySFX("Level Up Short"); // Play level up sound
-            SceneManager.LoadScene("MageUnlockScreen", LoadSceneMode.Additive); // Load mage unlock screen on top of existing scene
-            isUnlockedScreenOpen = true;
-            StartCoroutine(CloseUnlockScreenAfterDelay("MageUnlockScreen", 7f)); // 7 seconds
-            if (!isUnlockedScreenOpen && !wave2Started)
-            {
-                StartNextWave();
-                wave2Started = true;
-                Debug.Log("Wave 2 starting now!");
-            }
-
+            wave1To2Started = true;          // set immediately to avoid double-fire
+            StartCoroutine(TransitionWave1To2());
         }
 
-        // Optionally wave 3 too
-        if (playerArmyData.unitKillCount >= 30 && enemyArmyData.Units.Count == 0 && hasAttacked && playerArmyData.buildingKillCount == 19 && waveNumber == 2 && !wave3Started && !wave2Ended) //how to make sure they have already attacked before this round?
+       if (!wave2To3Started && CanTransitionWave3())
         {
-            wave2Ended = true; // Mark wave 2 as ended
-            //check if any dead enemy units are still in the game- if there are, remove them
-            enemyUnits = enemyArmyData.Units.Where(u => u != null && !u.IsDead).ToList();
-            foreach (var unit in enemyUnits)
+            wave2To3Started = true;          // set immediately to avoid double-fire
+            if (!isUnlockedScreenOpen)
             {
-                if (unit.IsDead)
-                {
-                    enemyArmyData.Units.Remove(unit);
-                    Destroy(unit); // Destroy the dead unit
-                    enemyUnits.Remove(unit); // Remove from the local list
-                    Debug.Log($"Removed dead enemy unit: {unit.name}");
-                }
-            }
-            //check if any dead enemy walls are still in the game- if there are, remove them
-            enemyBuildings = enemyArmyData.Buildings.Where(b => b != null && !b.IsDead).ToList();
-            foreach (var building in enemyBuildings)
-            {
-                if (building.IsDead)
-                {
-                    enemyArmyData.Buildings.Remove(building);
-                    Destroy(building); // Destroy the dead wall
-                    enemyBuildings.Remove(building); // Remove from the local list
-                    Debug.Log($"Removed dead enemy wall: {building.name}");
-                }
-            }
-
-            availableTeamUnits.AddUnit(policeType); // Add Police to available units after wave 1 is cleared
-            audioManager.PlaySFX("Level Up Short"); // Play level up sound
-            SceneManager.LoadScene("PoliceUnlockScreen", LoadSceneMode.Additive); // Load mage unlock screen on top of existing scene
-            isUnlockedScreenOpen = true;
-            StartCoroutine(CloseUnlockScreenAfterDelay("PoliceUnlockScreen", 7f)); // 7 seconds
-            buildingTypes.AddBuilding(houseData); // Add House to available buildings after wave 2 is cleared
-            audioManager.PlaySFX("Level Up Short"); // Play level up sound
-            SceneManager.LoadScene("HouseUnlockScreen", LoadSceneMode.Additive); // Load house unlock screen on top of existing scene
-            isUnlockedScreenOpen = true;
-            StartCoroutine(CloseUnlockScreenAfterDelay("HouseUnlockScreen", 7f)); // 7 seconds
-            if (!isUnlockedScreenOpen && !wave3Started)
-            {
-                StartNextWave();
-                wave3Started = true;
-                Debug.Log("All wave 2 enemies dead and all enemy walls collapsed. Starting wave 3.");
-                selectionManager.statusText.text = "Wave 3 incoming!";
+                StartCoroutine(TransitionWave2To3());
             }
         }
     }
-
-    IEnumerator CloseUnlockScreenAfterDelay(string sceneName, float delay)
-    {
-        yield return new WaitForSecondsRealtime(delay); // works even if timescale = 0
-        if (SceneManager.GetSceneByName(sceneName).isLoaded)
-        {
-            SceneManager.UnloadSceneAsync(sceneName);
-            isUnlockedScreenOpen = false;
-            Debug.Log($"Closed {sceneName} after {delay} seconds.");
-        }
-    }
-
 
     private void StartNextWave()
     {
@@ -222,7 +253,7 @@ public class EnemyAIManager : MonoBehaviour
 
 
         int numPlayerBuildings = playerBuildings.Count;
-        if (numPlayerBuildings < 4)
+        if (numPlayerBuildings < minPlayerBuildingsThisWave)
         {
             Debug.Log($"Player has only {numPlayerBuildings} buildings. Needs 4+ to trigger AI.");
         }
@@ -239,7 +270,7 @@ public class EnemyAIManager : MonoBehaviour
 
     void HandleDelayCountdown(int aliveUnits, int numBuildings)
     {
-        if (aliveUnits >= 7 && numBuildings >= 4)
+        if (aliveUnits >= minPlayerUnitsThisWave && numBuildings >= minPlayerBuildingsThisWave)
         {
             if (!ValidateForAttack()) return;
             //start wave 1 here?

@@ -22,3 +22,5 @@ MonoBehaviour:
   buildingIcon: {fileID: 21300000, guid: 21d5cfd56262af54d89e7239248cc7d0, type: 3}
   IsSolid: 1
   moveCost: -1
+  IsDefensiveStructure: 1
+  retaliationDamage: 10
