@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 [Serializable]
 public class ArmyData : MonoBehaviour, IArmyData
 {
     [SerializeField] private string _factionName;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private AllArmiesManager allArmiesManager;
 
     public GridManager GridManager;
     [field: SerializeField]
@@ -20,10 +23,12 @@ public class ArmyData : MonoBehaviour, IArmyData
 
     public List<UnitInstance> _units = new();
 
-    public List<BuildingBase> _buildings = new();
+    public List<BuildingInstance> _buildings = new();
 
     public IList<UnitInstance> Units => _units;
-    public IList<BuildingBase> Buildings => _buildings;
+    public IList<BuildingInstance> Buildings => _buildings;
+
+    public List<BuildingInstance> NonStartingBuildings = new(); //holds all buildings that are not starting buildings, e.g. factories, barracks, etc.
 
     public Material TeamMaterial { get; set; }
 
@@ -31,9 +36,24 @@ public class ArmyData : MonoBehaviour, IArmyData
 
     public IList<MachineInstance> Machines => _machines;
 
-    public GameObject healthBarPrefab;
+    public HealthBar healthBarPrefab;
 
+    public bool IsPlayerControlled;
 
+    public bool hasAddedBuildings;
+
+    public bool hasAddedUnits;
+
+    public bool AllBuildingsDestroyed => Buildings.Count == 0;
+    public bool FinalWaveActivated { get; private set; }
+
+    public event Action<ArmyData> OnFinalWaveStart;
+
+    public int unitKillCount, buildingKillCount;
+
+    public TextMeshProUGUI unitKillCountText;
+
+    public List<BuildingInstance> Houses = new();
     private void Awake()
     {
         Debug.Log($"ArmyData Awake with ArmyID={ArmyID}");
@@ -42,6 +62,32 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
     private bool isRegistered;
+
+    public void SetKillCountText(int killCount)
+    {
+        if (unitKillCountText != null)
+        {
+            unitKillCountText.text = $"Kill count: {killCount}";
+            Debug.Log($"Set unitKillCountText to: {killCount}");
+        }
+        else
+        {
+            Debug.LogError("unitKillCountText is not assigned in ArmyData.");
+        }
+    }
+
+    void Start()
+    {
+        
+    }
+
+    void Update()
+    {
+        if (IsPlayerControlled && hasAddedBuildings && hasAddedUnits && Units.Count == 0 && NonStartingBuildings.Count == 0)
+        {
+            SceneManager.LoadScene("LoseScreen");
+        }
+    }
 
     public void SetTeamMaterial(Material TeamMaterial)
     {
@@ -90,8 +136,11 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
 
-        GameObject hb = Instantiate(healthBarPrefab);
-        hb.GetComponent<HealthBar>().Initialize(instance.transform, instance, mainCamera);
+        HealthBar hb = Instantiate(healthBarPrefab);
+        hb.Initialize(instance.transform, instance, mainCamera);
+        hb.SetHealthText(instance.CurrentHealth, instance.MaxHealth);
+        Debug.Log("Calling HealthTextDebugLog from ArmyData.");
+        hb.HealthTextDebugLog();
 
         // Convert position to grid coords
         Vector2Int gridPos = new Vector2Int(
@@ -164,7 +213,7 @@ public class ArmyData : MonoBehaviour, IArmyData
         }
 
         // Initialize + register building
-        building.Initialize(buildingData, origin);
+        building.Initialize(buildingData, origin, GridManager, Pathfinder, this, TeamMaterial); // Fix: Use the instance property 'Pathfinder' instead of the type 'PathFinder'
         building.AssignToArmy(this);
 
         // Place on grid + store in AAM
@@ -174,7 +223,7 @@ public class ArmyData : MonoBehaviour, IArmyData
     }
 
 
-    public void AddBuilding(BuildingBase building)
+    public void AddBuilding(BuildingInstance building)
     {
         if (!Buildings.Contains(building))
         {
@@ -184,7 +233,7 @@ public class ArmyData : MonoBehaviour, IArmyData
         }
     }
 
-    public void RemoveBuilding(BuildingBase building)
+    public void RemoveBuilding(BuildingInstance building)
     {
         if (Buildings.Contains(building))
         {
@@ -254,6 +303,17 @@ public class ArmyData : MonoBehaviour, IArmyData
     {
         AllArmiesManager.Instance?.UnregisterArmy(ArmyID);
     }
+
+    public void CheckFinalWave()
+    {
+        if (AllBuildingsDestroyed && !FinalWaveActivated)
+        {
+            FinalWaveActivated = true;
+            Debug.Log($"Final wave activated for Army {ArmyID}");
+            OnFinalWaveStart?.Invoke(this);
+        }
+    }
+
 
     public void SpawnUnit(UnitData data)
     {

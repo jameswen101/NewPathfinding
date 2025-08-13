@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public abstract class UnitBase : MonoBehaviour
@@ -12,22 +11,24 @@ public abstract class UnitBase : MonoBehaviour
     public int Defence => unitType != null ? unitType.Defence : 0;
     public string UnitName => unitType != null ? unitType.unitTypeName : "Unknown";
 
-    public float CurrentHealth { get; protected set; }
-    public float MaxHealth { get; protected set; }
+    public float CurrentHealth { get; set; }
+    public float MaxHealth { get; set; }
     public bool IsDead { get; protected set; }
 
     [SerializeField] protected HealthBar healthBar;
 
-    public void TakeDamage(int incomingDamage)
+    public void TakeDamage(int incomingDamage, UnitInstance attacker)
     {
         int mitigated = Mathf.Max(incomingDamage - Defence, 1); //no need to say UnitType.Defence
         CurrentHealth -= mitigated;
         healthBar.UpdateHealthBar(CurrentHealth, MaxHealth);
+        healthBar.SetHealthText(CurrentHealth, MaxHealth); // Update the health text display
         Debug.Log($"{UnitName} took {mitigated} damage (after {Defence} defence).");  //no need to say UnitType.unitTypeName
 
         if (CurrentHealth <= 0)
         {
-            IsDead = true;
+            // DON'T set IsDead here
+            (this as UnitInstance)?.Die(); // or route to correct type
         }
     }
 

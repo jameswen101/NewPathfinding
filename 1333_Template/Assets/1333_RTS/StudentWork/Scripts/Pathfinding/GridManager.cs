@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -20,6 +19,8 @@ public class GridManager : MonoBehaviour
     private readonly Dictionary<Vector2Int, UnitInstance> _unitOccupancy = new(); /// Tracks units that occupy grid nodes.
     private readonly Dictionary<Vector2Int, MachineInstance> _machineOccupancy = new(); /// Tracks units that occupy grid nodes.
     private List<Vector3> _currentDebugPath;
+    public Transform visualParent;
+    public GameObject grassPrefab, rockPrefab, dangerPrefab;
 
 
     public bool IsInitialized { get; private set; } = false;
@@ -49,6 +50,25 @@ public class GridManager : MonoBehaviour
             _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
             Debug.Log("Debug path recalculated.");
         }
+    }
+
+    private void InstantiateTerrainVisual(GridNode node)
+    {
+        GameObject prefab = null;
+
+        if (node.TerrainType == terrainTypes[1])
+            prefab = grassPrefab;
+        else if (node.TerrainType == terrainTypes[2])
+            prefab = rockPrefab;
+        else if (node.TerrainType == terrainTypes[0])
+            prefab = dangerPrefab;
+        else
+        {
+            Debug.LogWarning($"Unknown terrain type: {node.TerrainType}");
+            return;
+        }
+
+        Instantiate(prefab, node.WorldPosition, Quaternion.identity);
     }
 
     public void InitializeGrid()
@@ -81,6 +101,7 @@ public class GridManager : MonoBehaviour
                     TerrainType = terrain,
                     GizmoColor = terrain.gizmoColor
                 };
+                InstantiateTerrainVisual(gridNodes[x, y]);
             }
         }
 
@@ -88,7 +109,7 @@ public class GridManager : MonoBehaviour
     }
 
 
-    private void PopulateDebugList()
+    public void PopulateDebugList()
     {
         AllNodes.Clear();
         for (int x = 0;x < gridSettings.GridSizeX;x++)
@@ -116,6 +137,10 @@ public class GridManager : MonoBehaviour
     public void SetWalkable(int x, int y, bool walkable)
     {
         gridNodes[x,y].Walkable = walkable;
+        if (gridNodes[x,y].Walkable)
+        {
+            Debug.Log($"Node ({x}, {y}) is now walkable.");
+        }
     }
 
     public void ComputeDebugPath()
@@ -216,19 +241,6 @@ public class GridManager : MonoBehaviour
         _currentDebugPath = pathFinder.CalculatePath(StartNode, EndNode);
     }
 
-
-
-    private void DoSomethingOnEachNode(System.Action thingToDo)
-    {
-        for (int x = 0; x < gridSettings.GridSizeX; x++)
-        {
-            for(int y = 0;y < gridSettings.GridSizeY;y++)
-            {
-                thingToDo?.Invoke();
-            }
-        }
-    }
-
     public bool CanPlaceBuilding(BuildingTypes type, Vector2Int origin)
     {
         for (int dx = 0; dx < type.Buildings[dx].width; dx++)
@@ -263,7 +275,7 @@ public class GridManager : MonoBehaviour
 
     }
 
-    public void RemoveBuilding(BuildingBase instance)
+    public void RemoveBuilding(BuildingInstance instance)
     {
         Vector2Int origin = instance.OriginPoint;
         BuildingData data = instance.Data;
@@ -432,20 +444,15 @@ public class GridManager : MonoBehaviour
         return x >= 0 && x < gridSettings.GridSizeX && y >= 0 && y < gridSettings.GridSizeY;
     }
 
-    [CustomEditor(typeof(GridManager))]
-    public class GridManagerEditor : Editor
+    public int WorldToGridX(float worldX)
     {
-        public override void OnInspectorGUI()
-        {
-            DrawDefaultInspector();
-            GridManager grid = (GridManager)target;
-            if (grid.IsInitialized)
-            {
-                if (GUILayout.Button("Refresh Grid Debug View"))
-                {
-                    grid.PopulateDebugList();
-                }
-            }
-        }
+        return Mathf.RoundToInt(worldX / gridSettings.NodeSize);
     }
+
+    public int WorldToGridZ(float worldZ)
+    {
+        return Mathf.RoundToInt(worldZ / gridSettings.NodeSize);
+    }
+
+   
 }

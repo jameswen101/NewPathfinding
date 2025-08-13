@@ -15,6 +15,8 @@ public class CameraController : MonoBehaviour
     public Vector3 defaultPosition;
     public Vector3 topDownPosition;
     public bool isTopDown = false;
+    [SerializeField] private float rotationSpeed = 5f;  // Adjust for smoothness
+    private float targetRoll = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -49,14 +51,25 @@ public class CameraController : MonoBehaviour
         if (Input.GetKey(KeyCode.D)) // right (X+)
             transform.position += panSpeed * Time.deltaTime * transform.right;
 
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q))
+            transform.Rotate(0f, 0f, -90f, Space.Self);
+
+        if (Input.GetKeyDown(KeyCode.E))
+            transform.Rotate(0f, 0f, 90f, Space.Self);
+
+        Vector3 euler = transform.rotation.eulerAngles;
+        float currentRoll = euler.z;
+        float newRoll = Mathf.MoveTowardsAngle(currentRoll, targetRoll, rotationSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Euler(euler.x, euler.y, newRoll);
+
+        // Mouse scroll-wheel zoom
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll != 0f)
         {
-            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - 20f * Time.deltaTime, 20f, 90f);
+            cam.fieldOfView -= scroll * scrollSpeed * 5f;
+            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, minY, maxY);
         }
-        if (Input.GetKey(KeyCode.E))
-        {
-            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView + 20f * Time.deltaTime, 20f, 90f);
-        }
+
         if (Input.GetKeyDown(KeyCode.C))
         {
             isTopDown = !isTopDown;

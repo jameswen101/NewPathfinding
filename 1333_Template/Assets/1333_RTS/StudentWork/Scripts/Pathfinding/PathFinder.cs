@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class PathFinder : MonoBehaviour
 {
@@ -45,43 +44,6 @@ public class PathFinder : MonoBehaviour
     [SerializeField] private bool useSeededRandom = true;
     [SerializeField] private float minWeight = 1f;
     [SerializeField] private float maxWeight = 10f;
-
-    /*
-    protected void FindPath(GridNode StartNode, GridNode EndNode)
-    {
-        List<GridNode> searchedNodes = new List<GridNode>(); //starts with nothing
-        List<GridNode> nodesToSearch = new List<GridNode> { StartNode }; //starts with all
-        List<GridNode> finalPath = new List<GridNode>(); //start with nothing
-
-        StartNode.gCost = 0;
-        StartNode.hCost = GetDistance(StartNode, EndNode);
-        StartNode.fCost = GetDistance(StartNode, EndNode);
-
-        while (nodesToSearch.Count > 0)
-        {
-            //decide the node search order
-            GridNode nodeToSearch = nodesToSearch[0];
-            GridNode bestNeighbor = StartNode;
-            foreach (GridNode node in nodesToSearch)
-            {
-                if (node.fCost < gridManager.AllNodes[cellToSearch].fCost ||
-                    (node.fCost == cells[cellToSearch].fCost && node.hCost == cells[cellToSearch].hCost))
-                    //compare among cell (x-1), cell (x+1), cell (z-1), and cell (z+1)
-                    if (node.WorldPosition.x == StartNode.WorldPosition.x-1)
-                    {
-                        bestNeighbor = node;
-                        nodesToSearch[1] = node;
-                    }
-                    if (node.WorldPosition.x < StartNode.WorldPosition.x-1)
-                    {
-
-                    }
-            }
-
-        }
-
-    }
-    */
 
     public List<Vector3> CalculatePath(GridNode StartNode, GridNode EndNode)
     {
@@ -151,6 +113,17 @@ public class PathFinder : MonoBehaviour
         return lowest * 14 + horizontalMovesRequired * 10; //should it be sqrt(200) instead?
     }
 
-
+    public void UpdateNodeWalkability(int minX, int minZ, int maxX, int maxZ, bool walkable)
+    {
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int z = minZ; z <= maxZ; z++)
+            {
+                if (x < 0 || z < 0 || x >= gridManager.GridSettings.GridSizeX || z >= gridManager.GridSettings.GridSizeY)
+                    continue;
+                gridManager.gridNodes[x, z].Walkable = walkable;
+            }
+        }
+    }
 
 }

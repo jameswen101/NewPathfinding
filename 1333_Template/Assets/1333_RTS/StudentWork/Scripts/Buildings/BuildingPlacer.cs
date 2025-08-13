@@ -6,9 +6,10 @@ public class BuildingPlacer : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private ArmyData armyData;
+    public ArmyData armyData;
     [SerializeField] private GameObject healthBarPrefab;
     [SerializeField] private AudioManager audioManager;
+    public PathFinder pathFinder;
 
     private BuildingData selectedBuilding;
     private GameObject previewObject;
@@ -17,6 +18,8 @@ public class BuildingPlacer : MonoBehaviour
     private BuildingData currentBuildingData;
     private GameObject ghostObject;
     private ArmyData currentArmy;
+
+    private bool isHouse = false;
 
     public void SetArmyData(ArmyData army)
     {
@@ -31,6 +34,12 @@ public class BuildingPlacer : MonoBehaviour
         // Instantiate ghost prefab (make sure your BuildingData has this reference)
         ghostObject = Instantiate(buildingData.buildingPrefab); //add a separate GhostPrefab in BuildingData?
         audioManager.PlaySFX("Right Answer"); // Play placement sound
+
+        //if BuildingData is a house
+        if (buildingData.buildingName == "House")
+        {
+            isHouse = true;
+        }
     }
 
     private Vector2Int gridOffset = Vector2Int.zero;
@@ -114,19 +123,38 @@ public class BuildingPlacer : MonoBehaviour
             currentBuildingData.buildingPrefab.transform.rotation
         );
 
-        // 2. Try to get the BuildingInstance (or BuildingBase)
-        BuildingBase buildingComponent = buildingInstance.GetComponent<BuildingBase>();
+        // 2. Try to get the BuildingInstance 
         BuildingInstance buildingIns = buildingInstance.GetComponent<BuildingInstance>();
-
+        buildingIns.Initialize(
+            currentBuildingData,
+            node.Coordinates,
+            gridManager,
+            pathFinder,
+            currentArmy, // Assign the current army
+            currentArmy.TeamMaterial // Assuming you have a TeamMaterial in ArmyData
+        );
         IHasHealth healthComponent = buildingIns.GetComponent<IHasHealth>();
 
-        if (buildingComponent == null)
+        if (buildingIns == null)
         {
-            Debug.LogError("Placed building does not have a BuildingBase component.");
+            Debug.LogError("Placed building does not have a BuildingInstance component.");
         }
         else if (currentArmy != null)
         {
-            currentArmy.Buildings.Add(buildingComponent);
+            currentArmy.Buildings.Add(buildingIns);
+            currentArmy.NonStartingBuildings.Add(buildingIns);
+            if (isHouse)
+            {
+                currentArmy.Houses.Add(buildingIns); // Add to Houses list if it's a house
+                Debug.Log($"Added {buildingIns.name} to Houses list of Army {currentArmy.ArmyID}.");
+                isHouse = false; // Reset the flag after adding
+            }
+            buildingIns.FindBounds(); // Find bounds for the building
+
+            if (currentArmy.hasAddedBuildings == false)
+            {
+                currentArmy.hasAddedBuildings = true;
+            }
         }
         else
         {

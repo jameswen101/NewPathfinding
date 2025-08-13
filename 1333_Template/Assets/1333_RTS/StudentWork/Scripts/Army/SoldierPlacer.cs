@@ -9,15 +9,27 @@ public class SoldierPlacer : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject healthBarPrefab;
     [SerializeField] private AudioManager audioManager;
+    [SerializeField] private ArmyData currentArmy;
 
     private GameObject ghostSoldier;
     private UnitType currentUnitType;
     private Vector2Int gridOffset = Vector2Int.zero;
-    private ArmyData currentArmy;
 
-    public void SetArmyData(ArmyData army)
+    //public void SetArmyData(ArmyData army)
+    //{
+    //    currentArmy = army;
+    //}
+
+    private void Start()
     {
-        currentArmy = army;
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager is NULL! No audio will play.");
+        }
+        else
+        {
+            Debug.Log("AudioManager exists.");
+        }
     }
 
     void Update()
@@ -33,11 +45,19 @@ public class SoldierPlacer : MonoBehaviour
         GridNode targetNode = gridManager.GetNodeFromWorldPosition(node.WorldPosition + new Vector3(gridOffset.x, 0, gridOffset.y));
         if (!gridManager.IsValidCoordinate((int)targetNode.WorldPosition.x, (int)targetNode.WorldPosition.z)) return;
 
-        ghostSoldier.transform.position = targetNode.WorldPosition;
+        ghostSoldier.transform.position = targetNode.WorldPosition + currentUnitType.PlacementOffset;
 
         // Optional: Validity check for placement (eg. grid occupied)
         bool validPlacement = IsValidPlacement(targetNode);
         SetGhostColor(validPlacement ? Color.green : Color.red);
+        if (validPlacement)
+        {
+            Debug.Log("Placement is valid- color is green.");
+        }
+        else
+        {
+            Debug.Log("Placement is invalid- color is red.");
+        }
 
         // Confirm placement
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Return))
@@ -62,16 +82,12 @@ public class SoldierPlacer : MonoBehaviour
         }
         // Cancel placement with right-click
         if (Input.GetMouseButtonDown(1)) CancelPlacement();
-        if (audioManager == null)
+
+        if (audioManager != null)
         {
-            Debug.LogError("AudioManager is NULL! No audio will play.");
-        }
-        else
-        {
-            Debug.Log("AudioManager exists.");
+            audioManager.PlaySFX("Wrong Answer");
         }
 
-        audioManager.PlaySFX("Wrong Answer");
     }
 
     public void StartPlacingSoldier(UnitType unitType)
@@ -88,7 +104,7 @@ public class SoldierPlacer : MonoBehaviour
         if (unitInstance != null)
         {
 
-         Debug.Log($"currentArmy = {(currentArmy == null ? "NULL" : currentArmy.name)}");
+         Debug.Log($"{unitType.name}'s currentArmy = {(currentArmy == null ? "NULL" : currentArmy.name)}");
 
 
             // Initialize the UnitInstance
@@ -99,24 +115,6 @@ public class SoldierPlacer : MonoBehaviour
                 unitType,
                 Vector2Int.zero, currentArmy, currentArmy.ArmyID
             );
-
-            // Create health bar
-            GameObject hbObj = Instantiate(healthBarPrefab);
-
-            // Get HealthBar component
-            HealthBar hb = hbObj.GetComponent<HealthBar>();
-            if (hb != null)
-            {
-                hb.Initialize(
-                    ghostSoldier.transform,     // Target transform to follow
-                    unitInstance,               // IHasHealth reference (make sure UnitInstance implements IHasHealth)
-                    mainCamera                    // Camera to convert world to screen
-                );
-            }
-            else
-            {
-                Debug.LogError("HealthBar prefab is missing HealthBar script!");
-            }
         }
         else
         {
@@ -137,7 +135,12 @@ public class SoldierPlacer : MonoBehaviour
 
     private void PlaceSoldier(GridNode node)
     {
-        GameObject unitInstance = Instantiate(currentUnitType.unitPrefab, node.WorldPosition, Quaternion.identity);
+        GameObject unitInstance = Instantiate(
+    currentUnitType.unitPrefab,
+    node.WorldPosition + currentUnitType.PlacementOffset,
+    Quaternion.identity
+);
+        Debug.Log($"Placing {currentUnitType.name} at {node.WorldPosition} + offset {currentUnitType.PlacementOffset}");
 
         UnitInstance unitComponent = unitInstance.GetComponent<UnitInstance>();
         if (unitComponent == null)
@@ -147,6 +150,16 @@ public class SoldierPlacer : MonoBehaviour
         else if (currentArmy != null)
         {
             currentArmy.Units.Add(unitComponent); //adds unit to army
+            //unitComponent.Army = currentArmy; // sets the army reference
+            // Initialize the UnitInstance
+            unitComponent.Initialize(
+                pathFinder,
+                currentArmy.TeamMaterial,
+                gridManager,
+                currentUnitType,
+                Vector2Int.zero, currentArmy, currentArmy.ArmyID
+            );
+            Debug.Log($"{unitComponent.name}'s army = {(unitComponent.Army == null ? "NULL" : unitComponent.Army.name)}");
         }
         else
         {
@@ -163,6 +176,7 @@ public class SoldierPlacer : MonoBehaviour
 
         audioManager.PlaySFX("Bike Bell"); // Play placement sound
         Destroy(ghostSoldier);
+        currentArmy.hasAddedUnits = true;
     }
 
 
@@ -173,12 +187,15 @@ public class SoldierPlacer : MonoBehaviour
         return node.Walkable; // You can expand this logic
     }
 
-    private void SetGhostColor(Color color)
+    private void SetGhostColor(Color color) //change that to material
     {
-        var renderer = ghostSoldier.GetComponentInChildren<Renderer>();
-        if (renderer != null)
+        var renderers = ghostSoldier.GetComponentsInChildren<MeshRenderer>();
+        foreach(Renderer renderer in renderers)
         {
-            renderer.material.color = color;
+            if (renderer != null)
+            {
+                renderer.material.color = color;
+            }
         }
     }
 

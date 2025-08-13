@@ -17,7 +17,7 @@ public class UnitPlacementManager : MonoBehaviour
     private UnitType pendingUnit;
     //private BuildingData matchingBuilding;
     private GameObject ghostObject;
-    private Renderer[] ghostRenderers;
+    private MeshRenderer[] ghostRenderers;
     private ArmyData playerArmy;
 
     private void Start()
@@ -36,7 +36,7 @@ public class UnitPlacementManager : MonoBehaviour
         ghostObject = Instantiate(pendingUnit.unitPrefab);
         ghostObject.SetActive(true);
 
-        ghostRenderers = ghostObject.GetComponentsInChildren<Renderer>();
+        ghostRenderers = ghostObject.GetComponentsInChildren<MeshRenderer>();
     }
 
 
@@ -53,15 +53,12 @@ public class UnitPlacementManager : MonoBehaviour
 
         ghostObject.transform.position = snappedWorld;
 
-        // Use pendingUnit here
-        bool canPlace = gridManager.CanPlaceUnit(pendingUnit, snappedCoords);
-        SetGhostMaterial(canPlace ? validMaterial : invalidMaterial);
+        bool isValid = gridManager.CanPlaceUnit(pendingUnit, snappedCoords);
+        SetGhostMaterial(isValid ? validMaterial : invalidMaterial);
 
-        if (canPlace && Mouse.current.leftButton.wasPressedThisFrame)
+        if (isValid && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            // This should be something like SpawnUnit, not SpawnBuilding:
-            // (assuming you create a SpawnUnit method)
-            playerArmy.SpawnUnit(pendingUnit, snappedWorld, playerArmy.TeamMaterial); //try getting that unit's existing army material, or whatever army material was pre-assigned
+            playerArmy.SpawnUnit(pendingUnit, snappedWorld, playerArmy.TeamMaterial);
             CancelPlacement();
         }
 

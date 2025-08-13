@@ -1,13 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SoldierMovementManager : MonoBehaviour
 {
     private SoldierUnit selectedSoldier;      // source
-    private Highlightable selectedHighlight;  // highlight for source
-
-    private Highlightable targetHighlight;    // highlight for target
-
     [SerializeField] private GridManager gridManager;
     [SerializeField] private PathFinder pathfinder;
     [SerializeField] private LineRenderer lineRenderer;
@@ -21,7 +18,14 @@ public class SoldierMovementManager : MonoBehaviour
 
     void HandleClick()
     {
+        Debug.Log($"HandleClick: mainCamera={(mainCamera == null ? "NULL" : "OK")}, selectedSoldier={(selectedSoldier == null ? "null" : "has value")}");
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (ray.origin == null || ray.direction == null)
+        {
+            Debug.LogError("Ray origin or direction is null. Cannot proceed with raycasting.");
+            return;
+        }
+        Debug.Log($"Ray origin: {ray.origin}, direction: {ray.direction}");
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             GameObject clicked = hit.collider.gameObject;
@@ -33,56 +37,42 @@ public class SoldierMovementManager : MonoBehaviour
                 if (selectedSoldier == null)
                 {
                     selectedSoldier = soldier;
-
-                    if (selectedHighlight != null)
-                        selectedHighlight.SetHighlight(false);
-
-                    selectedHighlight = soldier.GetComponent<Highlightable>();
-                    if (selectedHighlight != null)
-                        selectedHighlight.SetHighlight(true);
+                    Debug.Log($"Selected soldier: {selectedSoldier.name}");
                 }
                 else
                 {
-                    // This becomes the target soldier
-                    if (targetHighlight != null)
-                        targetHighlight.SetHighlight(false);
-
-                    targetHighlight = soldier.GetComponent<Highlightable>();
-                    if (targetHighlight != null)
-                        targetHighlight.SetHighlight(true);
-
                     // Move to target
-                    MoveTo(clicked.transform.position);
+                    MoveTo(selectedSoldier, clicked.transform.position);
+                    //if (selectedSoldier == null) 
+                    //{
+                    //    Debug.LogError("Selected soldier is null when trying to move.");
+                    //}
+                    if (clicked.name == null)
+                    {
+                        Debug.LogError("Clicked object name is null when trying to move.");
+                    }
+                    if (clicked.transform == null)
+                    {
+                        Debug.LogError("Clicked object transform is null when trying to move.");
+                    }
+                    Debug.Log($"Moving {selectedSoldier.name} to {clicked.name} at position {clicked.transform.position}");
                 }
             }
             // If clicking a building
-            else if (clicked.CompareTag("Building")) 
+            else if (clicked.CompareTag("Building"))
             {
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(false);
-
-                targetHighlight = clicked.GetComponent<Highlightable>();
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(true);
-
                 if (selectedSoldier != null)
                 {
-                    MoveTo(clicked.transform.position);
+                    MoveTo(selectedSoldier, clicked.transform.position);
+                    Debug.Log($"Moving {selectedSoldier.name} to building at position {clicked.transform.position}");
                 }
             }
             // If clicking a machine
-            else if (clicked.CompareTag("Machine")) 
-            {
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(false);
-
-                targetHighlight = clicked.GetComponent<Highlightable>();
-                if (targetHighlight != null)
-                    targetHighlight.SetHighlight(true);
-
+            else if (clicked.CompareTag("Machine"))
+            { 
                 if (selectedSoldier != null)
                 {
-                    MoveTo(clicked.transform.position);
+                    MoveTo(selectedSoldier, clicked.transform.position);
                 }
             }
             else
@@ -90,32 +80,43 @@ public class SoldierMovementManager : MonoBehaviour
                 // Clicking ground, just move
                 if (selectedSoldier != null) //make sure system knows what soldier is called
                 {
-                    MoveTo(hit.point);
+                    MoveTo(selectedSoldier, hit.point);
                 }
             }
         }
     }
 
-    void MoveTo(Vector3 destination)
+    public void MoveTo(SoldierUnit selectedSoldier, Vector3 destination, int stopBeforeLast = 3)
     {
+        this.selectedSoldier = selectedSoldier;
+        Debug.Log($"Calculating path with stopBeforeLast = {stopBeforeLast}");
+
         Vector3 start = selectedSoldier.transform.position;
-        List<Vector3> path = pathfinder.CalculatePath(
+        List<Vector3> fullPath = pathfinder.CalculatePath(
             gridManager.GetNodeFromWorldPosition(start),
-            gridManager.GetNodeFromWorldPosition(destination));
+            gridManager.GetNodeFromWorldPosition(destination)
+        );
 
-        selectedSoldier.MoveAlongPath(path);
+        int count = fullPath.Count;
+        Debug.Log($"Full path length: {count}");
 
-        lineRenderer.positionCount = path.Count;
-        lineRenderer.SetPositions(path.ToArray());
+        if (fullPath == null || count < 3)
+        {
+            Debug.Log("Path too short (<3 nodes). Movement skipped.");
+            return;
+        }
 
-        // Clear highlights
-        if (selectedHighlight != null)
-            selectedHighlight.SetHighlight(false);
-        if (targetHighlight != null)
-            targetHighlight.SetHighlight(false);
+        // Decide where to stop: e.g. stopBeforeLast = 2 or 3
+        int targetIndex = Mathf.Max(0, count - stopBeforeLast);
+        Debug.Log($"Truncated path to stop at index: {targetIndex}");
 
-        selectedSoldier = null;
-        selectedHighlight = null;
-        targetHighlight = null;
+        List<Vector3> truncated = fullPath.Take(targetIndex + 1).ToList();
+
+        selectedSoldier.MoveAlongPath(truncated);
+
+        lineRenderer.positionCount = truncated.Count;
+        lineRenderer.SetPositions(truncated.ToArray());
     }
+
+
 }

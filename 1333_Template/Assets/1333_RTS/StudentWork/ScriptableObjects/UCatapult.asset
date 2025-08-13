@@ -16,10 +16,18 @@ MonoBehaviour:
   height: 1
   maxHp: 100
   moveSpeed: 1
-  damage: 10
+  damage: 20
   defence: 1
   attackType: 1
   range: 3
   unitTypeName: Catapult
   unitPrefab: {fileID: 4625885196819267898, guid: e3a9bc961d7a8f94b84e5f91515e4b87, type: 3}
   unitIcon: {fileID: 21300000, guid: 5bec696391362e948811360eff4578ab, type: 3}
+  placementOffset: {x: 0, y: 2, z: 0}
+  CanAttackUnits: 0
+  CanAttackBuildings: 1
+  CanHeal: 0
+  HealingAmount: 50
+  CanEscort: 0
+  RetaliateOnAttack: 1
+  RetaliatoryDamage: 40

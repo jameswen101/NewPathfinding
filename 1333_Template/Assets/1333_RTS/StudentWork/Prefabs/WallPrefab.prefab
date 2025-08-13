@@ -48,9 +48,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BuildingData: {fileID: 11400000, guid: 377fc7e21e057d243b5e882a7894efa5, type: 2}
-  CurrentHp: 0
+  CurrentHp: 300
   Origin: {x: 0, y: 0}
+  OwningArmy: {fileID: 0}
   healthBar: {fileID: 5934650816807420389}
+  audioManager: {fileID: 0}
+  gridManager: {fileID: 0}
+  pathFinder: {fileID: 0}
 --- !u!136 &3673128659742750847
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -124,7 +128,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.16
+      value: -0.03
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalRotation.w
@@ -144,11 +148,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 2.59
+      value: 0.18
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 3.23
+      value: 5.54
       objectReference: {fileID: 0}
     - target: {fileID: 3803310604673242917, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -166,8 +170,16 @@ PrefabInstance:
       propertyPath: m_PresetInfoIsWorld
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4536633602300384127, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: linkedObject
+      value: 
+      objectReference: {fileID: 2612258116480238236}
     - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
       propertyPath: target
+      value: 
+      objectReference: {fileID: 7483801451690339909}
+    - target: {fileID: 5728986684893571789, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}
+      propertyPath: targetTransform
       value: 
       objectReference: {fileID: 7483801451690339909}
     - target: {fileID: 6879022286885001475, guid: d3629b57071b3644cbc86069f6ba7e67, type: 3}

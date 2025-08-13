@@ -7,7 +7,7 @@ public class ArmyManager : MonoBehaviour
     public int ArmyID;
     public bool IsPlayer => ArmyID == 0;
     public List<UnitBase> Units = new List<UnitBase>();
-    public List<BuildingBase> Buildings = new List<BuildingBase> (); 
+    public List<BuildingInstance> Buildings = new List<BuildingInstance> (); 
     public GridManager GridManager;
 
     // Start is called before the first frame update

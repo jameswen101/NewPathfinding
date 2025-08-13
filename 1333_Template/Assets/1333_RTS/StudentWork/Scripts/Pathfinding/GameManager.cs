@@ -6,23 +6,47 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
-    [SerializeField] private UnitManager unitManager;
     [SerializeField] private PathFinder pathFinder;
     [SerializeField] private ArmyComposition armyComposition;
     private bool selectingStart = true;
     [SerializeField] private ArmyPathfindingTester armyPathfindingTester;
     [SerializeField] private AudioManager audioManager;
+    [SerializeField] private EnemyAIManager enemyAIManager;
+    private ArmyData playerArmy;
+    private ArmyData enemyArmy;
+
     // Start is called before the first frame update
 
     private void Awake()
     {
         gridManager.InitializeGrid();
-        unitManager.SpawnDummyUnit();
     }
 
     void Start()
     {
-        StartNewGame(2); //starting a new game with 2 players
+
+        GameStartIntent intent = FindAnyObjectByType<GameStartIntent>();
+
+        if (intent != null)
+        {
+                if (intent.mode == GameStartIntent.StartMode.NewGame)
+                {
+                    StartNewGame(2);
+                }
+                else if (intent.mode == GameStartIntent.StartMode.LoadGame)
+                {
+                    LoadGame();
+                }
+
+                // Clear intent after use
+                intent.mode = GameStartIntent.StartMode.None;
+        }
+        else
+        {
+            Debug.LogWarning("GameStartIntent not found! Starting a new game by default.");
+            // If no intent is found, start a new game by default
+            StartNewGame(2); //starting a new game with 2 players
+        }
         //call BGM
         if (audioManager == null)
         {
@@ -69,7 +93,8 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             audioManager.StopMusic(); // stop music
-            SceneManager.LoadScene("PauseMenu");
+            SaveAll(); // save game state in case player chooses to quit
+            SceneManager.LoadScene("PauseMenu", LoadSceneMode.Additive);
         }
     }
 
@@ -92,21 +117,52 @@ public class GameManager : MonoBehaviour
         {
             var armyData = gameObject.AddComponent<ArmyData>();
 
-            armyData.Initialize(gridManager, pathFinder, i, armyPathfindingTester.armyMaterials[i]); //setting up the army
-            //change to TeamMaterialsCollection
+            armyData.Initialize(gridManager, pathFinder, i, armyPathfindingTester.armyMaterials[i]);
 
-            // Example spawn for now: one unit in each army
+            if (i == 0)
+            {
+                playerArmy = armyData;
+            }
+            else if (i == 1)
+            {
+                enemyArmy = armyData;
+            }
+
             foreach (var unitComp in armyComposition.entries)
             {
                 var startX = Random.Range(0, gridSizeX);
                 var startY = Random.Range(0, gridSizeY);
-
                 var position = new Vector3(startX * nodeSize, 0, startY * nodeSize);
-                //var unitData = new UnitData
-                //{ UnitType = unitComp.UnitConfig, Position = position, Health = unitComp.UnitConfig.MaxHp, ArmyId = i };
-
-                //armyData.SpawnUnit(unitData);
+                // Presumably you instantiate and place units here later
             }
         }
+
     }
+
+    public void LoadGame()
+    {
+        SaveData data = SaveSystem.LoadGame();
+        if (data != null)
+        {
+            SceneManager.LoadScene(data.sceneName);
+            // pass data to relevant systems after scene load
+        }
+    }
+
+    public void SaveAll()
+    {
+        SaveData data = new();
+        data.sceneName = SceneManager.GetActiveScene().name;
+        data.waveNumber = enemyAIManager.waveNumber;
+
+        data.playerUnits = UnitSaveUtility.SaveUnits(playerArmy._units);
+        data.enemyUnits = UnitSaveUtility.SaveUnits(enemyArmy._units);
+        data.playerBuildings = BuildingSaveUtility.SaveBuildings(playerArmy._buildings);
+        data.enemyBuildings = BuildingSaveUtility.SaveBuildings(enemyArmy._buildings);
+
+        SaveSystem.SaveGame(data);
+        Debug.Log("Game state saved.");
+    }
+
+
 }

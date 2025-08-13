@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,10 +9,22 @@ public class SoldierUnit : MonoBehaviour //controls solider movement
         StartCoroutine(FollowPath(path));
     }
 
-    private IEnumerator FollowPath(List<Vector3> path)
+    public IEnumerator FollowPath(List<Vector3> path)
     {
-        foreach (Vector3 point in path)
+        int count = path.Count;
+        Debug.Log($"FollowPath called, path length: {count}");
+
+        if (path == null || count <= 2)
         {
+            Debug.Log("Skipping movement — path too short or null");
+            yield break;
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 point = path[i];
+            Debug.Log($"Moving to path[{i}] = {point}");
+
             while (Vector3.Distance(transform.position, point) > 0.1f)
             {
                 transform.position = Vector3.MoveTowards(transform.position, point, 5f * Time.deltaTime);
@@ -20,4 +32,5 @@ public class SoldierUnit : MonoBehaviour //controls solider movement
             }
         }
     }
+
 }

@@ -16,6 +16,17 @@ public class UnitType : ScriptableObject
     public string unitTypeName;
     public GameObject unitPrefab;
     public Sprite unitIcon;
+    [SerializeField] private Vector3 placementOffset = Vector3.zero;
+    public Vector3 PlacementOffset => placementOffset;
+    [Header("Attack Permissions")]
+    public bool CanAttackUnits;
+    public bool CanAttackBuildings;
+    public bool CanHeal;
+    public int HealingAmount = 50;
+    public bool CanEscort;
+    public bool RetaliateOnAttack = true;
+    public int RetaliatoryDamage = 40;
+
     //public TeamArmies army;
 
     public int Width => width;
@@ -36,4 +47,8 @@ public class UnitType : ScriptableObject
     {
 
     }
+
+    
+
+
 }
